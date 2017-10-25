@@ -48,5 +48,17 @@ namespace Pentagon.Maths
             var s = -v;
             return -Math.Pow(s, 1d / 3d);
         }
+
+        public static IEnumerable<double> Abs(this [NotNull] IEnumerable<double> collection) 
+        {
+            Require.NotNull(() => collection);
+            foreach(var value in collection)
+            {
+                if (value < 0d)
+                     yield return (double)Math.Abs(value);
+                else
+                    yield return value;
+            }
+        }
     }
 }
