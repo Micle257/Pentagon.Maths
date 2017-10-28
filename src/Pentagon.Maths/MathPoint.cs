@@ -9,58 +9,68 @@ namespace Pentagon.Maths
     using System;
     using Pentagon.Extensions;
 
-    public struct MathPoint : IEquatable<MathPoint>, IComparable<MathPoint>, IComparable
+    public struct MathPoint : IValueDataType<MathPoint>
     {
         public MathPoint(double x, double y)
         {
             X = x;
             Y = y;
-            IsDefault = false;
+            HasValue = true;
         }
 
-        public bool IsDefault { get; }
-        public double X { get; set; }
-        public double Y { get; set; }
+        public double X { get; }
+        public double Y { get; }
+
+        /// <inheritdoc />
+        public bool HasValue { get; }
 
         #region Operators
 
-        /// <summary>
-        ///     Returns a value that indicates whether a <see cref="T:Pentagon.Maths.MathPoint" /> value is less than another
-        ///     <see cref="T:Pentagon.Maths.MathPoint" /> value.
-        /// </summary>
-        /// <param name="left"> The first value to compare. </param>
-        /// <param name="right"> The second value to compare. </param>
-        /// <returns> true if <paramref name="left" /> is less than <paramref name="right" />; otherwise, false. </returns>
+        /// <inheritdoc />
         public static bool operator <(MathPoint left, MathPoint right) => left.CompareTo(right) < 0;
 
-        /// <summary> Returns a value that indicates whether a <see cref="T:Pentagon.Maths.MathPoint" /> value is greater than another <see cref="T:Pentagon.Maths.MathPoint" /> value. </summary>
-        /// <param name="left"> The first value to compare. </param>
-        /// <param name="right"> The second value to compare. </param>
-        /// <returns> true if <paramref name="left" /> is greater than <paramref name="right" />; otherwise, false. </returns>
+        /// <inheritdoc />
         public static bool operator >(MathPoint left, MathPoint right) => left.CompareTo(right) > 0;
 
-        /// <summary>
-        ///     Returns a value that indicates whether a <see cref="T:Pentagon.Maths.MathPoint" /> value is less than or equal to another <see cref="T:Pentagon.Maths.MathPoint" /> value.
-        /// </summary>
-        /// <param name="left"> The first value to compare. </param>
-        /// <param name="right"> The second value to compare. </param>
-        /// <returns> true if <paramref name="left" /> is less than or equal to <paramref name="right" />; otherwise, false. </returns>
+        /// <inheritdoc />
         public static bool operator <=(MathPoint left, MathPoint right) => left.CompareTo(right) <= 0;
 
-        /// <summary>
-        ///     Returns a value that indicates whether a <see cref="T:Pentagon.Maths.MathPoint" /> value is greater than or equal to another <see cref="T:Pentagon.Maths.MathPoint" /> value.
-        /// </summary>
-        /// <param name="left"> The first value to compare. </param>
-        /// <param name="right"> The second value to compare. </param>
-        /// <returns> true if <paramref name="left" /> is greater than <paramref name="right" />; otherwise, false. </returns>
+        /// <inheritdoc />
         public static bool operator >=(MathPoint left, MathPoint right) => left.CompareTo(right) >= 0;
 
+        /// <inheritdoc />
         public static bool operator ==(MathPoint left, MathPoint right) => left.Equals(right);
 
+        /// <inheritdoc />
         public static bool operator !=(MathPoint left, MathPoint right) => !left.Equals(right);
 
         #endregion
 
+        #region IEquatable members
+
+        /// <inheritdoc />
+        public bool Equals(MathPoint other) => X.EqualTo(other.X) && Y.EqualTo(other.Y);
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+                return false;
+            return obj is MathPoint && Equals((MathPoint) obj);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (X.GetHashCode() * 397) ^ Y.GetHashCode();
+            }
+        }
+
+        #endregion
+
+        /// <inheritdoc />
         public int CompareTo(object obj)
         {
             if (ReferenceEquals(null, obj))
@@ -70,6 +80,7 @@ namespace Pentagon.Maths
             return CompareTo((MathPoint) obj);
         }
 
+        /// <inheritdoc />
         public int CompareTo(MathPoint other)
         {
             var xComparison = X.CompareTo(other.X);
@@ -78,23 +89,7 @@ namespace Pentagon.Maths
             return Y.CompareTo(other.Y);
         }
 
-        public bool Equals(MathPoint other) => X.EqualTo(other.X) && Y.EqualTo(other.Y);
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj))
-                return false;
-            return obj is MathPoint && Equals((MathPoint) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (X.GetHashCode() * 397) ^ Y.GetHashCode();
-            }
-        }
-
+        /// <inheritdoc />
         public override string ToString() => $"{Math.Round(X, 5)}; {Math.Round(Y, 5)}";
     }
 }
