@@ -7,9 +7,11 @@
 namespace Pentagon.Maths
 {
     using System;
+    using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
     using Helpers;
+    using JetBrains.Annotations;
     using Quantities;
 
     public static class Extensions
@@ -49,13 +51,19 @@ namespace Pentagon.Maths
             return -Math.Pow(s, 1d / 3d);
         }
 
-        public static IEnumerable<double> Abs(this [NotNull] IEnumerable<double> collection) 
+        /// <summary>
+        /// Computes absolute value of each value in the collection.
+        /// </summary>
+        /// <param name="collection">The collection.</param>
+        /// <returns>An enumeration of absolute values.</returns>
+        /// <exception cref="ArgumentNullException">When collection is null.</exception>
+        public static IEnumerable<double> Abs([NotNull] this IEnumerable<double> collection)
         {
             Require.NotNull(() => collection);
-            foreach(var value in collection)
+            foreach (var value in collection)
             {
                 if (value < 0d)
-                     yield return (double)Math.Abs(value);
+                    yield return Math.Abs(value);
                 else
                     yield return value;
             }
