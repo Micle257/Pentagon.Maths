@@ -80,6 +80,7 @@ namespace Pentagon.Maths.Functions
         /// <exception cref="ValueOutOfDomainException"> </exception>
         public virtual double GetValue(double x)
         {
+
             if (!IsInDomain(x))
                 throw new ValueOutOfDomainException(x);
             return Func(x);
@@ -131,13 +132,13 @@ namespace Pentagon.Maths.Functions
             return samples;
         }
 
-        public DiscreteFunction ToDiscreteFunction(Frequency samplingFrequency, MathInterval mathInterval)
+        public Sequence<double> ToDiscreteFunction(Frequency samplingFrequency, MathInterval mathInterval)
         {
             var startTime = Math.Abs(mathInterval.Min.ToSample(samplingFrequency));
             var count = (int) (mathInterval.Size * samplingFrequency.Value);
-            return new DiscreteFunction(samplingFrequency, GetSamples(count + 1, samplingFrequency, mathInterval.Min), startTime);
+            return new Sequence<double>(GetSamples(count + 1, samplingFrequency, mathInterval.Min), startTime);
         }
 
-        public DiscreteFunction ToDiscreteFunction(Frequency sampl) => new DiscreteFunction(i => GetValue(i.ToTime(sampl)), default(Frequency));
+        public IDiscreteFunction ToDiscreteFunction(Frequency sampl) => new InfiniteDiscreteFunction(i => GetValue(i.ToTime(sampl)), sampl);
     }
 }

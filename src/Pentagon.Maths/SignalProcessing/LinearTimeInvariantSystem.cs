@@ -21,7 +21,7 @@ namespace Pentagon.Maths.SignalProcessing
 
         public DiscreteFunction GetImpulseResponse()
         {
-            var imp = DiscreteFunction.ImpulseFunction();
+            var imp = InfiniteDiscreteFunction.ImpulseFunction(new Frequency(48000));
             Func<int, double> func = i =>
                                      {
                                          var f = new IirDigitalFilter(Function);

@@ -10,12 +10,35 @@ namespace Pentagon.Maths
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using System.Numerics;
     using Helpers;
     using JetBrains.Annotations;
     using Quantities;
 
     public static class Extensions
     {
+        static HashSet<Type> NumericTypes = new HashSet<Type>
+        {
+            typeof(short),
+            typeof(ushort),
+            typeof(byte),
+            typeof(sbyte),
+            typeof(int),
+            typeof(uint),
+            typeof(long),
+            typeof(ulong),
+            typeof(float),
+            typeof(double),
+            typeof(decimal),
+            typeof(BigInteger),
+            typeof(Complex)
+        };
+
+        public static bool IsNumeric(this object value)
+        {
+            return NumericTypes.Contains(value.GetType()) || NumericTypes.Contains(Nullable.GetUnderlyingType(value.GetType()));
+        }
+
         public static bool InRange(this int val, int min, int max) => new Range<int>(min, max).InRange(val);
 
         public static bool InRange(this double val, double min, double max) => new MathInterval(min, max).InRange(val);
@@ -39,7 +62,7 @@ namespace Pentagon.Maths
             return Convert.ToDouble(val);
         }
 
-        public static int ToSample(this double val, Frequency sampling) => (int) (val * sampling.Value);
+        public static int ToSample(this double val, Frequency sampling) => (int)(val * sampling.Value);
 
         public static double ToTime(this int val, Frequency sampling) => val / sampling.Value;
 

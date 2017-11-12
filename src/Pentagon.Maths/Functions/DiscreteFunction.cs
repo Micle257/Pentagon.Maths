@@ -7,47 +7,39 @@
 namespace Pentagon.Maths.Functions
 {
     using System;
+    using System.Numerics;
     using Helpers;
     using Quantities;
     using SignalProcessing;
 
-    public class DiscreteFunction
+    public class DiscreteFunction : IDiscreteFunction
     {
         readonly Func<int, double> _func;
+        readonly double _initialValue;
 
-        public DiscreteFunction(Frequency sampling, double[] samples, int midpoint)
+        public DiscreteFunction(Func<int,double> function,Frequency sampling, double initialValue = 0)
         {
-            Samples = samples;
-            Midpoint = midpoint;
-            Sampling = new SamplingSource(sampling, samples.Length);
-            _func = i => Samples[i];
+            SamplingFrequency = sampling;
+            _func = function;
+            _initialValue = initialValue;
         }
-
-        internal DiscreteFunction(Func<int, double> func, Frequency f)
-        {
-            Sampling = new SamplingSource(f, TimeSpan.MaxValue);
-            _func = func;
-        }
-
-        public double[] Samples { get; }
-        public int Midpoint { get; }
-        public Vector Vector => new Vector(Samples);
-
-        public SamplingSource Sampling { get; }
-
-        public static DiscreteFunction StepFunction(int midpoint = 0) => new DiscreteFunction(i => i >= midpoint ? 1 : 0, Frequency.Infinity);
-
-        public static DiscreteFunction ImpulseFunction(int midpoint = 0) => new DiscreteFunction(i => i == midpoint ? 1 : 0, Frequency.Infinity);
-
+        
         public double EvaluateTime(double t)
         {
-            var d = t.ToSample(Sampling.Frequency);
+            var d = t.ToSample(SamplingFrequency);
             return EvaluateSample(d);
         }
 
-        public double EvaluateSample(int n) => _func(n);
+        public Frequency SamplingFrequency { get; }
 
-        public double[] EvaluateSamples(Range<int> range)
+        public double this[int sample]
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public double EvaluateSample(int n) => _initialValue + _func(n);
+
+        public double[] EvaluateSamples(IRange<int> range)
         {
             var ss = new double[Math.Abs(range.Max - range.Min)];
             for (var i = range.Min; i < range.Max; i++)
