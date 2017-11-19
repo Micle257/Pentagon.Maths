@@ -24,7 +24,7 @@ namespace Pentagon.Maths.Tests
             var outputZ = new ZTranform(new[] {1d, 2, 1});
             var inputZ = new ZTranform(new[] {1d, 1 / 3d, -1 / 4d});
             var f = new TransferFunction(outputZ, inputZ);
-            var filter = new IirDigitalFilter(f);
+            var filter = new LinearTimeInvariantSystem(f);
             var yn = new List<double>();
             foreach (var sample in samples)
                 yn.Add(filter.ProcessSample(sample));
@@ -36,9 +36,9 @@ namespace Pentagon.Maths.Tests
             var outputZ = new ZTranform(new[] {5d});
             var inputZ = new ZTranform(new[] {5d});
             var f = new TransferFunction(outputZ, inputZ);
-            var filter = new IirDigitalFilter(f);
+            var filter = new LinearTimeInvariantSystem(f);
             var yn = new List<double>();
-            var step = DiscreteFunction.StepFunction();
+            var step = InfiniteDiscreteFunction.StepFunction(new Frequency(48000));
             var samples = step.EvaluateSamples(new Range<int>(0, 500));
             foreach (var sample in samples)
                 yn.Add(filter.ProcessSample(sample));
@@ -50,9 +50,9 @@ namespace Pentagon.Maths.Tests
             var outputZ = new ZTranform(new[] {1d});
             var inputZ = new ZTranform(new[] {1d, 0.92});
             var f = new TransferFunction(outputZ, inputZ);
-            var de = new DifferenceEquation(f);
+            var de = f.DifferenceEquation;
             var signal = new Function(MathExpr.Sin(Function.IndependentName * (ValueMathExpression) new Frequency(10000).ConvertUnit(new AngularSpeed()).Value)).ToDiscreteFunction((Frequency) 48000);
-            var ss = de.ProcessSignal(signal.EvaluateSamples(new Range<int>(0, 100)));
+            var ss = de.EvaluateSignal(signal.EvaluateSamples(new Range<int>(0, 100)));
         }
 
         [Fact]
@@ -63,7 +63,7 @@ namespace Pentagon.Maths.Tests
             var f = new TransferFunction(outputZ, inputZ);
             var yn = new List<double>();
             var cs = new LinearTimeInvariantSystem(f);
-            var d = cs.GetImpulseResponse();
+            var d = cs.GetImpulseResponse(new Frequency(48000));
             var ss = d.EvaluateSamples(new Range<int>(0, 100));
         }
     }

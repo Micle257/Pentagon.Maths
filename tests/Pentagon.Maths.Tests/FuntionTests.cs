@@ -52,11 +52,11 @@ namespace Pentagon.Maths.Tests
         {
             var cf = new Function(a => 2 * a);
             var df = cf.ToDiscreteFunction((Frequency) 1, new MathInterval(-10d, 10d));
-            Assert.Equal(-20, df.Samples[0]);
-            Assert.Equal(-18, df.EvaluateSample(1));
-            Assert.Equal(-20, df.EvaluateTime(0));
-            Assert.Equal(-10, df.EvaluateTime(5));
-            Assert.Equal(0, df.EvaluateTime(10));
+            Assert.Equal(-20, df.EvaluateSample(-10));
+            Assert.Equal(-18, df.EvaluateSample(-9));
+            Assert.Equal(0, df.EvaluateTime(0));
+            Assert.Equal(10, df.EvaluateTime(5));
+            Assert.Equal(20, df.EvaluateTime(10));
         }
     }
 }
