@@ -6,30 +6,42 @@
 
 namespace Pentagon.Maths.SignalProcessing
 {
-    public class TransferFunction
+    using System.Collections.Generic;
+    using System.Linq;
+
+    public class TransferFunction : ISystemDefinition
     {
-        public TransferFunction(ZTranform output, ZTranform input)
+        public TransferFunction(ZTranform numerator, ZTranform denumerator)
         {
-            Input = input;
-            Output = output;
+            Input = denumerator;
+            Output = numerator;
+            DifferenceEquation = GetDifferenceEquation(numerator.Coefficients, denumerator.Coefficients);
         }
-
-        public TransferFunction(double[] output, double[] input) : this(new ZTranform(output), new ZTranform(input)) { }
-
+        
         public ZTranform Input { get; }
         public ZTranform Output { get; }
 
+        public DifferenceEquation DifferenceEquation { get; } 
+
         #region Operators
 
-        public static TransferFunction operator +(TransferFunction a, TransferFunction b) => new TransferFunction(a.Output + b.Output, a.Input + b.Input);
-        public static TransferFunction operator *(TransferFunction a, TransferFunction b) => new TransferFunction(a.Output * b.Output, a.Input * b.Input);
+        public static TransferFunction operator +(TransferFunction a, TransferFunction b) => new TransferFunction(new ZTranform(Polynomial.Add(a.Output.Coefficients, b.Output.Coefficients).ToArray()), new ZTranform(Polynomial.Add(a.Input.Coefficients, b.Input.Coefficients).ToArray()));
+        public static TransferFunction operator *(TransferFunction a, TransferFunction b) => Multiple(a,b);
+
+        static TransferFunction Multiple(TransferFunction tf1, TransferFunction tf2)
+        {
+            var output = Polynomial.Convolution(tf1.Output.Coefficients, tf2.Output.Coefficients).ToArray();
+            var input = Polynomial.Convolution(tf1.Input.Coefficients, tf2.Input.Coefficients).ToArray();
+
+            return new TransferFunction(new ZTranform(output), new ZTranform(input));
+        }
 
         public static TransferFunction operator *(TransferFunction a, double value)
         {
-            var s = a.Output.Parameters;
-            for (var index = 0; index < s.Length; index++)
+            var s = a.Output.Coefficients;
+            for (var index = 0; index < s.Count; index++)
                 s[index] *= value;
-            return new TransferFunction(new ZTranform(s), a.Input);
+            return new TransferFunction(new ZTranform(s.ToArray()), a.Input);
         }
 
         public static TransferFunction operator ^(TransferFunction a, int exp)
@@ -41,32 +53,28 @@ namespace Pentagon.Maths.SignalProcessing
                 return a;
             }
             return a;
-            //return new TransferFunction((MathExpression)a.Numerator ^ exp, (MathExpression)a.Denominator ^ exp);
         }
 
         #endregion
-
-        //public static double[] Convolution(double[] u, double[] v)
-        //{
-        //    var m = u.Length;
-        //    var n = v.Length;
-        //    var w = new double[m + n - 1];
-        //    for (var k = 0; k < w.Length; k++)
-        //    {
-        //        for (var j = new[] {0, k - n + 1}.Max(); j < new[] {k + 1, m}.Min(); j++) // var j = max(1,k+1-n); j < min(k,m); j++
-        //            w[k] += u[j] * v[k - j];
-        //    }
-        //    return w;
-        //}
+        
+        DifferenceEquation GetDifferenceEquation(IList<double> numerator, IList<double> denumerator)
+        {
+            return new DifferenceEquation((input, previousInput, output) =>
+                                           (input 
+                                              + Sum.Compute(0, numerator.Count, n => numerator[n] * previousInput[-n])
+                                              - Sum.Compute(1, denumerator.Count, n => denumerator[n] * output[-n])) / denumerator[0]);
+        }
 
         public TransferFunction AddOne()
         {
-            var input = Input.Parameters;
-            var output = Output.Parameters;
-            var newOutput = input + output;
+            var input = Input.Coefficients;
+            var output = Output.Coefficients;
+            var newOutput = Polynomial.Add(input, output).ToArray();
             return new TransferFunction(new ZTranform(newOutput), Input);
         }
 
         public TransferFunction Invert() => new TransferFunction(Input, Output);
+
+        public double EvaluateNext(double x) => DifferenceEquation.EvaluateNext(x);
     }
 }

@@ -1,75 +1,51 @@
-// -----------------------------------------------------------------------
-//  <copyright file="DifferenceEquation.cs">
-//   Copyright (c) Michal Pokorn�. All Rights Reserved.
+﻿// -----------------------------------------------------------------------
+//  <copyright file="ZTranform.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
 //  </copyright>
 // -----------------------------------------------------------------------
 
 namespace Pentagon.Maths.SignalProcessing
 {
+    using System;
     using System.Collections.Generic;
-    using System.Linq;
+    using System.Linq.Expressions;
+    using Expression;
 
-    public class DifferenceEquation
+    public class DifferenceEquation : ISystemDefinition
     {
-        public DifferenceEquation(TransferFunction func)
+        readonly DifferenceEquationCallback _function;
+        SignalBuilder _inputSignal = new SignalBuilder();
+        SignalBuilder _outputSignal = new SignalBuilder();
+        bool _isEvaluating;
+
+        public DifferenceEquation(Expression<DifferenceEquationCallback> function)
         {
-            Function = func;
+            _function = function.Compile();
         }
 
-        TransferFunction Function { get; }
-        List<double> InputSamples { get; } = new List<double>();
-        List<double> OutputSamples { get; } = new List<double>();
-
-        public void SetInitialCondition(double c = double.NaN)
+        public void SetInitialCondition(Signal signal)
         {
-            InputSamples.Clear();
-            OutputSamples.Clear();
-            if (!double.IsNaN(c))
-                OutputSamples.Add(c);
+            if (!_isEvaluating)
+                _outputSignal.AddSignal(signal);
         }
 
-        public double[] ProcessSignal(double[] signal)
+        public double EvaluateNext(double x)
         {
-            SetInitialCondition(0d);
-            var result = new double[signal.Length];
-            for (var i = 0; i < signal.Length; i++)
-                result[i] = ProcessValue(signal[i]);
-            return result;
+            _isEvaluating = true;
+            var y = _function(x, _inputSignal.GetRelativeSignal(), _outputSignal.GetRelativeSignal());
+
+            _inputSignal.AddSample(x);
+            _outputSignal.AddSample(y);
+
+            return y;
         }
 
-        double ProcessValue(double sampleValue)
+        public IEnumerable<double> EvaluateSignal(IEnumerable<double> samples)
         {
-            InputSamples.Add(sampleValue);
-
-            var yn = ProcessInputs().Sum() - ProcessOutputs().Sum();
-            OutputSamples.Add(yn);
-            return yn;
-        }
-
-        List<double> ProcessOutputs()
-        {
-            var yValues = new List<double>();
-            for (var i = 1; i < Function.Input.Parameters.Length; i++)
+            foreach (var sample in samples)
             {
-                if (i > OutputSamples.Count)
-                    break;
-                var xc = Function.Input.Parameters[i];
-                yValues.Add(xc * OutputSamples[OutputSamples.Count - i]);
+                yield return EvaluateNext(sample);
             }
-            return yValues;
-        }
-
-        List<double> ProcessInputs()
-        {
-            var xValues = new List<double>();
-            for (var i = 0; i < Function.Output.Parameters.Length; i++)
-            {
-                if (i >= InputSamples.Count)
-                    break;
-                var yc = Function.Output.Parameters[i];
-                xValues.Add(yc * InputSamples[InputSamples.Count - 1 - i]);
-            }
-            return xValues;
         }
     }
 }

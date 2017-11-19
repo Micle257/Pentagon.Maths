@@ -12,28 +12,31 @@ namespace Pentagon.Maths.SignalProcessing
 
     public class LinearTimeInvariantSystem
     {
-        public LinearTimeInvariantSystem(TransferFunction function)
+        public ISystemDefinition Definition { get; }
+
+        public LinearTimeInvariantSystem(ISystemDefinition definition)
         {
-            Function = function;
+            Definition = definition;
         }
-
-        public TransferFunction Function { get; }
-
-        public DiscreteFunction GetImpulseResponse()
+        
+        public DiscreteFunction GetImpulseResponse(Frequency samplingFrequency)
         {
-            var imp = InfiniteDiscreteFunction.ImpulseFunction(new Frequency(48000));
+            var imp = InfiniteDiscreteFunction.ImpulseFunction(samplingFrequency);
             Func<int, double> func = i =>
                                      {
-                                         var f = new IirDigitalFilter(Function);
                                          if (i < 0)
                                              return 0;
                                          var d = 0d;
                                          for (var j = 0; j < i + 1; j++)
-                                             d = f.ProcessSample(imp.EvaluateSample(j));
-                                         f.SetInitialCondition();
+                                           d=  Definition.EvaluateNext(imp.EvaluateSample(j));
                                          return d;
                                      };
-            return new DiscreteFunction(func, Frequency.Infinity);
+            return new DiscreteFunction(func, samplingFrequency);
+        }
+
+        public double ProcessSample(double sample)
+        {
+           return Definition.EvaluateNext(sample);
         }
     }
 }
