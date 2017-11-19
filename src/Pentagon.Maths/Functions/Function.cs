@@ -132,11 +132,11 @@ namespace Pentagon.Maths.Functions
             return samples;
         }
 
-        public Sequence<double> ToDiscreteFunction(Frequency samplingFrequency, MathInterval mathInterval)
+        public IDiscreteFunction ToDiscreteFunction(Frequency samplingFrequency, MathInterval mathInterval)
         {
             var startTime = Math.Abs(mathInterval.Min.ToSample(samplingFrequency));
             var count = (int) (mathInterval.Size * samplingFrequency.Value);
-            return new Sequence<double>(GetSamples(count + 1, samplingFrequency, mathInterval.Min), startTime);
+            return new RealSequence(GetSamples(count + 1, samplingFrequency, mathInterval.Min), startTime, samplingFrequency);
         }
 
         public IDiscreteFunction ToDiscreteFunction(Frequency sampl) => new InfiniteDiscreteFunction(i => GetValue(i.ToTime(sampl)), sampl);

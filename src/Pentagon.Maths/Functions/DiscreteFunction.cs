@@ -7,6 +7,7 @@
 namespace Pentagon.Maths.Functions
 {
     using System;
+    using System.Collections.Generic;
     using System.Numerics;
     using Helpers;
     using Quantities;
@@ -39,7 +40,7 @@ namespace Pentagon.Maths.Functions
 
         public double EvaluateSample(int n) => _initialValue + _func(n);
 
-        public double[] EvaluateSamples(IRange<int> range)
+        public IEnumerable<double> EvaluateSamples(IRange<int> range)
         {
             var ss = new double[Math.Abs(range.Max - range.Min)];
             for (var i = range.Min; i < range.Max; i++)

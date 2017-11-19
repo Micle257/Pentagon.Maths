@@ -1,4 +1,6 @@
 namespace Pentagon.Maths.Functions {
+    using System.Collections.Generic;
+    using Helpers;
     using Quantities;
 
     public interface IDiscreteFunction
@@ -10,5 +12,6 @@ namespace Pentagon.Maths.Functions {
         double EvaluateSample(int sample);
 
         double EvaluateTime(double time);
+        IEnumerable<double> EvaluateSamples(IRange<int> range);
     }
 }

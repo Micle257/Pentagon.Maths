@@ -25,5 +25,7 @@ namespace Pentagon.Maths.Expression
         public static LnMathExpression Ln(MathExpression e) => new LnMathExpression(e);
 
         public static IMathExpression Cast(MathExpression mathExpression) => mathExpression;
+
+        public static ExpMathExpression Exp(MathExpression baseExpression, MathExpression exponent) => new ExpMathExpression(baseExpression, exponent);
     }
 }

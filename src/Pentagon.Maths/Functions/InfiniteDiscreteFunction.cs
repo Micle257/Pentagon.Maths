@@ -1,5 +1,6 @@
 namespace Pentagon.Maths.Functions {
     using System;
+    using System.Collections.Generic;
     using Helpers;
     using Quantities;
 
@@ -30,6 +31,11 @@ namespace Pentagon.Maths.Functions {
         {
             var d = time.ToSample(SamplingFrequency);
             return EvaluateSample(d);
+        }
+
+        public IEnumerable<double> EvaluateSamples(IRange<int> range)
+        {
+            return EvaluateSequence(range);
         }
 
         public Sequence<double> EvaluateSequence(IRange<int> interval)
