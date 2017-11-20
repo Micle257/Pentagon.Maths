@@ -31,8 +31,8 @@
 
             for (int i = 0; i < length; i++)
             {
-                var a1 = i.InRange(0, first.Coefficients.Count) ? first.Coefficients[i] : 0;
-                var a2 = i.InRange(0, second.Coefficients.Count) ? second.Coefficients[i] : 0;
+                var a1 = i.InRange(0, first.Coefficients.Count-1) ? first.Coefficients[i] : 0;
+                var a2 = i.InRange(0, second.Coefficients.Count-1) ? second.Coefficients[i] : 0;
                 sum.Add(a1 + a2);
             }
 

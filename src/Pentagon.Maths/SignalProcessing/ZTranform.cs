@@ -1,5 +1,6 @@
 ﻿namespace Pentagon.Maths.SignalProcessing
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Numerics;
@@ -35,10 +36,10 @@
 
             for (int i = 0; i < Coefficients.Count; i++)
             {
-                if (Coefficients[i].EqualTo(0, 5))
+                if (Math.Abs(Coefficients[i]) < 0.00001)
                     continue;
 
-                    result.Append($"{Coefficients[i].SignificantFigures(3)}");
+                    result.Append($"+{Coefficients[i].SignificantFigures(3)}");
 
                 if (i != 0)
                     result.Append($"z^-{i}");
