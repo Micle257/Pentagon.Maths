@@ -9,19 +9,18 @@ namespace Pentagon.Maths.SignalProcessing
     using System.Collections.Generic;
     using System.Linq;
 
-    public class TransferFunction : ISystemDefinition
+    public class TransferFunction
     {
         public TransferFunction(ZTranform numerator, ZTranform denumerator)
         {
             Input = denumerator;
             Output = numerator;
-            DifferenceEquation = GetDifferenceEquation(numerator.Coefficients, denumerator.Coefficients);
         }
 
         public ZTranform Input { get; }
         public ZTranform Output { get; }
 
-        public DifferenceEquation DifferenceEquation { get; }
+        public DifferenceEquation GetDifferenceEquation() => GetDifferenceEquation(Output.Coefficients, Input.Coefficients);
 
         #region Operators
 
@@ -85,9 +84,7 @@ namespace Pentagon.Maths.SignalProcessing
         }
 
         public TransferFunction Invert() => new TransferFunction(Input, Output);
-
-        public double EvaluateNext(double x) => DifferenceEquation.EvaluateNext(x);
-
+        
         /// <inheritdoc />
         public override string ToString()
         {

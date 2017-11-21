@@ -12,14 +12,16 @@ namespace Pentagon.Maths.SignalProcessing
 
     public class LinearTimeInvariantSystem
     {
-        public ISystemDefinition Definition { get; }
+        public TransferFunction TransferFunction { get; }
+        public DifferenceEquation DifferenceEquation { get; }
 
-        public LinearTimeInvariantSystem(ISystemDefinition definition)
+        public LinearTimeInvariantSystem(TransferFunction transferFunction)
         {
-            Definition = definition;
+            TransferFunction = transferFunction;
+            DifferenceEquation = TransferFunction.GetDifferenceEquation();
         }
         
-        public DiscreteFunction GetImpulseResponse(Frequency samplingFrequency)
+        public IDiscreteFunction GetImpulseResponse(Frequency samplingFrequency)
         {
             var imp = InfiniteDiscreteFunction.ImpulseFunction(samplingFrequency);
             Func<int, double> func = i =>
@@ -28,15 +30,20 @@ namespace Pentagon.Maths.SignalProcessing
                                              return 0;
                                          var d = 0d;
                                          for (var j = 0; j < i + 1; j++)
-                                           d=  Definition.EvaluateNext(imp.EvaluateSample(j));
+                                           d= DifferenceEquation.EvaluateNext(imp.EvaluateSample(j));
                                          return d;
                                      };
-            return new DiscreteFunction(func, samplingFrequency);
+            return new InfiniteDiscreteFunction(func, samplingFrequency);
+        }
+
+        public void SetInitialConditions()
+        {
+            DifferenceEquation.SetInitialCondition();
         }
 
         public double ProcessSample(double sample)
         {
-           return Definition.EvaluateNext(sample);
+           return DifferenceEquation.EvaluateNext(sample);
         }
     }
 }

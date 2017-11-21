@@ -11,8 +11,9 @@ namespace Pentagon.Maths.SignalProcessing
     using System.Linq.Expressions;
     using Expression;
 
-    public class DifferenceEquation : ISystemDefinition
+    public class DifferenceEquation
     {
+        readonly Expression<DifferenceEquationCallback> _expression;
         readonly DifferenceEquationCallback _function;
         SignalBuilder _inputSignal = new SignalBuilder();
         SignalBuilder _outputSignal = new SignalBuilder();
@@ -20,12 +21,16 @@ namespace Pentagon.Maths.SignalProcessing
 
         public DifferenceEquation(Expression<DifferenceEquationCallback> function)
         {
-            _function = function.Compile();
+            _expression = function;
+            _function = _expression.Compile();
         }
 
-        public void SetInitialCondition(Signal signal)
+        public void SetInitialCondition(Signal signal = null)
         {
-            if (!_isEvaluating)
+            _isEvaluating = false;
+            _inputSignal = new SignalBuilder();
+            _outputSignal = new SignalBuilder();
+            if (signal != null)
                 _outputSignal.AddSignal(signal);
         }
 
