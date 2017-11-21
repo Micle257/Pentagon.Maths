@@ -10,7 +10,8 @@ namespace Pentagon.Maths.Numbers
         public static INumber operator +(Number left, INumber right) => left.Add(right);
         public static INumber operator *(Number left, INumber right) => left.Multiple(right);
 
-        public abstract INumber Add(INumber second);
-        public abstract INumber Multiple(INumber second);
+        public abstract NumberSet NumberSet { get; }
+        public INumber Add(INumber second) => NumberCalculateHelper.Add(this, second);
+        public INumber Multiple(INumber second) => NumberCalculateHelper.Multiple(this, second);
     }
 }
