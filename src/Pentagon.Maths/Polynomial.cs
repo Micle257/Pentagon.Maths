@@ -64,8 +64,8 @@
             {
                 var j = Math.Max(0, i - second.Coefficients.Count + 1);
                 var min = Math.Min(i + 1, first.Coefficients.Count);
-                for (var k = j; j < min; j++)
-                    result[i] += first.Coefficients[k] * second.Coefficients[i - k];
+                for (var k = j; k < min; k++)
+                    result[i] += first.Coefficients[k] * second.Coefficients[i-k];
             }
             return new Polynomial(result, first._variableName);
         }
