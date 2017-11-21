@@ -30,22 +30,6 @@
         }
 
         /// <inheritdoc />
-        public override string ToString()
-        {
-            var result = new StringBuilder();
-
-            for (int i = 0; i < Coefficients.Count; i++)
-            {
-                if (Math.Abs(Coefficients[i]) < 0.00001)
-                    continue;
-
-                    result.Append($"+{Coefficients[i].SignificantFigures(3)}");
-
-                if (i != 0)
-                    result.Append($"z^-{i}");
-            }
-
-            return result.ToString();
-        }
+        public override string ToString() => Polynomial.ToString();
     }
 }

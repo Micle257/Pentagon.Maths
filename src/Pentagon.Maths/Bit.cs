@@ -14,14 +14,14 @@ namespace Pentagon.Maths
         /// <summary>
         ///     The inner bit value as integer.
         /// </summary>
-        readonly int _bit;
+        readonly bool _bit;
 
         /// <summary> Initializes a new instance of the <see cref="Bit" /> class. </summary>
         /// <param name="value"> The bit value. </param>
         public Bit(bool value)
         {
             Value = value;
-            _bit = Convert.ToInt32(value);
+            _bit = value;
             HasValue = true;
         }
 
@@ -98,6 +98,6 @@ namespace Pentagon.Maths
         public override int GetHashCode() => Value.GetHashCode();
 
         /// <inheritdoc />
-        public override string ToString() => $"{_bit}";
+        public override string ToString() => $"{(_bit ? "1" : "0")}";
     }
 }
