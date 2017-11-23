@@ -4,20 +4,25 @@
 
     public class SignalBuilder
     {
-        ICollection<double> _values = new List<double>();
+        RelativeSignal _relativeSignal;
+
+        public IReadOnlyList<double> Values => _values as IReadOnlyList<double>;
+
+        IList<double> _values = new List<double>();
+
+        public SignalBuilder()
+        {
+            _relativeSignal = new RelativeSignal(this);
+        }
 
         public void AddSample(double sample)
         {
             _values.Add(sample);
         }
 
-        [NotNull]
-        public Signal GetSignal() => new Signal(_values);
+        public Signal GetSignal() => new Signal(Values);
 
-        public RelativeSignal GetRelativeSignal()
-        {
-            return new RelativeSignal(GetSignal());
-        }
+        public RelativeSignal RelativeSignal => _relativeSignal;
 
         public void AddSignal(Signal signal)
         {

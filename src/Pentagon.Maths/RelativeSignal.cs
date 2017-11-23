@@ -4,9 +4,9 @@
     public class RelativeSignal
     {
         [NotNull]
-        readonly Signal _signal;
+        readonly SignalBuilder _signal;
 
-        public RelativeSignal([NotNull] Signal signal)
+        public RelativeSignal([NotNull] SignalBuilder signal)
         {
             Require.NotNull(() => signal);
             _signal = signal;
@@ -16,10 +16,10 @@
         {
             get
             {
-                if (_signal.Length + delay < 0 || _signal.Length + delay >= _signal.Length)
+                if (_signal.Values.Count + delay < 0 || _signal.Values.Count + delay >= _signal.Values.Count)
                     return 0;
                 else
-                    return _signal[_signal.Length + delay];
+                    return _signal.Values[_signal.Values.Count + delay];
             }
         }
     }

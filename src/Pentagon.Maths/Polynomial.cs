@@ -23,6 +23,7 @@ namespace Pentagon.Maths
         }
 
         public IList<double> Coefficients { get; }
+        public string VariableName => _variableName;
 
         #region Operators
 
