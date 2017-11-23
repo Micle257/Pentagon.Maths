@@ -37,7 +37,7 @@ namespace Pentagon.Maths.SignalProcessing
         public double EvaluateNext(double x)
         {
             _isEvaluating = true;
-            var y = _function(x, _inputSignal.GetRelativeSignal(), _outputSignal.GetRelativeSignal());
+            var y = _function(x, _inputSignal.RelativeSignal, _outputSignal.RelativeSignal);
 
             _inputSignal.AddSample(x);
             _outputSignal.AddSample(y);

@@ -7,7 +7,6 @@
 namespace Pentagon.Maths.SignalProcessing
 {
     using System.Collections.Generic;
-    using System.Linq;
 
     public class TransferFunction
     {
@@ -20,26 +19,26 @@ namespace Pentagon.Maths.SignalProcessing
         public ZTranform Input { get; }
         public ZTranform Output { get; }
 
-        public DifferenceEquation GetDifferenceEquation() => GetDifferenceEquation(Output.Coefficients, Input.Coefficients);
-
         #region Operators
 
         public static TransferFunction operator +(TransferFunction a, TransferFunction b) => Add(a, b);
 
-        public static TransferFunction operator +(TransferFunction a, double value)
-        {
-            var fraction = a.ToPolynomialFraction().Add(new PolynomialFraction(new[] { value }, new[] { 1d }));
+        public static TransferFunction operator -(TransferFunction a, TransferFunction b) => Substract(a, b);
 
-            return new TransferFunction(new ZTranform(fraction.Numerator.Coefficients), new ZTranform(fraction.Denumerator.Coefficients));
+        static TransferFunction Substract(TransferFunction left, TransferFunction right)
+        {
+            var a = new PolynomialFraction(left.Output.Polynomial, left.Input.Polynomial);
+            var b = new PolynomialFraction(right.Output.Polynomial, right.Input.Polynomial);
+            var mul = a- b;
+            
+            return new TransferFunction(new ZTranform(mul.Numerator.Coefficients), new ZTranform(mul.Denumerator.Coefficients));
         }
 
-        static TransferFunction Add(TransferFunction tf1, TransferFunction tf2)
+        public static TransferFunction operator +(TransferFunction a, double value)
         {
-            var a = new PolynomialFraction(tf1.Output.Polynomial, tf1.Input.Polynomial);
-            var b = new PolynomialFraction(tf2.Output.Polynomial, tf2.Input.Polynomial);
-            var mul = a + b;
+            var fraction = a.ToPolynomialFraction().Add(new PolynomialFraction(new[] {value}, new[] {1d}, a.Input.Polynomial.VariableName));
 
-            return new TransferFunction(new ZTranform(mul.Numerator.Coefficients), new ZTranform(mul.Denumerator.Coefficients));
+            return new TransferFunction(new ZTranform(fraction.Numerator.Coefficients), new ZTranform(fraction.Denumerator.Coefficients));
         }
 
         public static TransferFunction operator *(TransferFunction a, TransferFunction b) => Multiple(a, b);
@@ -53,18 +52,9 @@ namespace Pentagon.Maths.SignalProcessing
             return new TransferFunction(new ZTranform(result.Numerator.Coefficients), new ZTranform(result.Denumerator.Coefficients));
         }
 
-        static TransferFunction Multiple(TransferFunction tf1, TransferFunction tf2)
-        {
-            var a = new PolynomialFraction(tf1.Output.Polynomial, tf1.Input.Polynomial);
-            var b = new PolynomialFraction(tf2.Output.Polynomial, tf2.Input.Polynomial);
-            var mul = a * b;
-
-            return new TransferFunction(new ZTranform(mul.Numerator.Coefficients), new ZTranform(mul.Denumerator.Coefficients));
-        }
-
         public static TransferFunction operator *(TransferFunction a, double value)
         {
-            var fraction = a.ToPolynomialFraction().Multiple(new PolynomialFraction(new [] {value}, new [] {1d}));
+            var fraction = a.ToPolynomialFraction().Multiple(new PolynomialFraction(new[] {value}, new[] {1d}, a.Input.Polynomial.VariableName));
 
             return new TransferFunction(new ZTranform(fraction.Numerator.Coefficients), new ZTranform(fraction.Denumerator.Coefficients));
         }
@@ -78,20 +68,37 @@ namespace Pentagon.Maths.SignalProcessing
 
         #endregion
 
+        /// <inheritdoc />
+        public override string ToString() => $"H(z) = ({Output}) / ({Input})";
+
+        public DifferenceEquation GetDifferenceEquation() => GetDifferenceEquation(Output.Coefficients, Input.Coefficients);
+
+        public PolynomialFraction ToPolynomialFraction() => new PolynomialFraction(Output.Polynomial, Input.Polynomial);
+
+        static TransferFunction Add(TransferFunction tf1, TransferFunction tf2)
+        {
+            var a = new PolynomialFraction(tf1.Output.Polynomial, tf1.Input.Polynomial);
+            var b = new PolynomialFraction(tf2.Output.Polynomial, tf2.Input.Polynomial);
+            var mul = a + b;
+
+            return new TransferFunction(new ZTranform(mul.Numerator.Coefficients), new ZTranform(mul.Denumerator.Coefficients));
+        }
+
+        static TransferFunction Multiple(TransferFunction tf1, TransferFunction tf2)
+        {
+            var a = new PolynomialFraction(tf1.Output.Polynomial, tf1.Input.Polynomial);
+            var b = new PolynomialFraction(tf2.Output.Polynomial, tf2.Input.Polynomial);
+            var mul = a * b;
+
+            return new TransferFunction(new ZTranform(mul.Numerator.Coefficients), new ZTranform(mul.Denumerator.Coefficients));
+        }
+
         DifferenceEquation GetDifferenceEquation(IList<double> numerator, IList<double> denumerator)
         {
             return new DifferenceEquation((input, previousInput, output) =>
-                                           (input
-                                              + Sum.Compute(0, numerator.Count, n => numerator[n] * previousInput[-n])
-                                              - Sum.Compute(1, denumerator.Count, n => denumerator[n] * output[-n])) / denumerator[0]);
-        }
-        
-        public PolynomialFraction ToPolynomialFraction() => new PolynomialFraction(Output.Polynomial, Input.Polynomial);
-
-        /// <inheritdoc />
-        public override string ToString()
-        {
-            return $"H(z) = ({Output}) / ({Input})";
+                                              (input
+                                               + Sum.Compute(0, numerator.Count, n => numerator[n] * previousInput[-n])
+                                               - Sum.Compute(1, denumerator.Count, n => denumerator[n] * output[-n])) / denumerator[0]);
         }
     }
 }
