@@ -8,7 +8,7 @@ namespace Pentagon.Maths.Functions {
         where TNumber : struct, IEquatable<TNumber>
     {
         IList<TNumber> _values;
-        int _zeroIndex;
+      protected  int _zeroIndex;
 
         public Sequence(IEnumerable<TNumber> values, int zeroIndex)
         {

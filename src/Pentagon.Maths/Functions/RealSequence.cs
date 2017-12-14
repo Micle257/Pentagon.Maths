@@ -1,6 +1,7 @@
 namespace Pentagon.Maths.Functions {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Helpers;
     using Quantities;
 
@@ -14,6 +15,8 @@ namespace Pentagon.Maths.Functions {
         public Frequency SamplingFrequency { get; }
         public double EvaluateSample(int sample)
         {
+            if (sample + _zeroIndex >= this.Count() || sample + _zeroIndex < 0)
+                return 0;
             return this[sample];
         }
 

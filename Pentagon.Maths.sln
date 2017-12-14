@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+VisualStudioVersion = 15.0.27130.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pentagon.Maths", "src\Pentagon.Maths\Pentagon.Maths.csproj", "{ECA1D9C0-38CF-421F-B9A3-EE094CB6651E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B7A6AD43-9A7A-4434-92FD-447222C8714D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pentagon.Maths.Tests", "tests\Pentagon.Maths.Tests\Pentagon.Maths.Tests.csproj", "{4C50C6A1-A7D8-4306-B434-38BD97857A54}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{101B8FBB-5E1E-4779-926C-C162D290D608}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
