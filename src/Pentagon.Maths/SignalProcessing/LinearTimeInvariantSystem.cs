@@ -7,10 +7,11 @@
 namespace Pentagon.Maths.SignalProcessing
 {
     using System;
+    using SystemNodes;
     using Functions;
     using Quantities;
 
-    public class LinearTimeInvariantSystem
+    public class LinearTimeInvariantSystem : ILinearSystem
     {
         public TransferFunction TransferFunction { get; }
         public DifferenceEquation DifferenceEquation { get; }

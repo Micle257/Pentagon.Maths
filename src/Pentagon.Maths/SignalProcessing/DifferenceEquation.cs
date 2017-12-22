@@ -19,10 +19,9 @@ namespace Pentagon.Maths.SignalProcessing
         SignalBuilder _outputSignal = new SignalBuilder();
         bool _isEvaluating;
 
-        public DifferenceEquation(Expression<DifferenceEquationCallback> function)
+        public DifferenceEquation(DifferenceEquationCallback function)
         {
-            _expression = function;
-            _function = _expression.Compile();
+            _function = function;
         }
 
         public void SetInitialCondition(Signal signal = null)
