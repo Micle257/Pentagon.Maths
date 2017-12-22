@@ -7,7 +7,6 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
 
     public class DelaySystemNode : IMemoryNode, ISingleInputNode
     {
@@ -27,13 +26,13 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
 
         public double GetValue(int index)
         {
-            if (index < Values.Count-DelayLength)
+            if (index < Values.Count - DelayLength)
                 return Values[index];
 
             if (index > Values.Count - DelayLength)
                 throw new ArgumentOutOfRangeException(nameof(index));
 
-            Values.Add(0);
+            Values.Add(Values[Values.Count - DelayLength]);
             var preValue = InputNode.GetValue(index);
             Values[Values.Count - 1] = preValue;
 
