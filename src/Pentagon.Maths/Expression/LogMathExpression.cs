@@ -19,7 +19,7 @@ namespace Pentagon.Maths.Expression
 
         public override double Value => GetValue(Math.Log(InnerExpression.Value, Base));
 
-        public override string StringValue => $"log{(Base.EqualTo(10) ? "" : Base.SignificantFigures(3).ToString(CultureInfo.InvariantCulture))}({InnerExpression})";
+        public override string StringValue => $"log{(Base.EqualTo(10) ? "" : Base.RoundSignificantFigures(3).ToString(CultureInfo.InvariantCulture))}({InnerExpression})";
 
         public double Base { get; }
         public IMathExpression InnerExpression => InnerExpressions?[0];

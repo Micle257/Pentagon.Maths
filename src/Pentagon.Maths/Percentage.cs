@@ -52,6 +52,6 @@ namespace Pentagon.Maths
 
         public override int GetHashCode() => DecimalValue.GetHashCode();
 
-        public override string ToString() => $"{DecimalValue.SignificantFigures(3) * 100}%";
+        public override string ToString() => $"{DecimalValue.RoundSignificantFigures(3) * 100}%";
     }
 }

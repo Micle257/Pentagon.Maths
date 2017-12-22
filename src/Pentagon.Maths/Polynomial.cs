@@ -51,7 +51,7 @@ namespace Pentagon.Maths
                 if (Math.Abs(Coefficients[i]) < 0.00001)
                     continue;
 
-                result.Append($"+{Coefficients[i].SignificantFigures(3)}");
+                result.Append($"+{Coefficients[i].RoundSignificantFigures(3)}");
 
                 if (i != 0)
                     result.Append($"{_variableName}^{i}");

@@ -11,7 +11,7 @@
     <Description>Class library  for mathematics logic.</Description>
     <Copyright>Copyright (c) Michal Pokorný. All Rights Reserved.</Copyright>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>1.2.10</Version>
+    <Version>1.2.12</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -21,8 +21,14 @@
 
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="11.0.0" />
-    <PackageReference Include="Pentagon.Common" Version="1.4.0" />
+    <PackageReference Include="Pentagon.Common" Version="1.4.3" />
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Numerics.Vectors">
+      <HintPath>..\..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.0.0\ref\netcoreapp2.0\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

@@ -10,19 +10,24 @@
         public void FactMethodName_Scenario_ExpectedBehavior()
         {
             var delay = new DelaySystemNode(1);
-            var sum = new SumSystemNode();
-            var f = new FactorSystemNode(0.2);
-            var input = new InputFunctionSystemNode(new InfiniteDiscreteFunction(a => a, new Frequency(100)));
+            var backDelay = new DelaySystemNode(2);
+            var sum1 = new SumSystemNode();
+            var sum2 = new SumSystemNode();
+            var f = new FactorSystemNode(0.5);
+            var input = new StepImpulseInputSystemNode();
 
-            delay.SetInputNode(sum);
-            f.SetInputNode(delay);
-            sum.AddInputNode(input);
-            sum.AddInputNode(f);
+            sum1.AddInputNode(input);
+            delay.SetInputNode(sum1);
+            sum2.AddInputNode(delay);
+            sum2.AddInputNode(input);
+            backDelay.SetInputNode(delay);
+            f.SetInputNode(backDelay);
+            sum1.AddInputNode(f);
 
             var result = new List<double>();
             for (int i = 0; i <150; i++)
             {
-                result.Add(delay.GetValue(i));
+                result.Add(sum2.GetValue(i));
             }
         }
     }

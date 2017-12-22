@@ -126,6 +126,6 @@ namespace Pentagon.Maths.Quantities
         public override int GetHashCode() => Value.GetHashCode();
 
         /// <inheritdoc />
-        public override string ToString() => $"{Value.SignificantFigures(5)} {Unit.Symbol}";
+        public override string ToString() => $"{Value.RoundSignificantFigures(5)} {Unit.Symbol}";
     }
 }
