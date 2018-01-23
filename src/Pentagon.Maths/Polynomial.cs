@@ -14,16 +14,14 @@ namespace Pentagon.Maths
 
     public struct Polynomial
     {
-        readonly string _variableName;
-
-        public Polynomial(IEnumerable<double> coefficients, string variableName = "x")
+        public Polynomial(IEnumerable<double> coefficients)
         {
-            _variableName = variableName;
+           // VariableName = variableName;
             Coefficients = coefficients as IList<double> ?? coefficients.ToList();
         }
 
         public IList<double> Coefficients { get; }
-        public string VariableName => _variableName;
+       // public string VariableName { get; }
 
         #region Operators
 
@@ -31,18 +29,23 @@ namespace Pentagon.Maths
 
         public static Polynomial operator -(Polynomial first) => first.Invert();
 
-        Polynomial Invert() => new Polynomial(new [] {0d}, _variableName) - this;
-
         public static Polynomial operator -(Polynomial first, Polynomial second) => first.Substract(second);
 
         public static Polynomial operator *(Polynomial first, Polynomial second) => first.Multiple(second);
+
+        public static Polynomial operator *(Polynomial polynomial, double factor) => polynomial.MultipleByFactor(factor);
+
+        public static Polynomial operator *(double factor, Polynomial polynomial) => polynomial.MultipleByFactor(factor);
 
         public static Polynomial operator ^(Polynomial first, uint exponent) => first.Power(exponent);
 
         #endregion
 
         /// <inheritdoc />
-        public override string ToString()
+        public override string ToString() => ToString("x");
+
+        /// <inheritdoc />
+        public string ToString(string variableName)
         {
             var result = new StringBuilder();
 
@@ -51,10 +54,18 @@ namespace Pentagon.Maths
                 if (Math.Abs(Coefficients[i]) < 0.00001)
                     continue;
 
-                result.Append($"+{Coefficients[i].RoundSignificantFigures(3)}");
+                if (Coefficients[i] < 0)
+                    result.Append($"{Coefficients[i].RoundSignificantFigures(7)}");
+                else
+                {
+                    if (i != 0)
+                        result.Append($"+");
+
+                    result.Append($"{Coefficients[i].RoundSignificantFigures(7)}");
+                }
 
                 if (i != 0)
-                    result.Append($"{_variableName}^{i}");
+                    result.Append($"{variableName}^{i}");
             }
 
             return result.ToString();
@@ -64,8 +75,8 @@ namespace Pentagon.Maths
         {
             var first = this;
 
-            if (first._variableName != second._variableName)
-                throw new NotSupportedException(message: "The variable names must match.");
+          //  if (first.VariableName != second.VariableName)
+          //      throw new NotSupportedException(message: "The variable names must match.");
 
             var result = new double[first.Coefficients.Count + second.Coefficients.Count - 1];
             for (var i = 0; i < result.Length; i++)
@@ -75,15 +86,16 @@ namespace Pentagon.Maths
                 for (var k = j; k < min; k++)
                     result[i] += first.Coefficients[k] * second.Coefficients[i - k];
             }
-            return new Polynomial(result, first._variableName);
+
+            return new Polynomial(result);
         }
 
         public Polynomial Add(Polynomial second)
         {
             var first = this;
 
-            if (first._variableName != second._variableName)
-                throw new NotSupportedException(message: "The variable names must match.");
+         //   if (first.VariableName != second.VariableName)
+         //       throw new NotSupportedException(message: "The variable names must match.");
 
             var length = first.Coefficients.Count >= second.Coefficients.Count ? first.Coefficients.Count : second.Coefficients.Count;
 
@@ -96,20 +108,20 @@ namespace Pentagon.Maths
                 sum.Add(a1 + a2);
             }
 
-            return new Polynomial(sum, first._variableName);
+            return new Polynomial(sum);
         }
 
         public Polynomial Substract(Polynomial second)
         {
             var first = this;
 
-            if (first._variableName != second._variableName)
-                throw new NotSupportedException(message: "The variable names must match.");
+           // if (first.VariableName != second.VariableName)
+           //     throw new NotSupportedException(message: "The variable names must match.");
 
             var list = new List<double>();
             foreach (var c in second.Coefficients)
                 list.Add(-c);
-            var negativeSecond = new Polynomial(list, second._variableName);
+            var negativeSecond = new Polynomial(list);
 
             return first.Add(negativeSecond);
         }
@@ -127,6 +139,15 @@ namespace Pentagon.Maths
             for (var i = 1; i < exponent; i++)
                 result = basis * result;
             return result;
+        }
+
+        Polynomial Invert() => new Polynomial(new[] {0d}) - this;
+
+        Polynomial MultipleByFactor(double factor)
+        {
+            var coeffs = Coefficients.Select(a => a * factor);
+
+            return new Polynomial(coeffs);
         }
     }
 }

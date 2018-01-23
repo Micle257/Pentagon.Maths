@@ -13,7 +13,7 @@ namespace Pentagon.Maths.SignalProcessing
         public PolynomialFraction(Polynomial numerator, Polynomial denumerator) : base(numerator, denumerator) { }
 
         public PolynomialFraction(IEnumerable<double> numeratorCoefficients, IEnumerable<double> denumeratorCoefficients, string variableName = "x")
-               : this(new Polynomial(numeratorCoefficients, variableName),new Polynomial(denumeratorCoefficients,variableName) )
+               : this(new Polynomial(numeratorCoefficients),new Polynomial(denumeratorCoefficients) )
         {
         }
 
@@ -31,6 +31,7 @@ namespace Pentagon.Maths.SignalProcessing
         }
 
         public override Fraction<Polynomial> Multiple(Fraction<Polynomial> second) => new PolynomialFraction(Numerator * second.Numerator, Denumerator * second.Denumerator);
+
         public override Fraction<Polynomial> Divide(Fraction<Polynomial> second)
         {
             return this.Multiple(new PolynomialFraction(second.Denumerator, second.Numerator));
