@@ -1,5 +1,6 @@
 ﻿namespace Pentagon.Maths {
     using System.Collections.Generic;
+    using System.Linq;
     using JetBrains.Annotations;
 
     public class SignalBuilder
@@ -29,6 +30,14 @@
             foreach (var d in signal)
             {
                 AddSample(d);
+            }
+        }
+
+        public void SetLastSample(double value)
+        {
+            if (_values.Any())
+            {
+                _values[_values.Count - 1] = value;
             }
         }
     }

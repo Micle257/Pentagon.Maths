@@ -3,6 +3,7 @@
     using Functions;
     using Quantities;
     using SignalProcessing.SystemNodes;
+    using Xunit;
 
     public class SystemNodeTests
     {
@@ -29,6 +30,24 @@
             {
                 result.Add(sum2.GetValue(i));
             }
+        }
+
+        [Fact]
+        public void sa_d_g()
+        {
+            var input = new InputSampleSystemNode();
+
+            var delay = new DelaySystemNode(3);
+
+            delay.SetInputNode(input);
+
+            input.Add(1);
+            input.Add(2);
+            input.Add(5);
+
+            var ddd = delay.GetValue(0);
+
+            Assert.Equal(1,ddd );
         }
     }
 }

@@ -23,7 +23,7 @@ namespace Pentagon.Maths
                 _values = values.ToList();
         }
         
-        public Polynomial GetPolynomial() => new Polynomial(Values, "n");
+        public Polynomial GetPolynomial() => new Polynomial(Values);
 
         public double[] Values => _values.ToArray();
 
