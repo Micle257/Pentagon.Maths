@@ -16,10 +16,11 @@
         {
             get
             {
-                if (_signal.Values.Count + delay < 0 || _signal.Values.Count + delay >= _signal.Values.Count)
+                var index = (_signal.Values.Count - 1) + delay;
+                if (index < 0 || index >= _signal.Values.Count)
                     return 0;
                 else
-                    return _signal.Values[_signal.Values.Count + delay];
+                    return _signal.Values[index];
             }
         }
     }
