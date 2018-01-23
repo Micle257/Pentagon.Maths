@@ -11,6 +11,7 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
 
     public interface INode
     {
+        string Name { get; set; }
         double GetValue(int index);
     }
 }

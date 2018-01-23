@@ -19,7 +19,7 @@
             Coefficients = coefficients.ToArray();
         }
 
-        public Polynomial Polynomial => new Polynomial(Coefficients, "z-");
+        public Polynomial Polynomial => new Polynomial(Coefficients);
 
         public IList<double> Coefficients { get; }
 
@@ -30,6 +30,6 @@
         }
 
         /// <inheritdoc />
-        public override string ToString() => Polynomial.ToString();
+        public override string ToString() => Polynomial.ToString("z^-");
     }
 }

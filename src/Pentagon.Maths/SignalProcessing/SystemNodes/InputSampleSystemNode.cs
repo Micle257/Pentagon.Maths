@@ -12,6 +12,9 @@
         }
 
         /// <inheritdoc />
+        public string Name { get; set; }
+
+        /// <inheritdoc />
         public double GetValue(int index)
         {
             return Values[index];

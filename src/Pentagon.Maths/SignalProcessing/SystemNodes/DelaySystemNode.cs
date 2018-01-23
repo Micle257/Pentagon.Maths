@@ -5,10 +5,11 @@
 // -----------------------------------------------------------------------
 namespace Pentagon.Maths.SignalProcessing.SystemNodes
 {
-    using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
+    using Pentagon.Extensions;
 
-    public class DelaySystemNode : IMemoryNode, ISingleInputNode
+    public class DelaySystemNode : ISingleInputNode
     {
         public int DelayLength { get; }
 
@@ -17,36 +18,42 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
             DelayLength = delayLength;
             for (int i = 0; i < DelayLength; i++)
             {
-                Values.Add(0);
+                _delayLine.Enqueue(0);
             }
         }
+        
+        Queue<double> _delayLine = new Queue<double>();
 
-        public IList<double> Values { get; } = new List<double>();
+        /// <inheritdoc />
         public INode InputNode { get; private set; }
 
+        bool _wasQueued;
+
+        /// <inheritdoc />
+        public string Name { get; set; }
+
+        /// <inheritdoc />
         public double GetValue(int index)
         {
-            if (index < Values.Count - DelayLength)
-                return Values[index];
+            if (_wasQueued)
+                return _delayLine.Peek();
 
-            if (index > Values.Count - DelayLength)
-                throw new ArgumentOutOfRangeException(nameof(index));
+            _wasQueued = true;
 
-            Values.Add(Values[Values.Count - DelayLength]);
-            var preValue = InputNode.GetValue(index);
-            Values[Values.Count - 1] = preValue;
+            var next = InputNode.GetValue(index);
+            var value = _delayLine.Requeue(next);
 
-            return Values[index];
-            //if (index < DelayLength)
-            //    return 0;
-
-            //var value = Values[index - DelayLength];
-            //return value;
+            _wasQueued = false;
+            return value;
         }
 
+        /// <inheritdoc />
         public void SetInputNode(INode node)
         {
             InputNode = node;
         }
+
+        /// <inheritdoc />
+        public override string ToString() => Name == null ? $"Delay: z^-{DelayLength}" : $"{Name} (Delay): z^-{DelayLength}";
     }
 }

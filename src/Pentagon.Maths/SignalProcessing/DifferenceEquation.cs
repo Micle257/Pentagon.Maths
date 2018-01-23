@@ -13,15 +13,17 @@ namespace Pentagon.Maths.SignalProcessing
 
     public class DifferenceEquation
     {
-        readonly Expression<DifferenceEquationCallback> _expression;
         readonly DifferenceEquationCallback _function;
         SignalBuilder _inputSignal = new SignalBuilder();
         SignalBuilder _outputSignal = new SignalBuilder();
         bool _isEvaluating;
 
-        public DifferenceEquation(DifferenceEquationCallback function)
+        public Expression<DifferenceEquationCallback> Expression { get; }
+
+        public DifferenceEquation(Expression<DifferenceEquationCallback> function)
         {
-            _function = function;
+            Expression = function;
+            _function = function.Compile();
         }
 
         public void SetInitialCondition(Signal signal = null)
@@ -36,10 +38,12 @@ namespace Pentagon.Maths.SignalProcessing
         public double EvaluateNext(double x)
         {
             _isEvaluating = true;
-            var y = _function(x, _inputSignal.RelativeSignal, _outputSignal.RelativeSignal);
-
             _inputSignal.AddSample(x);
-            _outputSignal.AddSample(y);
+            _outputSignal.AddSample(_outputSignal.RelativeSignal[0]);
+
+            var y = _function(_inputSignal.RelativeSignal, _outputSignal.RelativeSignal);
+
+            _outputSignal.SetLastSample(y);
 
             return y;
         }

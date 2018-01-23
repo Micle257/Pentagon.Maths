@@ -13,6 +13,9 @@
         }
 
         /// <inheritdoc />
+        public string Name { get; set; }
+
+        /// <inheritdoc />
         public double GetValue(int index)
         {
             var values = InputNodes.Select(a => a.GetValue(index)).ToArray();

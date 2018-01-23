@@ -11,6 +11,9 @@
         }
 
         /// <inheritdoc />
+        public string Name { get; set; }
+
+        /// <inheritdoc />
         public double GetValue(int index)
         {
             var value = _function.EvaluateSample(index);
