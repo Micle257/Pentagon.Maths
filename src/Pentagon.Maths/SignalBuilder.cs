@@ -5,7 +5,7 @@
 
     public class SignalBuilder
     {
-        RelativeSignal _relativeSignal;
+        RelativeSignalold _relativeSignal;
 
         public IReadOnlyList<double> Values => _values as IReadOnlyList<double>;
 
@@ -13,7 +13,7 @@
 
         public SignalBuilder()
         {
-            _relativeSignal = new RelativeSignal(this);
+            _relativeSignal = new RelativeSignalold(this);
         }
 
         public void AddSample(double sample)
@@ -23,7 +23,7 @@
 
         public Signal GetSignal() => new Signal(Values);
 
-        public RelativeSignal RelativeSignal => _relativeSignal;
+        public RelativeSignalold RelativeSignal => _relativeSignal;
 
         public void AddSignal(Signal signal)
         {
