@@ -19,5 +19,14 @@
         {
             return Values[index];
         }
+
+        /// <inheritdoc />
+        public double GetValue(int index, params double[] inputValues)
+        {
+            return Values[index];
+        }
+
+        /// <inheritdoc />
+        public int InputCount => 0;
     }
 }

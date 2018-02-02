@@ -3,7 +3,7 @@
 
     public interface IMultiInputNode : INode
     {
-        ICollection<INode> InputNodes { get; }
+        IList<INode> InputNodes { get; }
         void AddInputNode(INode node);
     }
 }

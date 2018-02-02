@@ -48,6 +48,24 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
         }
 
         /// <inheritdoc />
+        public double GetValue(int index, params double[] inputValues)
+        {
+            if (_wasQueued)
+                return _delayLine.Peek();
+
+            _wasQueued = true;
+
+            var next = inputValues[0];
+            var value = _delayLine.Requeue(next);
+
+            _wasQueued = false;
+            return value;
+        }
+
+        /// <inheritdoc />
+        public int InputCount => 1;
+
+        /// <inheritdoc />
         public void SetInputNode(INode node)
         {
             InputNode = node;

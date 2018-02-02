@@ -37,7 +37,27 @@
 
             return Values[index];
         }
-        
+
+        /// <inheritdoc />
+        public double GetValue(int index, params double[] inputValues)
+        {
+            if (index < Values.Count - DelayLength)
+                return Values[index];
+
+            if (index > Values.Count - DelayLength)
+                throw new ArgumentOutOfRangeException(nameof(index));
+
+            Values.Add(Values[Values.Count - DelayLength]);
+            var preValue = inputValues[0];
+
+            Values[Values.Count - 1] = preValue;
+
+            return Values[index];
+        }
+
+        /// <inheritdoc />
+        public int InputCount => 1;
+
         /// <inheritdoc />
         public string Name { get; set; }
 

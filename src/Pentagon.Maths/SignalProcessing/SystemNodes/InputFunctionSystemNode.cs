@@ -19,5 +19,15 @@
             var value = _function.EvaluateSample(index);
             return value;
         }
+
+        /// <inheritdoc />
+        public double GetValue(int index, params double[] inputValues)
+        {
+            var value = _function.EvaluateSample(index);
+            return value;
+        }
+
+        /// <inheritdoc />
+        public int InputCount => 0;
     }
 }

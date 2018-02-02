@@ -15,16 +15,68 @@
         /// <inheritdoc />
         public string Name { get; set; }
 
+        double[] _values;
+
+        int _index = -1;
+
+        bool _isEvaluated;
+
+        public double CurrentValue { get; private set; }
         /// <inheritdoc />
         public double GetValue(int index)
         {
-            var values = InputNodes.Select(a => a.GetValue(index)).ToArray();
+            if (_values == null)
+                _values = new double[InputNodes.Count];
 
-            return _function(values);
+            if (_isEvaluated && _index == index)
+                return CurrentValue;
+
+            _isEvaluated = false;
+
+            for (var i = 0; i < InputNodes.Count; i++)
+            {
+                _values[i] = InputNodes[i].GetValue(index);;
+            }
+
+            var value = _function(_values);
+
+            _index = index;
+            _isEvaluated = true;
+            CurrentValue = value;
+
+            return CurrentValue;
         }
 
         /// <inheritdoc />
-        public ICollection<INode> InputNodes { get; } = new List<INode>();
+        public double GetValue(int index, params double[] inputValues)
+        {
+            if (_values == null)
+                _values = new double[inputValues.Length];
+
+            if (_isEvaluated && _index == index)
+                return CurrentValue;
+
+            _isEvaluated = false;
+
+            for (var i = 0; i < inputValues.Length; i++)
+            {
+                _values[i] = inputValues[i];
+            }
+
+            var value = _function(_values);
+
+            _index = index;
+            _isEvaluated = true;
+            CurrentValue = value;
+
+            return CurrentValue;
+        }
+
+        /// <inheritdoc />
+        public int InputCount { get; }
+
+        /// <inheritdoc />
+        public IList<INode> InputNodes { get; } = new List<INode>();
 
         /// <inheritdoc />
         public void AddInputNode(INode node)

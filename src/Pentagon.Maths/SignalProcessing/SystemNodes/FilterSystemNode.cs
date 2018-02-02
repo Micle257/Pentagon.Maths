@@ -1,120 +1,59 @@
-﻿namespace Pentagon.Maths.SignalProcessing.SystemNodes {
+﻿namespace Pentagon.Maths.SignalProcessing.SystemNodes
+{
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Linq;
     using System.Linq.Expressions;
 
-    public class SystemConnectionManager
-    {
-        IList<INode> _nodes = new List<INode>();
-
-        public void Add(INode node)
-        {
-            if (!_nodes.Contains(node))
-                _nodes.Add(node);
-        }
-
-        public void AddRange(params INode[] nodes)
-        {
-            foreach (var node in nodes)
-            {
-                Add(node);
-            }
-        }
-
-        public void SetupConnection(Action<ConnectionBuilder> action)
-        {
-            var builder = new ConnectionBuilder();
-
-            action(builder);
-
-            builder.Config(_nodes);
-        }
-    }
-
-    public class ConnectionBuilder
-    {
-        IList<(IList<INode> tails, INode head)> _connections = new List<(IList<INode> tails, INode head)> ();
-
-        public ConnectionBuilder Connect( INode head, INode tail)
-        {
-            _connections.Add((new []{ tail}, head));
-            return this;
-        }
-
-        public ConnectionBuilder Connect(INode head, params INode[] tails)
-        {
-            _connections.Add((tails, head));
-            return this;
-        }
-
-        public void Config(IList<INode> nodes)
-        {
-            foreach (var node in _connections)
-            {
-                var n = node.head;
-
-                //if (!nodes.Contains(n))
-                //    throw new ArgumentException("The node is not in nodes collection.");
-
-                switch (n)
-                {
-                    case ISingleInputNode sin:
-                        sin.SetInputNode(node.tails.FirstOrDefault());
-                        break;
-
-                    case IMultiInputNode min:
-                       foreach (var tn in node.tails)
-                       {
-                           min.AddInputNode(tn);
-                       }
-                       break;
-                }
-            }
-        }
-    }
-
-    public class FilterSystemNode : IMemoryNode, ISingleInputNode
+    public class FilterSystemNode : ISingleInputNode
     {
         DifferenceEquation _eq;
-        public IList<double> Values { get; } = new List<double>();
 
         public INode InputNode { get; private set; }
 
-        public FilterSystemNode(Expression<DifferenceEquationCallback> equationCallback)
+        public int InputCount => 1;
+
+        public FilterSystemNode(ISystemFunction system)
         {
-            _eq = new DifferenceEquation(equationCallback);
+            _eq = system as DifferenceEquation ?? new DifferenceEquation(system.Coefficients);
         }
 
-        public FilterSystemNode(DifferenceEquation equation)
+        public FilterSystemNode(Expression<Func<RelativeSignal, RelativeSignal, double>> equationCallback)
         {
-            _eq = equation;
+            _eq = DifferenceEquation.FromExpression(equationCallback);
+        }
+
+        bool _wasEvaluated;
+
+        public double GetValue(int index, params double[] inputValues)
+        {
+            if (_wasEvaluated)
+                return _eq.LastValue;
+
+            _wasEvaluated = true;
+
+            var next = inputValues[0];
+            var value = _eq.EvaluateNext(next);
+
+            _wasEvaluated = false;
+            return value;
+        }
+
+        public double GetValue(int index)
+        {
+            if (_wasEvaluated)
+                return _eq.LastValue;
+
+            _wasEvaluated = true;
+
+            var next = InputNode.GetValue(index);
+            var value = _eq.EvaluateNext(next);
+
+            _wasEvaluated = false;
+            return value;
         }
 
         /// <inheritdoc />
         public string Name { get; set; }
-
-        public double GetValue(int index)
-        {
-            if (index < Values.Count)
-                return Values[index];
-
-            if (index > Values.Count)
-                throw new ArgumentOutOfRangeException(nameof(index));
-
-            if (Values.Count > 0)
-                Values.Add(Values[Values.Count - 1]);
-            else
-                Values.Add(0);
-
-            var preValue = InputNode.GetValue(index);
-            var value = _eq.EvaluateNext(preValue);
-            
-            Values[Values.Count - 1] = value;
-
-            return Values[index];
-        }
 
         public void SetInputNode(INode node)
         {
