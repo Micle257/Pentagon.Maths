@@ -7,26 +7,43 @@
     using System.Text;
     using Pentagon.Extensions;
 
-    public class ZTranform
+    public static class TransferFunctionExtensions
     {
-        public ZTranform(params double[] coefficients)
+        public static DifferenceEquation ToDifferenceEquation(this TransferFunction function)
         {
-            Coefficients = coefficients;
+            return DifferenceEquation.FromTransferFunction(function);
+        }
+    }
+
+    public struct ZTranform
+    {
+        public ZTranform(Polynomial coefficients)
+        {
+            Coefficients = coefficients.Coefficients.ToArray();
+            Polynomial = coefficients;
         }
 
         public ZTranform(IEnumerable<double> coefficients)
         {
             Coefficients = coefficients.ToArray();
+            Polynomial = new Polynomial(Coefficients);
         }
 
-        public Polynomial Polynomial => new Polynomial(Coefficients);
+        public ZTranform(params double[] coefficients)
+        {
+            Coefficients = coefficients.ToArray();
+            Polynomial = new Polynomial(Coefficients);
+        }
 
-        public IList<double> Coefficients { get; }
+        public Polynomial Polynomial { get; }
+
+        public IReadOnlyList<double> Coefficients { get; }
 
         public Complex Evaluate(Complex z)
         {
             var sum = default(Complex);
-            return Sum.ComputeComplex(0, Coefficients.Count, n => Coefficients[n] * Complex.Pow(z, -n));
+            var tmpThis = this;
+            return Sum.ComputeComplex(0, tmpThis.Coefficients.Count, n => tmpThis.Coefficients[n] * Complex.Pow(z, -n));
         }
 
         /// <inheritdoc />

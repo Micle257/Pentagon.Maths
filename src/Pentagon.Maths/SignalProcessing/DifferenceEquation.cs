@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-//  <copyright file="ZTranform.cs">
+//  <copyright file="DifferenceEquation.cs">
 //   Copyright (c) Michal Pokorný. All Rights Reserved.
 //  </copyright>
 // -----------------------------------------------------------------------
@@ -8,52 +8,122 @@ namespace Pentagon.Maths.SignalProcessing
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Linq.Expressions;
-    using Expression;
 
-    public class DifferenceEquation
+    public struct SystemTuple
     {
-        readonly DifferenceEquationCallback _function;
-        SignalBuilder _inputSignal = new SignalBuilder();
-        SignalBuilder _outputSignal = new SignalBuilder();
-        bool _isEvaluating;
-
-        public Expression<DifferenceEquationCallback> Expression { get; }
-
-        public DifferenceEquation(Expression<DifferenceEquationCallback> function)
+        public SystemTuple(IEnumerable<double> numeratorCoefficients, IEnumerable<double> denumeratorCoefficients)
         {
-            Expression = function;
-            _function = function.Compile();
+            var num = numeratorCoefficients as double[] ?? numeratorCoefficients?.ToArray();
+            var den = denumeratorCoefficients as double[] ?? denumeratorCoefficients?.ToArray();
+
+            if (num == null || num.Length == 0)
+                num = new[] {1d};
+
+            if (den == null || den.Length == 0)
+                den = new[] {1d};
+
+            if (den.Length != num.Length)
+            {
+                if (num.Length < den.Length)
+                    Array.Resize(ref num, den.Length);
+                else
+                    Array.Resize(ref den, num.Length);
+            }
+
+            Numerator = num;
+            Denumerator = den;
+
+            Order = num.Length;
         }
 
-        public void SetInitialCondition(Signal signal = null)
+        public double[] Numerator { get; }
+
+        public double[] Denumerator { get; }
+
+        public int Order { get; }
+    }
+
+    public interface ISystemFunction
+    {
+        SystemTuple Coefficients { get; }
+    }
+
+    public class DifferenceEquation : ISystemFunction
+    {
+        RelativeSignal _inputSignal;
+        RelativeSignal _outputSignal;
+
+        public DifferenceEquation(IEnumerable<double> inputCoefficients, IEnumerable<double> outputCoefficients) : this(new SystemTuple(inputCoefficients, outputCoefficients)) { }
+
+        public DifferenceEquation(SystemTuple tuple)
         {
-            _isEvaluating = false;
-            _inputSignal = new SignalBuilder();
-            _outputSignal = new SignalBuilder();
-            if (signal != null)
-                _outputSignal.AddSignal(signal);
+            if (tuple.Order == 0)
+                throw new ArgumentException(message: "The coefficients are not specified.");
+
+            Coefficients = tuple;
+
+            _inputSignal = new RelativeSignal(tuple.Order);
+            _outputSignal = new RelativeSignal(tuple.Order);
         }
+
+        public SystemTuple Coefficients { get; }
+
+        public static DifferenceEquation FromTransferFunction(TransferFunction function)
+        {
+            var builder = new DifferenceEquationBuilder();
+
+            return builder.Build(function);
+        }
+
+        public static DifferenceEquation FromExpression(Expression<Func<RelativeSignal, RelativeSignal, double>> function)
+        {
+            var resolver = new DifferenceEquationResolver();
+
+            var cs = resolver.GetCoefficients(function);
+
+            return new DifferenceEquation(cs);
+        }
+
+        public DifferenceEquation CopyInitial()
+        {
+            return new DifferenceEquation(Coefficients);
+        }
+
+        //public void SetInitialCondition(Signal signal = null)
+        //{
+        //    _inputSignal = new SignalBuilder();
+        //    _outputSignal = new SignalBuilder();
+        //    if (signal != null)
+        //        _outputSignal.AddSignal(signal);
+        //}
+
+        public double LastValue { get; private set; }
 
         public double EvaluateNext(double x)
         {
-            _isEvaluating = true;
             _inputSignal.AddSample(x);
-            _outputSignal.AddSample(_outputSignal.RelativeSignal[0]);
+            _outputSignal.AddSample(_outputSignal[0]);
 
-            var y = _function(_inputSignal.RelativeSignal, _outputSignal.RelativeSignal);
+            double inSum = 0d, outSum = 0d;
+            for (var i = 0; i < Coefficients.Order; i++)
+            {
+                inSum += Coefficients.Numerator[i] * _inputSignal[-i];
+                outSum += Coefficients.Denumerator[i] * _outputSignal[-i];
+            }
+            
+            LastValue = inSum - outSum;
 
-            _outputSignal.SetLastSample(y);
+            _outputSignal.SetLastSample(LastValue);
 
-            return y;
+            return LastValue;
         }
 
         public IEnumerable<double> EvaluateSignal(IEnumerable<double> samples)
         {
             foreach (var sample in samples)
-            {
                 yield return EvaluateNext(sample);
-            }
         }
     }
 }

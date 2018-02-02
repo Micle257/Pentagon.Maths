@@ -11,18 +11,26 @@ namespace Pentagon.Maths.SignalProcessing
     using System.Linq;
     using System.Linq.Expressions;
 
-    public class TransferFunction
+    public class TransferFunction : ISystemFunction
     {
+        public TransferFunction(SystemTuple coefficients)
+        {
+            Coefficients = coefficients;
+
+            Numerator = new ZTranform(coefficients.Numerator);
+            Denumerator = new ZTranform(coefficients.Denumerator);
+        }
+
         public TransferFunction(ZTranform numerator, ZTranform denumerator)
         {
             Denumerator = denumerator;
             Numerator = numerator;
+
+            Coefficients = new SystemTuple(numerator.Coefficients, denumerator.Coefficients);
         }
 
-        public TransferFunction(double[] numerator, double[] denumeretor)
+        public TransferFunction(double[] numerator, double[] denumeretor) : this(new ZTranform(numerator), new ZTranform(denumeretor) )
         {
-            Numerator = new ZTranform(numerator);
-            Denumerator = new ZTranform(denumeretor);
         }
 
         public ZTranform Denumerator { get; }
@@ -69,42 +77,19 @@ namespace Pentagon.Maths.SignalProcessing
 
         #endregion
 
-        public static TransferFunction FromDifferenceEquation(Expression<DifferenceEquationCallback> equationFunction)
+        public static TransferFunction FromDifferenceEquationExpression(Expression<Func<RelativeSignal, RelativeSignal, double>> equationFunction)
         {
-            return FromDifferenceEquation(new DifferenceEquation(equationFunction));
+            return FromDifferenceEquation(DifferenceEquation.FromExpression(equationFunction));
         }
 
         public static TransferFunction FromDifferenceEquation(DifferenceEquation equation)
         {
-            var expression = equation.Expression;
-
-            var parameterNames = expression.Parameters.Select(a => a.Name).ToArray();
-
-            if (parameterNames.Length != 2)
-                throw new ArgumentException();
-
-            var parameterMap = new Dictionary<string, ValueDirection>
-                               {
-                                       {parameterNames[0], ValueDirection.Input},
-                                       {parameterNames[1], ValueDirection.Output}
-                               };
-
-            var body = expression.Body;
-
-            var diff = new DifferenceEquationResolver();
-
-            var mems = diff.ResolveMembers(body);
-            var map = diff.Resolve(mems, parameterMap);
-            var coeff = diff.GetDefinition(map);
-
-            return new TransferFunction(coeff.Numeretor, coeff.Denumeretor);
+            return new TransferFunction(equation.Coefficients);
         }
 
         /// <inheritdoc />
         public override string ToString() => $"H(z) = ({Numerator}) / ({Denumerator})";
-
-        public DifferenceEquation GetDifferenceEquation() => GetDifferenceEquation(Numerator.Coefficients, Denumerator.Coefficients);
-
+        
         public PolynomialFraction ToPolynomialFraction() => new PolynomialFraction(Numerator.Polynomial, Denumerator.Polynomial);
 
         static TransferFunction Substract(TransferFunction left, TransferFunction right)
@@ -133,12 +118,8 @@ namespace Pentagon.Maths.SignalProcessing
 
             return new TransferFunction(new ZTranform(mul.Numerator.Coefficients), new ZTranform(mul.Denumerator.Coefficients));
         }
-
-        DifferenceEquation GetDifferenceEquation(IList<double> numerator, IList<double> denumerator)
-        {
-            return new DifferenceEquation((previousInput, output) =>
-                                              (Sum.Compute(0, numerator.Count, n => numerator[n] * previousInput[-n])
-                                               - Sum.Compute(1, denumerator.Count, n => denumerator[n] * output[-n])) / denumerator[0]);
-        }
+        
+        /// <inheritdoc />
+        public SystemTuple Coefficients { get; }
     }
 }

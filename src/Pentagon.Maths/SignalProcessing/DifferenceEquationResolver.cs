@@ -11,6 +11,63 @@ namespace Pentagon.Maths.SignalProcessing
     using System.Linq;
     using System.Linq.Expressions;
 
+    public class DifferenceEquationBuilder
+    {
+        public Expression<Func<RelativeSignal, RelativeSignal, double>> GetDifferenceEqutionExpression(TransferFunction function)
+        {
+            var inputs = function.Numerator.Coefficients;
+            var outputs = function.Denumerator.Coefficients;
+
+            var inExp = new BinaryExpression[inputs.Count];
+            var outExp = new BinaryExpression[inputs.Count - 1];
+
+            var xParam = Expression.Parameter(typeof(RelativeSignal), "x");
+            var yParam = Expression.Parameter(typeof(RelativeSignal), "y");
+
+            for (int i = 0; i < inputs.Count; i++)
+            {
+                var con = Expression.Constant(inputs[i]);
+                var arg = -i;
+
+                var indexer = typeof(RelativeSignal).GetProperties().Where(a => a.GetIndexParameters().Length > 0).FirstOrDefault();
+
+                var call = Expression.Call(xParam, indexer.GetGetMethod(), Expression.Constant(arg));
+
+                var member = Expression.Multiply(con, call);
+
+                inExp[i] = member;
+            }
+
+            for (int i = 0; i < inputs.Count - 1; i++)
+            {
+                var con = Expression.Constant(-outputs[i + 1]);
+                var arg = -i;
+
+                var indexer = typeof(RelativeSignal).GetProperties().Where(a => a.GetIndexParameters().Length > 0).FirstOrDefault();
+
+                var call = Expression.Call(yParam, indexer.GetGetMethod(), Expression.Constant(arg));
+
+                var member = Expression.Multiply(con, call);
+
+                outExp[i] = member;
+            }
+
+            var inAdd = inExp.Aggregate((a, b) => Expression.Add(a, b));
+            var outAdd = outExp.Aggregate((a, b) => Expression.Add(a, b));
+
+            var finalAdd = Expression.Add(inAdd, outAdd);
+
+            var lambda = Expression.Lambda(finalAdd, xParam, yParam);
+
+            return (Expression<Func<RelativeSignal, RelativeSignal, double>>)lambda;
+        }
+
+        public DifferenceEquation Build(TransferFunction function)
+        {
+            return new DifferenceEquation(function.Numerator.Coefficients, function.Denumerator.Coefficients);
+        }
+    }
+
     public class DifferenceEquationResolver
     {
         public enum MemberAdditionMethod
@@ -48,7 +105,7 @@ namespace Pentagon.Maths.SignalProcessing
 
             if (IsAddOrSubtractExpression(expression))
             {
-                var binExp = (BinaryExpression) expression;
+                var binExp = (BinaryExpression)expression;
 
                 var left = binExp.Left;
                 var right = binExp.Right;
@@ -80,7 +137,7 @@ namespace Pentagon.Maths.SignalProcessing
             return exprs;
         }
 
-        public (double[] Numeretor, double[] Denumeretor) GetDefinition(IList<(ValueDirection Direction, double Coefficient, int Delay)> members)
+        public SystemTuple GetDefinition(IList<(ValueDirection Direction, double Coefficient, int Delay)> members)
         {
             var inputs = new Dictionary<int, double>();
             var outputs = new Dictionary<int, double>();
@@ -126,7 +183,7 @@ namespace Pentagon.Maths.SignalProcessing
                     num[i] = value / b0;
             }
 
-            return (num, den);
+            return new SystemTuple(num, den);
         }
 
         ValueDirection GetDirection(Expression expression, IDictionary<string, ValueDirection> parMap)
@@ -136,42 +193,42 @@ namespace Pentagon.Maths.SignalProcessing
             switch (type)
             {
                 case MemberType.ConstantTimesValue:
-                {
-                    var binaryExpression = (BinaryExpression) expression;
-                    Expression indexObject;
-                    if (binaryExpression.Left.NodeType == ExpressionType.Call)
-                        indexObject = ((MethodCallExpression) binaryExpression.Left).Object;
-                    else if (binaryExpression.Right.NodeType == ExpressionType.Call)
-                        indexObject = ((MethodCallExpression) binaryExpression.Right).Object;
-                    else
-                        throw new ArgumentException(message: "The given binary expression has no index expression.");
+                    {
+                        var binaryExpression = (BinaryExpression)expression;
+                        Expression indexObject;
+                        if (binaryExpression.Left.NodeType == ExpressionType.Call)
+                            indexObject = ((MethodCallExpression)binaryExpression.Left).Object;
+                        else if (binaryExpression.Right.NodeType == ExpressionType.Call)
+                            indexObject = ((MethodCallExpression)binaryExpression.Right).Object;
+                        else
+                            throw new ArgumentException(message: "The given binary expression has no index expression.");
 
-                    if (indexObject.NodeType != ExpressionType.Parameter)
-                        throw new ArgumentException(message: "The index object must be a parameter.");
+                        if (indexObject.NodeType != ExpressionType.Parameter)
+                            throw new ArgumentException(message: "The index object must be a parameter.");
 
-                    var parameter = (ParameterExpression) indexObject;
+                        var parameter = (ParameterExpression)indexObject;
 
-                    if (!parMap.TryGetValue(parameter.Name, out var direction))
-                        throw new ArgumentException(message: "The parameter was not mapped to any direction.");
+                        if (!parMap.TryGetValue(parameter.Name, out var direction))
+                            throw new ArgumentException(message: "The parameter was not mapped to any direction.");
 
-                    return direction;
-                }
+                        return direction;
+                    }
 
                 case MemberType.Value:
-                {
-                    var indexExpression = (MethodCallExpression) expression;
-                    var indexObject = indexExpression.Object;
+                    {
+                        var indexExpression = (MethodCallExpression)expression;
+                        var indexObject = indexExpression.Object;
 
-                    if (indexObject.NodeType != ExpressionType.Parameter)
-                        throw new ArgumentException(message: "The index object must be a parameter.");
+                        if (indexObject.NodeType != ExpressionType.Parameter)
+                            throw new ArgumentException(message: "The index object must be a parameter.");
 
-                    var parameter = (ParameterExpression) indexObject;
+                        var parameter = (ParameterExpression)indexObject;
 
-                    if (!parMap.TryGetValue(parameter.Name, out var direction))
-                        throw new ArgumentException(message: "The parameter was not mapped to any direction.");
+                        if (!parMap.TryGetValue(parameter.Name, out var direction))
+                            throw new ArgumentException(message: "The parameter was not mapped to any direction.");
 
-                    return direction;
-                }
+                        return direction;
+                    }
             }
 
             throw new ArgumentException();
@@ -199,23 +256,23 @@ namespace Pentagon.Maths.SignalProcessing
             switch (type)
             {
                 case MemberType.ConstantTimesValue:
-                {
-                    var binaryExpression = (BinaryExpression) expression;
-                    MethodCallExpression boxedCoefficient;
+                    {
+                        var binaryExpression = (BinaryExpression)expression;
+                        MethodCallExpression boxedCoefficient;
 
-                    if (binaryExpression.Left.NodeType == ExpressionType.Call)
-                        boxedCoefficient = (MethodCallExpression) binaryExpression.Left;
-                    else if (binaryExpression.Right.NodeType == ExpressionType.Call)
-                        boxedCoefficient = (MethodCallExpression) binaryExpression.Right;
-                    else
-                        throw new ArgumentException(message: "The given binary expression has no call expression.");
+                        if (binaryExpression.Left.NodeType == ExpressionType.Call)
+                            boxedCoefficient = (MethodCallExpression)binaryExpression.Left;
+                        else if (binaryExpression.Right.NodeType == ExpressionType.Call)
+                            boxedCoefficient = (MethodCallExpression)binaryExpression.Right;
+                        else
+                            throw new ArgumentException(message: "The given binary expression has no call expression.");
 
-                    return GetDelayFromCallExpression(boxedCoefficient);
-                }
+                        return GetDelayFromCallExpression(boxedCoefficient);
+                    }
                 case MemberType.Value:
-                {
-                    return GetDelayFromCallExpression((MethodCallExpression) expression);
-                }
+                    {
+                        return GetDelayFromCallExpression((MethodCallExpression)expression);
+                    }
             }
 
             throw new ArgumentException();
@@ -234,11 +291,27 @@ namespace Pentagon.Maths.SignalProcessing
             {
                 case ExpressionType.Negate:
                 case ExpressionType.NegateChecked:
-                {
-                    var inner = (UnaryExpression) param;
-                    if (inner.Operand.NodeType == ExpressionType.Constant)
                     {
-                        var boxedCoefficient = ((ConstantExpression) inner.Operand).Value;
+                        var inner = (UnaryExpression)param;
+                        if (inner.Operand.NodeType == ExpressionType.Constant)
+                        {
+                            var boxedCoefficient = ((ConstantExpression)inner.Operand).Value;
+
+                            if (!int.TryParse(boxedCoefficient.ToString(), out var coefficient))
+                                throw new ArgumentException(message: "The coefficient is not a number.");
+
+                            if (coefficient > 0)
+                                throw new ArgumentException(message: "The coefficient must be less than or equal to zero.");
+
+                            return coefficient;
+                        }
+
+                        throw new ArgumentException(message: "The expression nested in negate expression must be a constant expression.");
+                    }
+
+                case ExpressionType.Constant:
+                    {
+                        var boxedCoefficient = ((ConstantExpression)param).Value;
 
                         if (!int.TryParse(boxedCoefficient.ToString(), out var coefficient))
                             throw new ArgumentException(message: "The coefficient is not a number.");
@@ -248,22 +321,6 @@ namespace Pentagon.Maths.SignalProcessing
 
                         return coefficient;
                     }
-
-                    throw new ArgumentException(message: "The expression nested in negate expression must be a constant expression.");
-                }
-
-                case ExpressionType.Constant:
-                {
-                    var boxedCoefficient = ((ConstantExpression) param).Value;
-
-                    if (!int.TryParse(boxedCoefficient.ToString(), out var coefficient))
-                        throw new ArgumentException(message: "The coefficient is not a number.");
-
-                    if (coefficient > 0)
-                        throw new ArgumentException(message: "The coefficient must be less than or equal to zero.");
-
-                    return coefficient;
-                }
 
                 default:
                     throw new ArgumentException(message: "This expression for index argument is not supported.");
@@ -277,26 +334,36 @@ namespace Pentagon.Maths.SignalProcessing
             switch (type)
             {
                 case MemberType.ConstantTimesValue:
-                {
-                    var binaryExpression = (BinaryExpression) expression;
-                    object boxedCoefficient;
+                    {
+                        var binaryExpression = (BinaryExpression)expression;
+                        object boxedCoefficient;
 
-                    if (binaryExpression.Left.NodeType == ExpressionType.Constant)
-                        boxedCoefficient = ((ConstantExpression) binaryExpression.Left).Value;
-                    else if (binaryExpression.Right.NodeType == ExpressionType.Constant)
-                        boxedCoefficient = ((ConstantExpression) binaryExpression.Right).Value;
-                    else
-                        throw new ArgumentException(message: "The given binary expression has no constant expression.");
+                        if (binaryExpression.Left.NodeType == ExpressionType.Constant)
+                            boxedCoefficient = ((ConstantExpression)binaryExpression.Left).Value;
+                        else if (binaryExpression.Right.NodeType == ExpressionType.Constant)
+                            boxedCoefficient = ((ConstantExpression)binaryExpression.Right).Value;
+                        else if (binaryExpression.Left.NodeType == ExpressionType.MemberAccess)
+                        {
+                            var memberConstantExpression = ((MemberExpression)binaryExpression.Left);
+                            boxedCoefficient = memberConstantExpression.GetMemberValue();
+                        }
+                        else if (binaryExpression.Right.NodeType == ExpressionType.MemberAccess)
+                        {
+                            var memberConstantExpression = ((MemberExpression)binaryExpression.Right);
+                            boxedCoefficient = memberConstantExpression.GetMemberValue();
+                        }
+                        else
+                            throw new ArgumentException(message: "The given binary expression has no constant expression.");
 
-                    if (!double.TryParse(boxedCoefficient.ToString(), out var coefficient))
-                        throw new ArgumentException(message: "The coefficient is not a decimal number.");
+                        if (!double.TryParse(boxedCoefficient.ToString(), out var coefficient))
+                            throw new ArgumentException(message: "The coefficient is not a decimal number.");
 
-                    if (additionMethod == MemberAdditionMethod.Subtract)
-                        return -coefficient;
-                    if (additionMethod == MemberAdditionMethod.Add)
-                        return coefficient;
-                    throw new ArgumentException(message: "The addition method is not specified.");
-                }
+                        if (additionMethod == MemberAdditionMethod.Subtract)
+                            return -coefficient;
+                        if (additionMethod == MemberAdditionMethod.Add)
+                            return coefficient;
+                        throw new ArgumentException(message: "The addition method is not specified.");
+                    }
 
                 case MemberType.Value:
                     if (additionMethod == MemberAdditionMethod.Subtract)
@@ -335,6 +402,25 @@ namespace Pentagon.Maths.SignalProcessing
             }
 
             return false;
+        }
+
+        public SystemTuple GetCoefficients(Expression<Func<RelativeSignal, RelativeSignal, double>> expression)
+        {
+            var parameterNames = expression.Parameters.Select(a => a.Name).ToArray();
+
+            if (parameterNames.Length != 2)
+                throw new ArgumentException();
+
+            var parameterMap = new Dictionary<string, ValueDirection>
+                               {
+                                       {parameterNames[0], ValueDirection.Input},
+                                       {parameterNames[1], ValueDirection.Output}
+                               };
+
+            var members = ResolveMembers(expression.Body);
+            var resolve = Resolve(members, parameterMap);
+
+            return GetDefinition(resolve);
         }
     }
 }

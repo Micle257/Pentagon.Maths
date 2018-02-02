@@ -16,10 +16,10 @@ namespace Pentagon.Maths.SignalProcessing
         public TransferFunction TransferFunction { get; }
         public DifferenceEquation DifferenceEquation { get; }
 
-        public LinearTimeInvariantSystem(TransferFunction transferFunction)
+        public LinearTimeInvariantSystem(ISystemFunction system)
         {
-            TransferFunction = transferFunction;
-            DifferenceEquation = TransferFunction.GetDifferenceEquation();
+            TransferFunction = system as TransferFunction ?? new TransferFunction(system.Coefficients);
+            DifferenceEquation = system as DifferenceEquation ?? new DifferenceEquation(system.Coefficients);
         }
         
         public IDiscreteFunction GetImpulseResponse(Frequency samplingFrequency)
@@ -29,19 +29,16 @@ namespace Pentagon.Maths.SignalProcessing
                                      {
                                          if (i < 0)
                                              return 0;
-                                         var d = 0d;
-                                         for (var j = 0; j < i + 1; j++)
-                                           d= DifferenceEquation.EvaluateNext(imp.EvaluateSample(j));
+
+                                         var input = imp.EvaluateSample(i);
+
+                                         var d = ProcessSample(input);
+
                                          return d;
                                      };
             return new InfiniteDiscreteFunction(func, samplingFrequency);
         }
-
-        public void SetInitialConditions()
-        {
-            DifferenceEquation.SetInitialCondition();
-        }
-
+        
         public double ProcessSample(double sample)
         {
            return DifferenceEquation.EvaluateNext(sample);
