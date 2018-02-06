@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Pentagon.Maths.SignalProcessing\Pentagon.Maths.SignalProcessing.csproj" />
     <ProjectReference Include="..\..\src\Pentagon.Maths\Pentagon.Maths.csproj" />
   </ItemGroup>
 

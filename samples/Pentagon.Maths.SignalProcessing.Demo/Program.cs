@@ -14,43 +14,38 @@ namespace Pentagon.Maths.SignalProcessing.Demo
             //system H(z)=(1+z^-1)/(1-0.877z^-1)
             // y[n] = x[n] + x[n-1] + 0.877y[n-1]
 
-            var s1 = GetSeperateSystem();
-            var s2 = GetSeperateSystem();
+            var man = new SystemConnectionManager<System>();
 
-            var o1 = new List<double>();
-            var oH = new List<double>();
+            man.SetupSystem(new System());
+            
+            man.InitializeOutputNode(b => b.Sum);
 
-            var sf = 192000;
-            
-            var sin = new SinSignalSource(new Frequency(sf), new Frequency(100));
-            var sinH = new SinSignalSource(new Frequency(sf), new Frequency(10000));
-            
-            for (int i = 0; i < sf; i++)
+            var val = new List<double>();
+            for (int i = 0; i < 48000*25; i++)
             {
-                s1.input.Add(sin.GetValueAt(i));
-                o1.Add(s1.output.GetValue(i));
-
-                s2.input.Add(sinH.GetValueAt(i));
-                oH.Add(s2.output.GetValue(i));
+                val.Add(man.GetValue(i));
             }
         }
 
-        static (InputSampleSystemNode input, INode output) GetSeperateSystem()
+        public class System : INodeSystem
         {
-            var input = new InputSampleSystemNode();
-            var sum = new SumSystemNode();
-            var inputDelay = new DelaySystemNode(1);
-            var outputDelay = new DelaySystemNode(1);
-            var factor = new FactorSystemNode(0.877);
+            public StepImpulseInputSystemNode Input { get; } = new StepImpulseInputSystemNode { Name = "Input"};
 
-            sum.AddInputNode(input);
-            sum.AddInputNode(inputDelay);
-            sum.AddInputNode(factor);
-            inputDelay.SetInputNode(input);
-            outputDelay.SetInputNode(sum);
-            factor.SetInputNode(outputDelay);
+            public SumSystemNode Sum { get; } = new SumSystemNode {Name = "Output sum"};
 
-            return (input, sum);
+            public DelaySystemNode InputDelay { get; } = new DelaySystemNode(1) {Name = "x[n-1]"};
+
+            public DelaySystemNode OutputDelay { get; } = new DelaySystemNode(1) { Name = "y[n-1]" };
+
+            public FactorSystemNode Factor { get; } = new FactorSystemNode(0.877) {Name = "Factor for output delay"};
+
+            public void ConfigureConnections(IConnectionBuilder builder)
+            {
+                builder.Connect(Sum, Input, InputDelay, Factor);
+                builder.Connect(InputDelay, Input)
+                 .Connect(OutputDelay, Sum)
+                 .Connect(Factor, OutputDelay);
+            }
         }
     }
 }

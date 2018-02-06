@@ -55,7 +55,7 @@ namespace Pentagon.Maths.Tests
             var f = new TransferFunction(outputZ, inputZ);
             var fs = new TransferFunction(outputZ1, inputZ1);
             var sss = f + fs;
-            var de = f.GetDifferenceEquation();
+            var de = f.ToDifferenceEquation();
             var signal = new Function(MathExpr.Sin(Function.IndependentName * (ValueMathExpression) new Frequency(10000).ConvertUnit(new AngularSpeed()).Value)).ToDiscreteFunction((Frequency) 48000);
             var ss = de.EvaluateSignal(signal.EvaluateSamples(new Range<int>(0, 100)));
         }
