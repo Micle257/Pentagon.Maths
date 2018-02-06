@@ -4,14 +4,10 @@
     using System.Diagnostics;
     using System.Linq.Expressions;
 
-    public class FilterSystemNode : ISingleInputNode
+    public class FilterSystemNode : ISingleInputNode, IMemoryNode
     {
         DifferenceEquation _eq;
-
-        public INode InputNode { get; private set; }
-
-        public int InputCount => 1;
-
+        
         public FilterSystemNode(ISystemFunction system)
         {
             _eq = system as DifferenceEquation ?? new DifferenceEquation(system.Coefficients);
@@ -37,30 +33,14 @@
             _wasEvaluated = false;
             return value;
         }
-
-        public double GetValue(int index)
-        {
-            if (_wasEvaluated)
-                return _eq.LastValue;
-
-            _wasEvaluated = true;
-
-            var next = InputNode.GetValue(index);
-            var value = _eq.EvaluateNext(next);
-
-            _wasEvaluated = false;
-            return value;
-        }
-
+        
         /// <inheritdoc />
         public string Name { get; set; }
-
-        public void SetInputNode(INode node)
-        {
-            InputNode = node;
-        }
-
+        
         /// <inheritdoc />
         public override string ToString() => Name == null ? $"Filter system node" : $"{Name} (Filter)";
+
+        /// <inheritdoc />
+        public double LastValue => _eq.LastValue;
     }
 }

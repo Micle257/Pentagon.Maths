@@ -9,7 +9,7 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
     using System.Diagnostics;
     using Pentagon.Extensions;
 
-    public class DelaySystemNode : ISingleInputNode
+    public class DelaySystemNode : ISingleInputNode, IMemoryNode
     {
         public int DelayLength { get; }
 
@@ -23,54 +23,30 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
         }
         
         Queue<double> _delayLine = new Queue<double>();
-
-        /// <inheritdoc />
-        public INode InputNode { get; private set; }
-
-        bool _wasQueued;
-
+        
         /// <inheritdoc />
         public string Name { get; set; }
 
         /// <inheritdoc />
-        public double GetValue(int index)
-        {
-            if (_wasQueued)
-                return _delayLine.Peek();
-
-            _wasQueued = true;
-
-            var next = InputNode.GetValue(index);
-            var value = _delayLine.Requeue(next);
-
-            _wasQueued = false;
-            return value;
-        }
-
+        public double LastValue =>  _delayLine.Peek();
+        
         /// <inheritdoc />
         public double GetValue(int index, params double[] inputValues)
         {
-            if (_wasQueued)
+            if (index == _lastIndex)
                 return _delayLine.Peek();
 
-            _wasQueued = true;
-
             var next = inputValues[0];
-            var value = _delayLine.Requeue(next);
+            var value = _delayLine.Dequeue();
+             _delayLine.Enqueue(next);
 
-            _wasQueued = false;
+            _lastIndex = index;
+
             return value;
         }
 
-        /// <inheritdoc />
-        public int InputCount => 1;
-
-        /// <inheritdoc />
-        public void SetInputNode(INode node)
-        {
-            InputNode = node;
-        }
-
+        int _lastIndex = -1;
+        
         /// <inheritdoc />
         public override string ToString() => Name == null ? $"Delay: z^-{DelayLength}" : $"{Name} (Delay): z^-{DelayLength}";
     }

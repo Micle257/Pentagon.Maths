@@ -1,4 +1,5 @@
-﻿namespace Pentagon.Maths.SignalProcessing.SystemNodes {
+﻿namespace Pentagon.Maths.SignalProcessing.SystemNodes
+{
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -30,9 +31,11 @@
                 result.AddRange(nodes.Where(a => !result.Contains(a)));
             }
 
+            var inputNodes = _connections.Values.SelectMany(a => a).Where(a => a is IInputSystemNode).Distinct();
+
             result.Reverse();
 
-            return result;
+            return inputNodes.Concat(result).ToList();
         }
 
         void Get(IList<INode> conns)
@@ -49,14 +52,21 @@
                 }
             }
 
-            Get(toadd);
+            if (toadd.Count == 0)
+                return;
 
             _nodes.Add(toadd);
+
+            foreach (var node in toadd)
+            {
+                var cos = _connections[node];
+                Get(cos);
+            }
         }
 
         bool IsNodeRelated(INode node)
         {
-            if (_connections.TryGetValue(node,out var inputs))
+            if (_connections.TryGetValue(node, out var inputs))
             {
                 return inputs.Count != 0 && _nodes.SelectMany(a => a).Contains(node);
             }

@@ -1,8 +1,7 @@
 ﻿namespace Pentagon.Maths.SignalProcessing.SystemNodes {
     using System.Collections.Generic;
 
-    public interface IMemoryNode : INode
+    public interface IMultiInputNode : INode
     {
-        IList<double> Values { get; }
     }
 }
