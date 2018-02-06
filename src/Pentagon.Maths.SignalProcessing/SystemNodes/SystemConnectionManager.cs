@@ -5,6 +5,11 @@
     using System.Collections.Generic;
     using System.Linq;
 
+    public interface INodeSystem
+    {
+        void ConfigureConnections(IConnectionBuilder builder);
+    } 
+
     public class SystemConnectionManager : SystemConnectionManager<object>
     {
 
@@ -16,11 +21,31 @@
 
         IDictionary<INode, IList<INode>> _connectionMap;
 
-        INode _output;
-
-        public void SetupConnection(Action<ConnectionBuilder<T>, T> action)
+        IDictionary<INode, IList<INode>> ConnectionMap
         {
-            var builder = new ConnectionBuilder<T>();
+            get
+            {
+                if (_connectionMap != null)
+                    return _connectionMap;
+
+                if (Instance is INodeSystem ns)
+                {
+                    var b = new ConnectionBuilder();
+
+                    ns.ConfigureConnections(b);
+
+                    _connectionMap = b.Build();
+                }
+
+                return _connectionMap;
+            }
+        }
+
+       INode _output;
+
+        public void SetupConnection(Action<IConnectionBuilder, T> action)
+        {
+            var builder = new ConnectionBuilder();
 
             action(builder, Instance);
 
@@ -35,7 +60,7 @@
         {
             _output = setup(Instance);
 
-            var g = new SystemNodeGrapher(_output, _connectionMap);
+            var g = new SystemNodeGrapher(_output, ConnectionMap);
             _priority = g.GetPriority();
 
             foreach (var node in _priority)

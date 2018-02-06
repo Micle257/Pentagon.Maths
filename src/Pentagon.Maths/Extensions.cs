@@ -10,7 +10,9 @@ namespace Pentagon.Maths
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using System.Linq.Expressions;
     using System.Numerics;
+    using System.Reflection;
     using Helpers;
     using JetBrains.Annotations;
     using Quantities;

@@ -43,7 +43,7 @@
         {
             var sum = default(Complex);
             var tmpThis = this;
-            return Sum.ComputeComplex(0, tmpThis.Coefficients.Count, n => tmpThis.Coefficients[n] * Complex.Pow(z, -n));
+            return Sum.ComputeComplex(0, tmpThis.Coefficients.Count, n => new Complex(tmpThis.Coefficients[n],0) * Complex.Pow(z, -n));
         }
 
         /// <inheritdoc />
