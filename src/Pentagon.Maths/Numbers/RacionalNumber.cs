@@ -1,14 +1,19 @@
-﻿namespace Pentagon.Maths.Numbers {
-    using System;
+﻿// -----------------------------------------------------------------------
+//  <copyright file="RacionalNumber.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
 
-    public class RacionalNumber : Number {
-        public double Value { get; }
-
+namespace Pentagon.Maths.Numbers
+{
+    public class RacionalNumber : Number
+    {
         public RacionalNumber(double value)
         {
             Value = value;
         }
 
         public override NumberSet NumberSet => NumberSet.Racional;
+        public double Value { get; }
     }
 }

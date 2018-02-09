@@ -1,4 +1,11 @@
-namespace Pentagon.Maths.Functions {
+// -----------------------------------------------------------------------
+//  <copyright file="RealSequence.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.Maths.Functions
+{
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -10,8 +17,10 @@ namespace Pentagon.Maths.Functions {
         {
             SamplingFrequency = samplingFrequency;
         }
+
         public RealSequence(IEnumerable<double> zeroPositiveValues, IEnumerable<double> negativeValues = null) : base(zeroPositiveValues, negativeValues) { }
         public double SamplingFrequency { get; }
+
         public double EvaluateSample(int sample)
         {
             if (sample + _zeroIndex >= this.Count() || sample + _zeroIndex < 0)

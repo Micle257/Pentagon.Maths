@@ -17,7 +17,7 @@ namespace Pentagon.Maths.Equations
         public QuadraticEquation(double a, double b, double c)
         {
             if (a.EqualTo(0))
-                throw new ArgumentOutOfRangeException(a.GetType().Name, "A coefficient must be non-zero.");
+                throw new ArgumentOutOfRangeException(a.GetType().Name, message: "A coefficient must be non-zero.");
 
             CoefficientA = a;
             CoefficientB = b;
@@ -33,6 +33,7 @@ namespace Pentagon.Maths.Equations
                 else
                     Type = QuadraticEquationResultType.DoubleRoot;
             }
+
             ComputeRoots();
         }
 
@@ -79,6 +80,7 @@ namespace Pentagon.Maths.Equations
                                         Math.Sqrt(Math.Abs(Discriminant)) / (2 * CoefficientA));
                     break;
             }
+
             time.Stop();
             ComputeTime = new TimeSpan(time.ElapsedTicks);
             RootsComputed?.Invoke(this, null);

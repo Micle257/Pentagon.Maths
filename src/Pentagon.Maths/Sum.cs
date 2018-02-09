@@ -1,4 +1,11 @@
-﻿namespace Pentagon.Maths.SignalProcessing {
+﻿// -----------------------------------------------------------------------
+//  <copyright file="Sum.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.Maths
+{
     using System;
     using System.Numerics;
 
@@ -8,9 +15,7 @@
         {
             var sum = 0d;
             for (int i = from; i < to; i++)
-            {
                 sum += function(i);
-            }
             return sum;
         }
 
@@ -18,9 +23,7 @@
         {
             var sum = default(Complex);
             for (int i = from; i < to; i++)
-            {
                 sum += function(i);
-            }
             return sum;
         }
     }

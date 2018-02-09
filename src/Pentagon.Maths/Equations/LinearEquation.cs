@@ -14,7 +14,7 @@ namespace Pentagon.Maths.Equations
         public LinearEquation(double a, double b)
         {
             if (a.EqualTo(0))
-                throw new ArgumentOutOfRangeException(a.GetType().Name, "A coefficient must be non-zero.");
+                throw new ArgumentOutOfRangeException(a.GetType().Name, message: "A coefficient must be non-zero.");
 
             CoefficientA = a;
             CoefficientB = b;

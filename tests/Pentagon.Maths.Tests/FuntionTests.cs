@@ -13,7 +13,6 @@ namespace Pentagon.Maths.Tests
     using Helpers;
     using Pentagon.Extensions;
     using Quantities;
-    using SignalProcessing;
     using Xunit;
 
     public class FunctionTests

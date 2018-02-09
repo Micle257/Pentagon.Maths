@@ -10,29 +10,19 @@ namespace Pentagon.Maths
     using System.Collections.Generic;
     using System.Linq;
 
-    /// <summary>
-    ///     Represents a binary number.
-    /// </summary>
+    /// <summary> Represents a binary number. </summary>
     public struct BinaryNumber : IValueDataType<BinaryNumber>
     {
-        /// <summary>
-        ///     The number.
-        /// </summary>
+        /// <summary> The number. </summary>
         readonly double _number;
 
-        /// <summary>
-        ///     The bits.
-        /// </summary>
+        /// <summary> The bits. </summary>
         IReadOnlyList<Bit> _bits;
 
-        /// <summary>
-        ///     The bytes.
-        /// </summary>
+        /// <summary> The bytes. </summary>
         IReadOnlyList<byte> _bytes;
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="BinaryNumber" /> struct.
-        /// </summary>
+        /// <summary> Initializes a new instance of the <see cref="BinaryNumber" /> struct. </summary>
         /// <param name="number"> The number. </param>
         public BinaryNumber(double number)
         {
@@ -42,20 +32,12 @@ namespace Pentagon.Maths
             _bytes = null;
         }
 
-        /// <summary>
-        ///     Gets the bits of this binary number.
-        /// </summary>
-        /// <value>
-        ///     The read-only list of <see cref="Bit" />.
-        /// </value>
+        /// <summary> Gets the bits of this binary number. </summary>
+        /// <value> The read-only list of <see cref="Bit" />. </value>
         public IReadOnlyList<Bit> Bits => _bits ?? (_bits = GetBits());
 
-        /// <summary>
-        ///     Gets the bytes of this binary number.
-        /// </summary>
-        /// <value>
-        ///     The read-only list of <see cref="byte" />.
-        /// </value>
+        /// <summary> Gets the bytes of this binary number. </summary>
+        /// <value> The read-only list of <see cref="byte" />. </value>
         public IReadOnlyList<byte> Bytes => _bytes ?? (_bytes = GetBytes());
 
         /// <inheritdoc />
@@ -83,18 +65,7 @@ namespace Pentagon.Maths
 
         #endregion
 
-        /// <inheritdoc />
-        public int CompareTo(BinaryNumber other) => _number.CompareTo(other._number);
-
-        /// <inheritdoc />
-        public int CompareTo(object obj)
-        {
-            if (ReferenceEquals(null, obj))
-                return 1;
-            if (!(obj is BinaryNumber))
-                throw new ArgumentException($"Object must be of type {nameof(BinaryNumber)}");
-            return CompareTo((BinaryNumber) obj);
-        }
+        #region IEquatable members
 
         /// <inheritdoc />
         public bool Equals(BinaryNumber other) => _number.Equals(other._number);
@@ -110,15 +81,26 @@ namespace Pentagon.Maths
         /// <inheritdoc />
         public override int GetHashCode() => _number.GetHashCode();
 
+        #endregion
+
+        /// <inheritdoc />
+        public int CompareTo(BinaryNumber other) => _number.CompareTo(other._number);
+
+        /// <inheritdoc />
+        public int CompareTo(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+                return 1;
+            if (!(obj is BinaryNumber))
+                throw new ArgumentException($"Object must be of type {nameof(BinaryNumber)}");
+            return CompareTo((BinaryNumber) obj);
+        }
+
         /// <inheritdoc />
         public override string ToString() => Bits.Select(b => b.ToString()).Aggregate((s, s1) => $"{s}{s1}");
 
-        /// <summary>
-        ///     Gets the bits.
-        /// </summary>
-        /// <returns>
-        ///     A read-only list of <see cref="Bit" />.
-        /// </returns>
+        /// <summary> Gets the bits. </summary>
+        /// <returns> A read-only list of <see cref="Bit" />. </returns>
         IReadOnlyList<Bit> GetBits()
         {
             var bin = new List<Bit>();
@@ -137,12 +119,8 @@ namespace Pentagon.Maths
             return bin;
         }
 
-        /// <summary>
-        ///     Gets the bytes.
-        /// </summary>
-        /// <returns>
-        ///     A read-only list of <see cref="byte" />.
-        /// </returns>
+        /// <summary> Gets the bytes. </summary>
+        /// <returns> A read-only list of <see cref="byte" />. </returns>
         IReadOnlyList<byte> GetBytes()
         {
             var bytes = new List<byte>();
@@ -158,6 +136,7 @@ namespace Pentagon.Maths
                     one = bits.GetRange(i, 8);
                     bits.RemoveRange(i, 8);
                 }
+
                 byte b = 0;
                 foreach (var item in one)
                     b += Convert.ToByte(item.Value);

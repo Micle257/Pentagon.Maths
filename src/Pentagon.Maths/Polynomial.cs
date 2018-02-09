@@ -16,12 +16,11 @@ namespace Pentagon.Maths
     {
         public Polynomial(IEnumerable<double> coefficients)
         {
-           // VariableName = variableName;
+            // VariableName = variableName;
             Coefficients = coefficients as IList<double> ?? coefficients.ToList();
         }
 
         public IList<double> Coefficients { get; }
-       // public string VariableName { get; }
 
         #region Operators
 
@@ -42,7 +41,7 @@ namespace Pentagon.Maths
         #endregion
 
         /// <inheritdoc />
-        public override string ToString() => ToString("x");
+        public override string ToString() => ToString(variableName: "x");
 
         /// <inheritdoc />
         public string ToString(string variableName)
@@ -75,8 +74,8 @@ namespace Pentagon.Maths
         {
             var first = this;
 
-          //  if (first.VariableName != second.VariableName)
-          //      throw new NotSupportedException(message: "The variable names must match.");
+            //  if (first.VariableName != second.VariableName)
+            //      throw new NotSupportedException(message: "The variable names must match.");
 
             var result = new double[first.Coefficients.Count + second.Coefficients.Count - 1];
             for (var i = 0; i < result.Length; i++)
@@ -94,8 +93,8 @@ namespace Pentagon.Maths
         {
             var first = this;
 
-         //   if (first.VariableName != second.VariableName)
-         //       throw new NotSupportedException(message: "The variable names must match.");
+            //   if (first.VariableName != second.VariableName)
+            //       throw new NotSupportedException(message: "The variable names must match.");
 
             var length = first.Coefficients.Count >= second.Coefficients.Count ? first.Coefficients.Count : second.Coefficients.Count;
 
@@ -115,8 +114,8 @@ namespace Pentagon.Maths
         {
             var first = this;
 
-           // if (first.VariableName != second.VariableName)
-           //     throw new NotSupportedException(message: "The variable names must match.");
+            // if (first.VariableName != second.VariableName)
+            //     throw new NotSupportedException(message: "The variable names must match.");
 
             var list = new List<double>();
             foreach (var c in second.Coefficients)
@@ -149,5 +148,7 @@ namespace Pentagon.Maths
 
             return new Polynomial(coeffs);
         }
+
+        // public string VariableName { get; }
     }
 }

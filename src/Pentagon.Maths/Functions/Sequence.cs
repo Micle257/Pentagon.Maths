@@ -1,14 +1,21 @@
-namespace Pentagon.Maths.Functions {
+// -----------------------------------------------------------------------
+//  <copyright file="Sequence.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.Maths.Functions
+{
     using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
 
     public class Sequence<TNumber> : IEnumerable<TNumber>
-        where TNumber : struct, IEquatable<TNumber>
+            where TNumber : struct, IEquatable<TNumber>
     {
-        IList<TNumber> _values;
-      protected  int _zeroIndex;
+        protected int _zeroIndex;
+        readonly IList<TNumber> _values;
 
         public Sequence(IEnumerable<TNumber> values, int zeroIndex)
         {
@@ -43,9 +50,6 @@ namespace Pentagon.Maths.Functions {
 
         public IEnumerator<TNumber> GetEnumerator() => _values.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

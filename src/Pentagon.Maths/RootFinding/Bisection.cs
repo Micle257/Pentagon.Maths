@@ -162,21 +162,16 @@ namespace Pentagon.Maths.RootFinding
 
             // bad bracketing?
             if (Math.Sign(fmin) == Math.Sign(fmax))
-            {
                 return false;
-
-            }
 
             for (int i = 0; i <= maxIterations; i++)
             {
                 double froot = f(root);
 
                 if (upperBound - lowerBound <= 2 * accuracy && Math.Abs(froot) <= accuracy)
-                {
                     return true;
-                }
 
-                if ((lowerBound == root) || (upperBound == root))
+                if (lowerBound == root || upperBound == root)
                 {
                     // accuracy not sufficient, but cannot be improved further
                     return false;
@@ -193,9 +188,7 @@ namespace Pentagon.Maths.RootFinding
                     fmax = froot;
                 }
                 else // Math.Sign(froot) == 0
-                {
                     return true;
-                }
 
                 root = 0.5 * (lowerBound + upperBound);
             }

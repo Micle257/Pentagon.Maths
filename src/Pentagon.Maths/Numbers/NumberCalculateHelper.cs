@@ -1,4 +1,11 @@
-﻿namespace Pentagon.Maths.Numbers {
+﻿// -----------------------------------------------------------------------
+//  <copyright file="NumberCalculateHelper.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.Maths.Numbers
+{
     using System;
     using System.Numerics;
 
@@ -7,13 +14,15 @@
         public static INumber Add(INumber left, INumber right)
         {
             if (left.NumberSet >= right.NumberSet)
-            {
                 return AddCore(left, right);
-            }
-            else
-            {
-                return AddCore(right, left);
-            }
+            return AddCore(right, left);
+        }
+
+        public static INumber Multiple(INumber left, INumber right)
+        {
+            if (left.NumberSet >= right.NumberSet)
+                return MultipleCore(left, right);
+            return MultipleCore(right, left);
         }
 
         static INumber AddCore(INumber left, INumber right)
@@ -33,6 +42,7 @@
                     return null;
             }
         }
+
         static int ToWhole(INumber right)
         {
             switch (right)
@@ -40,7 +50,7 @@
                 case RacionalNumber q:
                 case ComplexNumber c:
                     throw new ArithmeticException();
-                    
+
                 case WholeNumber w:
                     return w.Value;
 
@@ -76,24 +86,12 @@
 
                 case RacionalNumber q:
                     return new Complex(q.Value, 0);
-                    
+
                 case WholeNumber w:
                     return new Complex(w.Value, 0);
 
                 default:
                     return Complex.Zero;
-            }
-        }
-
-        public static INumber Multiple(INumber left, INumber right)
-        {
-            if (left.NumberSet >= right.NumberSet)
-            {
-                return MultipleCore(left, right);
-            }
-            else
-            {
-                return MultipleCore(right, left);
             }
         }
 

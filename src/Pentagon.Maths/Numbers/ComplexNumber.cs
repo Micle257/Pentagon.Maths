@@ -1,19 +1,22 @@
-﻿namespace Pentagon.Maths.Numbers
+﻿// -----------------------------------------------------------------------
+//  <copyright file="ComplexNumber.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.Maths.Numbers
 {
-    using System;
     using System.Numerics;
 
     public class ComplexNumber : Number
     {
-        Complex _value;
-
-        public Complex Value => _value;
-
         public ComplexNumber(Complex value)
         {
-            _value = value;
+            Value = value;
         }
 
         public override NumberSet NumberSet => NumberSet.Complex;
+
+        public Complex Value { get; }
     }
 }

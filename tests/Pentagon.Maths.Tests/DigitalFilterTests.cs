@@ -11,7 +11,6 @@ namespace Pentagon.Maths.Tests
     using Functions;
     using Helpers;
     using Quantities;
-    using SignalProcessing;
     using Units;
     using Xunit;
 

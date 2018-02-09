@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Maths.SignalProcessing
+namespace Pentagon.Maths
 {
     public abstract class Fraction<TValue>
     {

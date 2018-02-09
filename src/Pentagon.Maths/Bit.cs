@@ -11,9 +11,7 @@ namespace Pentagon.Maths
     /// <summary> Represents a boolean bit value. </summary>
     public struct Bit : IValueDataType<Bit>, IValuable<bool?>
     {
-        /// <summary>
-        ///     The inner bit value as integer.
-        /// </summary>
+        /// <summary> The inner bit value as integer. </summary>
         readonly bool _bit;
 
         /// <summary> Initializes a new instance of the <see cref="Bit" /> class. </summary>
@@ -70,8 +68,23 @@ namespace Pentagon.Maths
 
         #endregion
 
+        #region IEquatable members
+
         /// <inheritdoc />
         public bool Equals(Bit other) => Value == other.Value;
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+                return false;
+            return obj is Bit && Equals((Bit) obj);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode() => Value.GetHashCode();
+
+        #endregion
 
         /// <inheritdoc />
         public int CompareTo(Bit other) => Nullable.Compare(Value, other.Value);
@@ -85,17 +98,6 @@ namespace Pentagon.Maths
                 throw new ArgumentException($"Object must be of type {nameof(Bit)}");
             return CompareTo((Bit) obj);
         }
-
-        /// <inheritdoc />
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj))
-                return false;
-            return obj is Bit && Equals((Bit) obj);
-        }
-
-        /// <inheritdoc />
-        public override int GetHashCode() => Value.GetHashCode();
 
         /// <inheritdoc />
         public override string ToString() => $"{(_bit ? "1" : "0")}";

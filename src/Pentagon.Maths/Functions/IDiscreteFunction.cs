@@ -1,4 +1,11 @@
-namespace Pentagon.Maths.Functions {
+// -----------------------------------------------------------------------
+//  <copyright file="IDiscreteFunction.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.Maths.Functions
+{
     using System.Collections.Generic;
     using Helpers;
 

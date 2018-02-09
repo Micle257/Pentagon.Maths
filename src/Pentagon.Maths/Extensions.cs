@@ -10,35 +10,30 @@ namespace Pentagon.Maths
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
-    using System.Linq.Expressions;
     using System.Numerics;
-    using System.Reflection;
     using Helpers;
     using JetBrains.Annotations;
 
     public static class Extensions
     {
-        static HashSet<Type> NumericTypes = new HashSet<Type>
-        {
-            typeof(short),
-            typeof(ushort),
-            typeof(byte),
-            typeof(sbyte),
-            typeof(int),
-            typeof(uint),
-            typeof(long),
-            typeof(ulong),
-            typeof(float),
-            typeof(double),
-            typeof(decimal),
-            typeof(BigInteger),
-            typeof(Complex)
-        };
+        static readonly HashSet<Type> NumericTypes = new HashSet<Type>
+                                                     {
+                                                             typeof(short),
+                                                             typeof(ushort),
+                                                             typeof(byte),
+                                                             typeof(sbyte),
+                                                             typeof(int),
+                                                             typeof(uint),
+                                                             typeof(long),
+                                                             typeof(ulong),
+                                                             typeof(float),
+                                                             typeof(double),
+                                                             typeof(decimal),
+                                                             typeof(BigInteger),
+                                                             typeof(Complex)
+                                                     };
 
-        public static bool IsNumeric(this object value)
-        {
-            return NumericTypes.Contains(value.GetType()) || NumericTypes.Contains(Nullable.GetUnderlyingType(value.GetType()));
-        }
+        public static bool IsNumeric(this object value) => NumericTypes.Contains(value.GetType()) || NumericTypes.Contains(Nullable.GetUnderlyingType(value.GetType()));
 
         public static bool InRange(this int val, int min, int max) => new Range<int>(min, max).InRange(val);
 
@@ -63,7 +58,7 @@ namespace Pentagon.Maths
             return Convert.ToDouble(val);
         }
 
-        public static int ToSample(this double val, double sampling) => (int)(val * sampling);
+        public static int ToSample(this double val, double sampling) => (int) (val * sampling);
 
         public static double ToTime(this int val, double sampling) => val / sampling;
 
@@ -75,12 +70,10 @@ namespace Pentagon.Maths
             return -Math.Pow(s, 1d / 3d);
         }
 
-        /// <summary>
-        /// Computes absolute value of each value in the collection.
-        /// </summary>
-        /// <param name="collection">The collection.</param>
-        /// <returns>An enumeration of absolute values.</returns>
-        /// <exception cref="ArgumentNullException">When collection is null.</exception>
+        /// <summary> Computes absolute value of each value in the collection. </summary>
+        /// <param name="collection"> The collection. </param>
+        /// <returns> An enumeration of absolute values. </returns>
+        /// <exception cref="ArgumentNullException"> When collection is null. </exception>
         public static IEnumerable<double> Abs([NotNull] this IEnumerable<double> collection)
         {
             if (collection == null)

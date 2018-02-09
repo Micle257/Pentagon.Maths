@@ -51,16 +51,15 @@ namespace Pentagon.Maths.Functions
         public FunctionCallback Func { get; }
 
         public Predicate<double> IsInDomain => d => Range == null || Range.InRange(d);
-        
+
         /// <summary> Gets the range of the Value. </summary>
         public IRange<double> Range { get; }
-        
+
         /// <summary> Gets the output value assigned to input value. </summary>
         /// <param name="x"> The input value of function. </param>
         /// <exception cref="ValueOutOfDomainException"> </exception>
         public virtual double GetValue(double x)
         {
-
             if (!IsInDomain(x))
                 throw new ValueOutOfDomainException(x);
             return Func(x);
@@ -105,7 +104,7 @@ namespace Pentagon.Maths.Functions
         public double[] GetSamples(int sampleCount, double samplingFrequency, double startTime = 0)
         {
             var samples = new double[sampleCount];
-            var dt = 1/ samplingFrequency;
+            var dt = 1 / samplingFrequency;
             var t = startTime;
             for (var i = 0; i < sampleCount; i++, t += dt)
                 samples[i] = GetValue(t);

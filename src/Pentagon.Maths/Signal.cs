@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-//  <copyright file="Vector.cs">
+//  <copyright file="Signal.cs">
 //   Copyright (c) Michal Pokorný. All Rights Reserved.
 //  </copyright>
 // -----------------------------------------------------------------------
@@ -9,7 +9,6 @@ namespace Pentagon.Maths
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using SignalProcessing;
 
     public class Signal : IEnumerable<double>
     {
@@ -22,8 +21,6 @@ namespace Pentagon.Maths
             else
                 _values = values.ToList();
         }
-        
-        public Polynomial GetPolynomial() => new Polynomial(Values);
 
         public double[] Values => _values.ToArray();
 
@@ -37,15 +34,14 @@ namespace Pentagon.Maths
 
         #region Operators
 
-        public static Signal operator +(Signal a, Signal b)
-        {
-            return new Signal((a.GetPolynomial() + b.GetPolynomial()).Coefficients);
-        }
+        public static Signal operator +(Signal a, Signal b) => new Signal((a.GetPolynomial() + b.GetPolynomial()).Coefficients);
 
         #endregion
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         public IEnumerator<double> GetEnumerator() => _values.GetEnumerator();
+
+        public Polynomial GetPolynomial() => new Polynomial(Values);
     }
 }

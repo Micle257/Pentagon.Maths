@@ -19,7 +19,7 @@ namespace Pentagon.Maths.Equations
         public CubicEquation(double a, double b, double c, double d)
         {
             if (a.EqualTo(0))
-                throw new ArgumentOutOfRangeException(a.GetType().Name, "A coefficient must be non-zero.");
+                throw new ArgumentOutOfRangeException(a.GetType().Name, message: "A coefficient must be non-zero.");
 
             CoefficientA = a;
             CoefficientB = b;
@@ -44,6 +44,7 @@ namespace Pentagon.Maths.Equations
                         Type = CubicEquationResultType.TwoReal;
                 }
             }
+
             ComputeRoots();
         }
 
@@ -88,6 +89,7 @@ namespace Pentagon.Maths.Equations
                     list.Add(new MathPoint(FirstDerivative.Root2.Real, GetValue(FirstDerivative.Root2.Real)));
                     break;
             }
+
             if (list.Any(a => a == GetInflectionPoint()))
                 list.Clear();
             return list;
@@ -102,6 +104,7 @@ namespace Pentagon.Maths.Equations
                 case CubicEquationResultType.ThreeReal:
                     return new MathPoint(SecondDerivative.Root, GetValue(SecondDerivative.Root));
             }
+
             return default(MathPoint);
         }
 
@@ -135,6 +138,7 @@ namespace Pentagon.Maths.Equations
                     Root1 = Root2 = Root3 = -(CoefficientD / CoefficientA).Cbrt();
                     break;
             }
+
             time.Stop();
             ComputeTime = new TimeSpan(time.ElapsedTicks);
             RootsComputed?.Invoke(this, null);

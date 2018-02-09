@@ -1,4 +1,11 @@
-﻿namespace Pentagon.Maths.Numbers {
+﻿// -----------------------------------------------------------------------
+//  <copyright file="NumberSet.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.Maths.Numbers
+{
     public enum NumberSet
     {
         Unspecified,
@@ -6,6 +13,6 @@
         Whole,
         Racional,
         Real,
-        Complex,
+        Complex
     }
 }

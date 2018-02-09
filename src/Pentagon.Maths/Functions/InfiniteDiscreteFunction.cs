@@ -1,4 +1,11 @@
-namespace Pentagon.Maths.Functions {
+// -----------------------------------------------------------------------
+//  <copyright file="InfiniteDiscreteFunction.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.Maths.Functions
+{
     using System;
     using System.Collections.Generic;
     using Helpers;
@@ -13,18 +20,11 @@ namespace Pentagon.Maths.Functions {
             _function = function;
         }
 
-        public static IDiscreteFunction StepFunction(double sampling) => new InfiniteDiscreteFunction(i => i >= 0 ? 1 : 0, sampling);
-
-        public static IDiscreteFunction ImpulseFunction(double sampling) => new InfiniteDiscreteFunction(i => i == 0 ? 1 : 0, sampling);
-
         public double SamplingFrequency { get; }
 
         public double this[int sample] => EvaluateSample(sample);
 
-        public double EvaluateSample(int sample)
-        {
-            return _function(sample);
-        }
+        public double EvaluateSample(int sample) => _function(sample);
 
         public double EvaluateTime(double time)
         {
@@ -32,10 +32,11 @@ namespace Pentagon.Maths.Functions {
             return EvaluateSample(d);
         }
 
-        public IEnumerable<double> EvaluateSamples(IRange<int> range)
-        {
-            return EvaluateSequence(range);
-        }
+        public IEnumerable<double> EvaluateSamples(IRange<int> range) => EvaluateSequence(range);
+
+        public static IDiscreteFunction StepFunction(double sampling) => new InfiniteDiscreteFunction(i => i >= 0 ? 1 : 0, sampling);
+
+        public static IDiscreteFunction ImpulseFunction(double sampling) => new InfiniteDiscreteFunction(i => i == 0 ? 1 : 0, sampling);
 
         public Sequence<double> EvaluateSequence(IRange<int> interval)
         {

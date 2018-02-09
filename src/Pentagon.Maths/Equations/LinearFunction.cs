@@ -13,7 +13,7 @@ namespace Pentagon.Maths.Equations
     public class LinearFunction : Function
     {
         public LinearFunction(double a, double b)
-            : base(x => a*x + b) { }
+                : base(x => a * x + b) { }
 
         public static LinearFunction FromTwoPoints(MathPoint a, MathPoint b)
         {
