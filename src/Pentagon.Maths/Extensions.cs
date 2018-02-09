@@ -15,7 +15,6 @@ namespace Pentagon.Maths
     using System.Reflection;
     using Helpers;
     using JetBrains.Annotations;
-    using Quantities;
 
     public static class Extensions
     {
@@ -64,9 +63,9 @@ namespace Pentagon.Maths
             return Convert.ToDouble(val);
         }
 
-        public static int ToSample(this double val, Frequency sampling) => (int)(val * sampling.Value);
+        public static int ToSample(this double val, double sampling) => (int)(val * sampling);
 
-        public static double ToTime(this int val, Frequency sampling) => val / sampling.Value;
+        public static double ToTime(this int val, double sampling) => val / sampling;
 
         public static double Cbrt(this double v)
         {

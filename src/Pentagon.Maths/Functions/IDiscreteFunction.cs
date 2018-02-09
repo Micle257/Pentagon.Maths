@@ -1,11 +1,10 @@
 namespace Pentagon.Maths.Functions {
     using System.Collections.Generic;
     using Helpers;
-    using Quantities;
 
     public interface IDiscreteFunction
     {
-        Frequency SamplingFrequency { get; }
+        double SamplingFrequency { get; }
 
         double this[int sample] { get; }
 

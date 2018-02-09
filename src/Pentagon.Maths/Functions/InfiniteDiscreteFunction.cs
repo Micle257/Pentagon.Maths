@@ -2,23 +2,22 @@ namespace Pentagon.Maths.Functions {
     using System;
     using System.Collections.Generic;
     using Helpers;
-    using Quantities;
 
     public class InfiniteDiscreteFunction : IDiscreteFunction
     {
         readonly Func<int, double> _function;
 
-        public InfiniteDiscreteFunction(Func<int, double> function, Frequency samplingFrequency)
+        public InfiniteDiscreteFunction(Func<int, double> function, double samplingFrequency)
         {
             SamplingFrequency = samplingFrequency;
             _function = function;
         }
 
-        public static IDiscreteFunction StepFunction(Frequency sampling) => new InfiniteDiscreteFunction(i => i >= 0 ? 1 : 0, sampling);
+        public static IDiscreteFunction StepFunction(double sampling) => new InfiniteDiscreteFunction(i => i >= 0 ? 1 : 0, sampling);
 
-        public static IDiscreteFunction ImpulseFunction(Frequency sampling) => new InfiniteDiscreteFunction(i => i == 0 ? 1 : 0, sampling);
+        public static IDiscreteFunction ImpulseFunction(double sampling) => new InfiniteDiscreteFunction(i => i == 0 ? 1 : 0, sampling);
 
-        public Frequency SamplingFrequency { get; }
+        public double SamplingFrequency { get; }
 
         public double this[int sample] => EvaluateSample(sample);
 

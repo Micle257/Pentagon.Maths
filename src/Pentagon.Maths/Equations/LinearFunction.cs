@@ -8,13 +8,12 @@ namespace Pentagon.Maths.Equations
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Expression;
     using Functions;
 
     public class LinearFunction : Function
     {
         public LinearFunction(double a, double b)
-            : base(new AddMathExpression(new MultiplicationMathExpression(new ValueMathExpression(a), new UnknownMathExpression("x")), new ValueMathExpression(b))) { }
+            : base(x => a*x + b) { }
 
         public static LinearFunction FromTwoPoints(MathPoint a, MathPoint b)
         {
