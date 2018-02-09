@@ -9,33 +9,42 @@
         readonly INode _node;
         readonly IDictionary<INode, IList<INode>> _connections;
         readonly List<IList<INode>> _nodes = new List<IList<INode>>();
+        public IList<INode> RelatedNodes { get; }
+        public IList<IMemoryNode> MemoryNodes { get; }
+            public IList<IInputSystemNode> InputNodes { get; }
+        public IList<INode> FunctionalNodes { get; }
 
         public SystemNodeGrapher(INode node, IDictionary<INode, IList<INode>> connections)
         {
             _node = node;
             _connections = connections;
-        }
 
-        public IList<INode> GetPriority()
+            RelatedNodes = _connections.Values.SelectMany(a => a).Distinct().ToList();
+            MemoryNodes = RelatedNodes.Where(a => a is IMemoryNode).Select(a => (IMemoryNode)a).ToList();
+            InputNodes = RelatedNodes.Where(a => a is IInputSystemNode).Select(a => (IInputSystemNode)a).ToList();
+            FunctionalNodes = RelatedNodes.Except(InputNodes).Except(MemoryNodes).ToList();
+        }
+    
+        public IList<INode> GetFunctionalPriority()
         {
             var result = new List<INode>();
-
-            _nodes.Add(new[] { _node });
-
+            
             var conns = _connections[_node];
-
+            
             Get(conns);
+
+            _nodes.Add(new [] {_node});
+
+            _nodes.Reverse();
 
             foreach (var nodes in _nodes)
             {
                 result.AddRange(nodes.Where(a => !result.Contains(a)));
             }
 
-            var inputNodes = _connections.Values.SelectMany(a => a).Where(a => a is IInputSystemNode).Distinct();
+            result = result.Where(a => FunctionalNodes.Contains(a)).ToList();
 
-            result.Reverse();
-
-            return inputNodes.Concat(result).ToList();
+            return result;
         }
 
         void Get(IList<INode> conns)
@@ -68,7 +77,7 @@
         {
             if (_connections.TryGetValue(node, out var inputs))
             {
-                return inputs.Count != 0 && _nodes.SelectMany(a => a).Contains(node);
+                return inputs.Count != 0 && node == _node;
             }
 
             throw new ArgumentException();

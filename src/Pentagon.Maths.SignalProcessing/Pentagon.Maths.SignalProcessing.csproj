@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Pentagon.Maths.UnitSystem\Pentagon.Maths.UnitSystem.csproj" />
     <ProjectReference Include="..\Pentagon.Maths\Pentagon.Maths.csproj" />
   </ItemGroup>
 

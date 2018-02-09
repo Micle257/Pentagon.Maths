@@ -25,8 +25,5 @@
         {
             return Values[index];
         }
-
-        /// <inheritdoc />
-        public int InputCount => 0;
     }
 }
