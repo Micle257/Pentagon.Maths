@@ -8,7 +8,7 @@
 	public struct RelativeSignal
 	{
 		public int Size { get; }
-        
+		
 		List<double> _values;
 
 		public RelativeSignal(int size)
@@ -35,14 +35,14 @@
 				if (-delay > Size)
 					throw new ArgumentOutOfRangeException(nameof(delay));
 
-			    return _values[Size + delay - 1];
+				return _values[Size + delay - 1];
 			}
 		}
 
-	    public void SetLastSample(double value)
-	    {
-	        _values[_values.Count - 1] = value;
-	    }
+		public void SetLastSample(double value)
+		{
+			_values[_values.Count - 1] = value;
+		}
 	}
 
 	public class RelativeSignalold
@@ -52,8 +52,7 @@
 
 		public RelativeSignalold([NotNull] SignalBuilder signal)
 		{
-			Require.NotNull(() => signal);
-			_signal = signal;
+			_signal = signal ?? throw new ArgumentNullException(nameof(signal));
 		}
 
 		public double this[int delay]

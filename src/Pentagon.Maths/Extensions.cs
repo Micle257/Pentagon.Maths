@@ -83,7 +83,9 @@ namespace Pentagon.Maths
         /// <exception cref="ArgumentNullException">When collection is null.</exception>
         public static IEnumerable<double> Abs([NotNull] this IEnumerable<double> collection)
         {
-            Require.NotNull(() => collection);
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+
             foreach (var value in collection)
             {
                 if (value < 0d)

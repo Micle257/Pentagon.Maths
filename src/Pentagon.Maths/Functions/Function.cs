@@ -10,6 +10,7 @@ namespace Pentagon.Maths.Functions
     using System.Collections.Generic;
     using System.Linq;
     using Helpers;
+    using JetBrains.Annotations;
 
     /// <summary> Represents a relation between a set of inputs and a set of permissible outputs with the property that each input is related to exactly one output. </summary>
     public class Function : IRangeable<double>
@@ -27,10 +28,10 @@ namespace Pentagon.Maths.Functions
             Range = range;
         }
 
-        public Function(IDictionary<IRange<double>, FunctionCallback> callbacks)
+        public Function([NotNull] IDictionary<IRange<double>, FunctionCallback> callbacks)
         {
-            Require.NotNull(() => callbacks);
-            // RequireRange.IsNotOverlapped(() => callbacks.Keys);
+            if (callbacks == null)
+                throw new ArgumentNullException(nameof(callbacks));
         }
 
         public Function(IDictionary<double, double> values)
