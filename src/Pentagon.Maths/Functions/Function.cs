@@ -9,9 +9,7 @@ namespace Pentagon.Maths.Functions
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Expression;
     using Helpers;
-    using Quantities;
 
     /// <summary> Represents a relation between a set of inputs and a set of permissible outputs with the property that each input is related to exactly one output. </summary>
     public class Function : IRangeable<double>
@@ -35,12 +33,6 @@ namespace Pentagon.Maths.Functions
             // RequireRange.IsNotOverlapped(() => callbacks.Keys);
         }
 
-        public Function(IMathExpression expr)
-        {
-            MathExpression = expr;
-            Func = d => expr.SubstituteUnknown(IndependentName, d);
-        }
-
         public Function(IDictionary<double, double> values)
         {
             Range = new Range<double>(values.Keys.Min(), values.Keys.Max());
@@ -58,23 +50,10 @@ namespace Pentagon.Maths.Functions
         public FunctionCallback Func { get; }
 
         public Predicate<double> IsInDomain => d => Range == null || Range.InRange(d);
-
-        public IMathExpression MathExpression { get; protected set; }
-
+        
         /// <summary> Gets the range of the Value. </summary>
         public IRange<double> Range { get; }
-
-        #region Operators
-
-        public static Function operator +(Function left, Function right)
-        {
-            if (left.MathExpression == null || right.MathExpression == null)
-                return new Function(a => left.GetValue(a) + right.GetValue(a));
-            return new Function((MathExpression) left.MathExpression + (MathExpression) right.MathExpression);
-        }
-
-        #endregion
-
+        
         /// <summary> Gets the output value assigned to input value. </summary>
         /// <param name="x"> The input value of function. </param>
         /// <exception cref="ValueOutOfDomainException"> </exception>
@@ -122,23 +101,23 @@ namespace Pentagon.Maths.Functions
             return di;
         }
 
-        public double[] GetSamples(int sampleCount, Frequency samplingFrequency, double startTime = 0)
+        public double[] GetSamples(int sampleCount, double samplingFrequency, double startTime = 0)
         {
             var samples = new double[sampleCount];
-            var dt = samplingFrequency.Period;
+            var dt = 1/ samplingFrequency;
             var t = startTime;
             for (var i = 0; i < sampleCount; i++, t += dt)
                 samples[i] = GetValue(t);
             return samples;
         }
 
-        public IDiscreteFunction ToDiscreteFunction(Frequency samplingFrequency, MathInterval mathInterval)
+        public IDiscreteFunction ToDiscreteFunction(double samplingFrequency, MathInterval mathInterval)
         {
             var startTime = Math.Abs(mathInterval.Min.ToSample(samplingFrequency));
-            var count = (int) (mathInterval.Size * samplingFrequency.Value);
+            var count = (int) (mathInterval.Size * samplingFrequency);
             return new RealSequence(GetSamples(count + 1, samplingFrequency, mathInterval.Min), startTime, samplingFrequency);
         }
 
-        public IDiscreteFunction ToDiscreteFunction(Frequency sampl) => new InfiniteDiscreteFunction(i => GetValue(i.ToTime(sampl)), sampl);
+        public IDiscreteFunction ToDiscreteFunction(double sampl) => new InfiniteDiscreteFunction(i => GetValue(i.ToTime(sampl)), sampl);
     }
 }
