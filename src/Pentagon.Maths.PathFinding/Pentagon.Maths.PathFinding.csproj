@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>Pentagon.Maths.PathFinding</RootNamespace>
+    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
+    <Authors>Michal Pokorný</Authors>
+    <Company />
+    <Product>Pentagon Maths Path Finding</Product>
+    <Description>...</Description>
+    <Copyright>Copyright (c) Michal Pokorný. All Rights Reserved.</Copyright>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\build\$(AssemblyName)\</OutputPath>
+    <DocumentationFile>..\..\build\$(AssemblyName)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations" Version="11.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Pentagon.Maths.UnitSystem\Pentagon.Maths.UnitSystem.csproj" />
+    <ProjectReference Include="..\Pentagon.Maths\Pentagon.Maths.csproj" />
+  </ItemGroup>
+
+</Project>
