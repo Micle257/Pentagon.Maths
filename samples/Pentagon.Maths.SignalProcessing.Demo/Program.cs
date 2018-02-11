@@ -3,35 +3,56 @@
 namespace Pentagon.Maths.SignalProcessing.Demo
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Linq;
     using SystemNodes;
     using Quantities;
     using SignalSources;
 
     class Program
     {
+       static SystemConnectionManager<System> _manager = new SystemConnectionManager<System>();
+
         static void Main(string[] args)
         {
-            //system H(z)=(1+z^-1)/(1-0.877z^-1)
-            // y[n] = x[n] - 0.5x[n-1] + 0.877y[n-1]
+            _manager.SetupSystem(new System());
             
-            var man = new SystemConnectionManager<Waveguide>();
+            Measure(() =>
+                    {
+                        var val = new List<double>();
+                        for (var i = 0; i < 48000; i++)
+                        {
+                            val.Add(_manager.GetValue(i));
+                        }
+                    });
+        }
 
-            man.SetupSystem(new Waveguide());
+        static void Measure(Action act)
+        {
+            var stop = new Stopwatch();
+            var span = new List<TimeSpan>();
 
-            var val = new List<double>();
-            for (int i = 0; i < 48000; i++)
+            for (var k = 0; k < 100; k++)
             {
-                val.Add(man.GetValue(i));
+                stop.Start();
+
+                act();
+
+                stop.Stop();
+                span.Add(stop.Elapsed);
+                stop.Reset();
             }
+
+            var average = span.Average(a => a.TotalSeconds);
         }
 
         public class Waveguide : INodeSystem
         {
-            public SumSystemNode TopSum { get; } = new SumSystemNode {Name = "Top sum"};
+            public SumSystemNode TopSum { get; } = new SumSystemNode { Name = "Top sum" };
 
             public SumSystemNode BottomSum { get; } = new SumSystemNode { Name = "Bottom sum" };
 
-            public FilterSystemNode Filter { get; } = new FilterSystemNode((x,y) => 0.8*x[0] + 0.1*x[-1] - 0.2*y[-1]) { Name = "Filter" };
+            public FilterSystemNode Filter { get; } = new FilterSystemNode((x, y) => 0.8 * x[0] + 0.1 * x[-1] - 0.2 * y[-1]) { Name = "Filter" };
 
             public DelaySystemNode TopRightDelay { get; } = new DelaySystemNode(5) { Name = "Top right" };
 
@@ -67,28 +88,33 @@ namespace Pentagon.Maths.SignalProcessing.Demo
 
         public class System : INodeSystem
         {
-            public StepImpulseInputSystemNode Input { get; } = new StepImpulseInputSystemNode { Name = "Input"};
+            public StepImpulseInputSystemNode Input1 { get; } = new StepImpulseInputSystemNode { Name = "Input1" };
 
-            public SumSystemNode Sum { get; } = new SumSystemNode {Name = "Output sum"};
+            public StepImpulseInputSystemNode Input2 { get; } = new StepImpulseInputSystemNode { Name = "Input2" };
 
-            public DelaySystemNode InputDelay { get; } = new DelaySystemNode(1) {Name = "x[n-1]"};
+            public SumSystemNode LeftSum { get; } = new SumSystemNode { Name = "Sum" };
 
-            public DelaySystemNode OutputDelay { get; } = new DelaySystemNode(1) { Name = "y[n-1]" };
+            public SumSystemNode RightSum { get; } = new SumSystemNode { Name = "Output sum" };
 
-            public FactorSystemNode OutputFactor { get; } = new FactorSystemNode(0.877) {Name = "Factor for output delay"};
+            public DelaySystemNode Delay { get; } = new DelaySystemNode(1) { Name = "Delay" };
 
-            public FactorSystemNode InputOneFactor { get; } = new FactorSystemNode(-.5) { Name = "Factor for input delay" };
+            public FactorSystemNode OutputFactor { get; } = new FactorSystemNode(.2) { Name = "Factor for output" };
+
+            public FactorSystemNode InputFactor { get; } = new FactorSystemNode(0.3) { Name = "Factor for input" };
+
+            public FilterSystemNode Filter { get; } = new FilterSystemNode((x, y) => 0.8 * x[0] + 0.1 * x[-1]);
 
             /// <inheritdoc />
-            public INode Output => Sum;
+            public INode Output => RightSum;
 
             public void ConfigureConnections(IConnectionBuilder builder)
             {
-                builder.Connect(Sum, Input, InputOneFactor, OutputFactor);
-                builder.Connect(InputDelay, Input)
-                 .Connect(OutputDelay, Sum)
-                 .Connect(OutputFactor, OutputDelay)
-                       .Connect(InputOneFactor, InputDelay);
+                builder.Connect(RightSum, InputFactor, OutputFactor)
+                       .Connect(InputFactor, Input2)
+                       .Connect(LeftSum, Input1, Delay, InputFactor)
+                       .Connect(OutputFactor, LeftSum)
+                       .Connect(Delay, Filter)
+                       .Connect(Filter, LeftSum);
             }
         }
     }

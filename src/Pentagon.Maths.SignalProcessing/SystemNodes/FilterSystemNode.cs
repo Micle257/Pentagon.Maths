@@ -4,9 +4,11 @@
     using System.Diagnostics;
     using System.Linq.Expressions;
 
-    public class FilterSystemNode : ISingleInputNode, IMemoryNode
+    public class FilterSystemNode : IFilterSystemNode, ISingleInputNode, IMemoryNode
     {
         DifferenceEquation _eq;
+
+        public ISystemFunction System { get; }
         
         public FilterSystemNode(ISystemFunction system)
         {

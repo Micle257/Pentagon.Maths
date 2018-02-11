@@ -8,8 +8,8 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
     using System.Collections.Generic;
     using System.Diagnostics;
     using Pentagon.Extensions;
-
-    public class DelaySystemNode : ISingleInputNode, IMemoryNode
+    
+    public class DelaySystemNode : IDelaySystemNode, ISingleInputNode, IMemoryNode
     {
         public int DelayLength { get; }
 
