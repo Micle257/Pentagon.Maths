@@ -16,6 +16,7 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
     {
         INode Output { get; }
         void ConfigureConnections(IConnectionBuilder builder);
+        void Initialize();
     }
 
     public class SystemConnectionManager : SystemConnectionManager<object> { }
@@ -71,34 +72,41 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
             // compute the values for input nodes
             foreach (var inputNode in _grapher.InputNodes)
                 _values[inputNode] = GetValueOutput(inputNode, inputNode.GetValue(index));
-
-            // compute the memory nodes
-            //foreach (var memoryNode in _grapher.DelayNodes)
-            //    _values[memoryNode] = GetValueOutput(memoryNode, memoryNode.LastValue);
-
+            
             // get values from functional priority
             foreach (var n in _priority)
             {
+                if (n is DelayOutputSystemNode dosn)
+                {
+                    _values[n] = GetValueOutput(n, dosn.GetValue(index));
+                    continue;
+                }
+
                 var inputs = _connectionMap[n];
 
-                var values = inputs.Select(a => _values[a]).ToArray();
+                var fixedInputs = inputs.ToList();
 
-                _values[n] = GetValueOutput(n, n.GetValue(index, values));
+                foreach (var input in inputs)
+                {
+                    var inDelay = _grapher.DelayNodes.FirstOrDefault(a => a == input);
+                    if (inDelay != null)
+                    {
+                        var by = _grapher.DelayOutputNodes.FirstOrDefault(a => a.Delay == inDelay);
+                        if (by != null)
+                        {
+                            fixedInputs.Remove(input);
+                            fixedInputs.Add(by);
+                        }
+                    }
+                }
+
+                var values = fixedInputs.Select(a => _values[a]).ToArray();
+
+                var value = GetValueOutput(n, n.GetValue(index, values));
+
+                _values[n] = value;
             }
-
-            // compute next values for memory nodes
-            //foreach (var n in _grapher.DelayNodes)
-            //{
-            //    var inputs = _connectionMap[n];
-
-            //    var values = inputs.Select(a => _values[a]).ToArray();
-
-            //    n.GetValue(index, values);
-            //}
-
-            if (_values.Any(a => a.Value > 100000000))
-                Debugger.Break();
-
+            
             foreach (var w in _watchers)
             {
                 if (_values.ContainsKey(w.Node) && _connectionMap.ContainsKey(w.Node))

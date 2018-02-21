@@ -84,6 +84,12 @@ namespace Pentagon.Maths.SignalProcessing.Demo
 
                 builder.Connect(Factor, Input);
             }
+
+            /// <inheritdoc />
+            public void Initialize()
+            {
+
+            }
         }
 
         public class System : INodeSystem
@@ -96,11 +102,15 @@ namespace Pentagon.Maths.SignalProcessing.Demo
 
             public SumSystemNode RightSum { get; } = new SumSystemNode { Name = "Output sum" };
 
-            public DelaySystemNode Delay { get; } = new DelaySystemNode(1) { Name = "Delay" };
+            public DelaySystemNode Delay1 { get; } = new DelaySystemNode(1) { Name = "Delay1" };
+
+            public DelaySystemNode Delay2 { get; } = new DelaySystemNode(2) { Name = "Delay2" };
 
             public FactorSystemNode OutputFactor { get; } = new FactorSystemNode(.2) { Name = "Factor for output" };
 
             public FactorSystemNode InputFactor { get; } = new FactorSystemNode(0.3) { Name = "Factor for input" };
+
+            public FactorSystemNode BackFactor { get; } = new FactorSystemNode(0.1) { Name = "Factor for input" };
 
             public FilterSystemNode Filter { get; } = new FilterSystemNode((x, y) => 0.8 * x[0] + 0.1 * x[-1]);
 
@@ -111,11 +121,51 @@ namespace Pentagon.Maths.SignalProcessing.Demo
             {
                 builder.Connect(RightSum, InputFactor, OutputFactor)
                        .Connect(InputFactor, Input2)
-                       .Connect(LeftSum, Input1, Delay, InputFactor)
+                       .Connect(LeftSum, Input1, BackFactor, InputFactor, Delay2)
+                       .Connect(BackFactor, Delay1)
                        .Connect(OutputFactor, LeftSum)
-                       .Connect(Delay, Filter)
-                       .Connect(Filter, LeftSum);
+                       .Connect(Delay1, LeftSum)
+                       .Connect(Delay2, RightSum);
+            }
+
+            /// <inheritdoc />
+            public void Initialize()
+            {
+
             }
         }
+
+        public class FilterSystem : INodeSystem
+        {
+            public IInputSystemNode Input { get; } = new StepImpulseInputSystemNode(); 
+
+            public FilterSystemNode Loss { get; } = new FilterSystemNode(new [] {0, -0.996},new [] {1, -0.001}) {Name = "Loss"};
+
+            public FilterSystemNode Dispersion1 { get; } = new FilterSystemNode(new[] { -0.3, 1 }, new[] { 1, -0.3 }) { Name = "Disp1" };
+
+            public FilterSystemNode Dispersion2 { get; } = new FilterSystemNode(new[] { -0.3, 1 }, new[] { 1, -0.3 }) { Name = "Disp2" };
+
+            public FilterSystemNode Tuning { get; } = new FilterSystemNode(new[] { -0.141848762041005, 1 }, new[] { 1, -0.141848762041005 }) { Name = "Tun" };
+
+            /// <inheritdoc />
+            public INode Output => Loss;
+
+            /// <inheritdoc />
+            public void ConfigureConnections(IConnectionBuilder builder)
+            {
+                builder.Connect(Dispersion1, Input)
+                       .Connect(Dispersion2, Dispersion1)
+                       .Connect(Tuning, Dispersion2)
+                       .Connect(Loss, Tuning);
+            }
+
+            /// <inheritdoc />
+            public void Initialize()
+            {
+               
+            }
+        }
+
+
     }
 }

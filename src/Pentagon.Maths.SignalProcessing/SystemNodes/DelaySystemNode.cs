@@ -8,6 +8,37 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
     using System.Collections.Generic;
     using System.Diagnostics;
     using Pentagon.Extensions;
+
+    public class EmptySystemNode : INode, ISingleInputNode
+    {
+        /// <inheritdoc />
+        public string Name { get; set; }
+
+        /// <inheritdoc />
+        public double GetValue(int index, params double[] inputValues)
+        {
+            return inputValues[0];
+        }
+    }
+
+    public class DelayOutputSystemNode : ISingleInputNode
+    {
+        public IDelaySystemNode Delay { get; }
+
+        /// <inheritdoc />
+        public string Name { get; set; }
+
+        public DelayOutputSystemNode(IDelaySystemNode delay)
+        {
+            Delay = delay;
+        }
+
+        /// <inheritdoc />
+        public double GetValue(int index, params double[] inputValues)
+        {
+            return Delay.LastValue;
+        }
+    }
     
     public class DelaySystemNode : IDelaySystemNode, ISingleInputNode, IMemoryNode
     {

@@ -72,14 +72,6 @@
 
         public IDictionary<INode, IList<INode>> Build()
         {
-            //var result = new ConcurrentDictionary<INode, IList<INode>>();
-
-            //foreach (var node in _connections)
-            //{
-            //    result.TryAdd(node.head, node.tails);
-            //}
-
-            //return result;
             return _connections;
         }
     }

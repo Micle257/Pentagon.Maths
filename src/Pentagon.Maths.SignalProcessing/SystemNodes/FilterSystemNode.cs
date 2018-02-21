@@ -1,6 +1,7 @@
 ﻿namespace Pentagon.Maths.SignalProcessing.SystemNodes
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq.Expressions;
 
@@ -9,6 +10,11 @@
         DifferenceEquation _eq;
 
         public ISystemFunction System { get; }
+
+        public FilterSystemNode(IEnumerable<double> numeratorCoefficients, IEnumerable<double> denumeratorCoefficients)
+        {
+            _eq = new DifferenceEquation(numeratorCoefficients, denumeratorCoefficients);
+        }
         
         public FilterSystemNode(ISystemFunction system)
         {

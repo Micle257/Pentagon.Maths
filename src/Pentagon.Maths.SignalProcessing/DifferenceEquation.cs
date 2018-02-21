@@ -19,10 +19,10 @@ namespace Pentagon.Maths.SignalProcessing
             var den = denumeratorCoefficients as double[] ?? denumeratorCoefficients?.ToArray();
 
             if (num == null || num.Length == 0)
-                num = new[] {1d};
+                num = new[] { 1d };
 
             if (den == null || den.Length == 0)
-                den = new[] {1d};
+                den = new[] { 1d };
 
             if (den.Length != num.Length)
             {
@@ -55,7 +55,7 @@ namespace Pentagon.Maths.SignalProcessing
         RelativeSignal _inputSignal;
         RelativeSignal _outputSignal;
 
-        public DifferenceEquation(IEnumerable<double> inputCoefficients, IEnumerable<double> outputCoefficients) : this(new SystemTuple(inputCoefficients, outputCoefficients)) { }
+        public DifferenceEquation(IEnumerable<double> numeretorCoefficients, IEnumerable<double> denumeratorCoefficients) : this(new SystemTuple(numeretorCoefficients, denumeratorCoefficients)) { }
 
         public DifferenceEquation(SystemTuple tuple)
         {
@@ -90,15 +90,7 @@ namespace Pentagon.Maths.SignalProcessing
         {
             return new DifferenceEquation(Coefficients);
         }
-
-        //public void SetInitialCondition(Signal signal = null)
-        //{
-        //    _inputSignal = new SignalBuilder();
-        //    _outputSignal = new SignalBuilder();
-        //    if (signal != null)
-        //        _outputSignal.AddSignal(signal);
-        //}
-
+        
         public double LastValue { get; private set; }
 
         public double EvaluateNext(double x)
@@ -110,9 +102,11 @@ namespace Pentagon.Maths.SignalProcessing
             for (var i = 0; i < Coefficients.Order; i++)
             {
                 inSum += Coefficients.Numerator[i] * _inputSignal[-i];
-                outSum += Coefficients.Denumerator[i] * _outputSignal[-i];
+
+                if (i != 0)
+                    outSum += Coefficients.Denumerator[i] * _outputSignal[-i];
             }
-            
+
             LastValue = inSum - outSum;
 
             _outputSignal.SetLastSample(LastValue);
