@@ -128,16 +128,27 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
                                 var chain = new KeyValuePair<INode, IList<INode>>(relatedNode, new List<INode>());
                                 while (nodeCursor != null) // null would be if we get to the root item
                                 {
+                                    if (nodeCursor.Parent.IsRoot)
+                                    {
+                                        break;
+                                    }
+
                                     var parent = nodeCursor.Parent.Value;
 
                                     if (parent is IDelaySystemNode dsn)
                                     {
-                                        var outputDelay = new DelayOutputSystemNode(dsn);
-                                        DelayOutputNodes.Add(outputDelay);
-                                        chain.Value.Add(outputDelay);
+                                        var del = DelayOutputNodes.FirstOrDefault(a => a.Delay == dsn);
+
+                                        if (del == null)
+                                        {
+                                            var outputDelay = new DelayOutputSystemNode(dsn);
+                                            DelayOutputNodes.Add(outputDelay);
+                                            chain.Value.Add(outputDelay);
+                                        }
+
                                         break;
                                     }
-                                    else if (parent == relatedNode)
+                                    if (parent == relatedNode)
                                     {
                                         throw new OverflowException("The node system computation loop.");
                                     }
@@ -206,9 +217,11 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
 
                     overallPriority.InsertRange(insertIndex, priority);
                 }
+
+                //overallPriority.Where(a => a is DelayOutputSystemNode).Cast<DelayOutputSystemNode>().GroupBy(a => a.Delay).Select(a => a.First());
             }
             
-           var result = overallPriority.Where(a => !InputNodes.Contains(a)).ToList();
+           var result = overallPriority.Where(a => !InputNodes.Contains(a) && !DelayOutputNodes.Contains(a)).ToList();
 
             return result;
         }
