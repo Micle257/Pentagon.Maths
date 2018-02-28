@@ -16,7 +16,53 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
     {
         INode Output { get; }
         void ConfigureConnections(IConnectionBuilder builder);
+        void ConfigureConstrains(SystemManagerConstrainCollection contrains);
         void Initialize();
+    }
+
+    public class SystemManagerConstrainCollection
+    {
+       public List<ISystemManagerConstrain> Items { get; } = new List<ISystemManagerConstrain>();
+
+        public void Add<TModel>(TModel model, Func<TModel, INode> noteSelector, Func<(double OutputValue, double[] InputValues), bool> condition, Action<TModel> action)
+            where TModel : INodeSystem
+        {
+            Items.Add(new SystemManagerConstrain<TModel>(model, noteSelector, condition,action));
+        }
+    }
+
+    public interface ISystemManagerConstrain {
+        INode Node { get; }
+        void Run(double outputValue, IEnumerable<double> inputValues);
+    }
+
+    public class SystemManagerConstrain<TModel> : ISystemManagerConstrain
+        where TModel : INodeSystem
+    {
+        readonly TModel _model;
+        readonly Func<TModel, INode> _noteSelector;
+        readonly Func<(double OutputValue, double[] InputValues), bool> _condition;
+        readonly Action<TModel> _action;
+
+        public SystemManagerConstrain(TModel model, Func<TModel, INode> noteSelector, Func<(double OutputValue, double[] InputValues), bool> condition, Action<TModel> action)
+        {
+            _model = model;
+            _condition = condition;
+            _action = action;
+
+            Node = noteSelector(_model);
+        }
+
+        /// <inheritdoc />
+        public INode Node { get; }
+
+        public void Run(double outputValue, IEnumerable<double> inputValues)
+        {
+            var result = _condition((outputValue, inputValues?.ToArray()));
+
+            if (result)
+                _action(_model); // TODO make togglable
+        }
     }
 
     public class SystemConnectionManager : SystemConnectionManager<object> { }
@@ -31,10 +77,10 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
 
         IList<INode> _priority = new List<INode>();
         readonly List<SystemNodeWatcher> _watchers = new List<SystemNodeWatcher>();
-
-        readonly List<SystemManagerDisableConstrain> _disableConstrains = new List<SystemManagerDisableConstrain>();
+        
         SystemNodeGrapher _grapher;
         public T Instance { get; private set; }
+        public SystemManagerConstrainCollection Constrains { get; } = new SystemManagerConstrainCollection();
 
         public void SetupConnection(Action<IConnectionBuilder, T> action)
         {
@@ -72,16 +118,18 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
             // compute the values for input nodes
             foreach (var inputNode in _grapher.InputNodes)
                 _values[inputNode] = GetValueOutput(inputNode, inputNode.GetValue(index));
-            
+
+            // compute the values for delay outputs
+            foreach (var inputNode in _grapher.DelayOutputNodes)
+            {
+                var delay = inputNode.Delay;
+
+                _values[inputNode] = _values[delay];
+            }
+
             // get values from functional priority
             foreach (var n in _priority)
             {
-                if (n is DelayOutputSystemNode dosn)
-                {
-                    _values[n] = GetValueOutput(n, dosn.GetValue(index));
-                    continue;
-                }
-
                 var inputs = _connectionMap[n];
 
                 var fixedInputs = inputs.ToList();
@@ -106,7 +154,7 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
 
                 _values[n] = value;
             }
-            
+
             foreach (var w in _watchers)
             {
                 if (_values.ContainsKey(w.Node) && _connectionMap.ContainsKey(w.Node))
@@ -130,26 +178,11 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
             }
         }
 
-        public void AddDisableConstrain(SystemManagerDisableConstrain constrain)
-        {
-            if (!_disableConstrains.Contains(constrain))
-                _disableConstrains.Add(constrain);
-        }
-
         double GetValueOutput(INode node, double value)
         {
-            var con = _disableConstrains.FirstOrDefault(a => a.Node == node);
+            var con = Constrains.Items.FirstOrDefault(a => a.Node == node);
 
-            if (con != null)
-            {
-                if (con.IsDisabled)
-                    return 0;
-                if (con.Func((_values[node], null)))
-                {
-                    con.IsDisabled = true;
-                    return 0;
-                }
-            }
+            con?.Run(_values[node], null);
 
             return value;
         }
