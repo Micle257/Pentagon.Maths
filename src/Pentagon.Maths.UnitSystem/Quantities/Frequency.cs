@@ -12,6 +12,34 @@ namespace Pentagon.Maths.Quantities
     using Units;
     using Units.Converters;
 
+    public static class Densities
+    {
+        public static Density Steel => new Density(7860);
+
+        public static Density Copper => new Density(8960);
+    }
+
+    public struct Density : IPhysicalQuantity, IRangeable<double>
+    {
+        public Density(double value) : this()
+        {
+            if (!Range.InRange(value))
+                throw new ArgumentOutOfRangeException(nameof(value));
+            Value = value;
+
+            Unit = new ComposeUnit(new [] { new Kilogram()}, new [] { new MeterCubed() });
+        }
+
+        /// <inheritdoc />
+        public double Value { get; }
+
+        /// <inheritdoc />
+        public IPhysicalUnit Unit { get; }
+
+        /// <inheritdoc />
+        public IRange<double> Range => new MathInterval(0, double.PositiveInfinity);
+    }
+
     /// <summary> Represents the number of occurrences of a repeating event per unit time. </summary>
     public struct Frequency : IPhysicalQuantity, IRangeable<double>, IValueDataType<Frequency>, IUnitConvertable<Frequency>
     {
