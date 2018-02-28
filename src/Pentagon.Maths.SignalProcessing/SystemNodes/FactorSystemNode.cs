@@ -4,7 +4,7 @@
 
     public class FactorSystemNode : INode, ISingleInputNode
     {
-        public double Factor { get; }
+        public double Factor { get; set; }
         
         public FactorSystemNode(double factor)
         {
