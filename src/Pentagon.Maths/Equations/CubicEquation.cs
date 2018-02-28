@@ -13,11 +13,22 @@ namespace Pentagon.Maths.Equations
     using System.Numerics;
     using System.Threading;
     using System.Threading.Tasks;
-    using Functions;
+    using Exceptions;
     using Pentagon.Extensions;
 
-    public class CubicEquation 
+    public class CubicEquation
     {
+        double _redCoifP;
+        double _redCoifQ;
+        Complex _root1;
+        Complex _root2;
+        Complex _root3;
+        TimeSpan _computeTime;
+        double _discriminant;
+        CubicEquationResultType _resultType;
+        readonly QuadraticEquation _firstDerivative;
+        readonly LinearEquation _secondDerivative;
+
         public CubicEquation(double a, double b, double c, double d)
         {
             if (a.EqualTo(0))
@@ -31,59 +42,6 @@ namespace Pentagon.Maths.Equations
             Function = new CubicFunction(a, b, c, d);
             _firstDerivative = new QuadraticEquation(3 * CoefficientA, 2 * CoefficientB, CoefficientC);
             _secondDerivative = new LinearEquation(6 * CoefficientA * CoefficientA, 2 * CoefficientB * CoefficientB);
-        }
-
-        public Task EnsureComputedAsync(CancellationToken cancellationToken = default)
-        {
-            if (!IsComputed)
-                return ComputeRootsAsync(cancellationToken);
-
-            return Task.CompletedTask;
-        }
-
-        public Task ComputeRootsAsync(CancellationToken cancellationToken = default)
-        {
-            if (IsComputed)
-                return Task.CompletedTask;
-
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var source = new TaskCompletionSource<bool>();
-
-            try
-            {
-                _redCoifP = -Math.Pow(CoefficientB, 2) / (3 * Math.Pow(CoefficientA, 2)) + CoefficientC / CoefficientA;
-                _redCoifQ = 2 * Math.Pow(CoefficientB, 3) / (27 * Math.Pow(CoefficientA, 3)) -
-                            CoefficientB * CoefficientC / (3 * Math.Pow(CoefficientA, 2)) + CoefficientD / CoefficientA;
-
-                _discriminant = Math.Pow(_redCoifQ / 2, 2) + Math.Pow(_redCoifP / 3, 3);
-
-                if (Discriminant < 0)
-                    _resultType = CubicEquationResultType.ThreeReal;
-                else
-                {
-                    if (Discriminant > 0)
-                        _resultType = CubicEquationResultType.OneRealTwoComplex;
-                    else
-                    {
-                        if (Discriminant.EqualTo(0) && _redCoifP.EqualTo(_redCoifQ))
-                            _resultType = CubicEquationResultType.OneReal;
-                        else
-                            _resultType = CubicEquationResultType.TwoReal;
-                    }
-                }
-
-                ComputeRoots();
-                
-                IsComputed = true;
-                source.SetResult(true);
-            }
-            catch (Exception e)
-            {
-                source.SetException(e);
-            }
-
-            return source.Task;
         }
 
         public double CoefficientA { get; }
@@ -101,12 +59,6 @@ namespace Pentagon.Maths.Equations
                 EnsureComputed();
                 return _resultType;
             }
-        }
-
-        void EnsureComputed()
-        {
-            if (!IsComputed)
-                throw new EquationNotComputedException();
         }
 
         public double Discriminant
@@ -154,21 +106,10 @@ namespace Pentagon.Maths.Equations
             }
         }
 
+        public CubicFunction Function { get; }
+
         public bool IsComputed { get; private set; }
 
-        double _redCoifP;
-        double _redCoifQ;
-        Complex _root1;
-        Complex _root2;
-        Complex _root3;
-        TimeSpan _computeTime;
-        double _discriminant;
-        CubicEquationResultType _resultType;
-        QuadraticEquation _firstDerivative;
-        LinearEquation _secondDerivative;
-
-        public CubicFunction Function { get; }
-        
         public override string ToString()
         {
             var b = CoefficientB.EqualTo(0) ? "" : $"{(CoefficientB < 0 ? " - " : " + ")}{Math.Abs(CoefficientB)}x^2";
@@ -176,7 +117,60 @@ namespace Pentagon.Maths.Equations
             var d = CoefficientD.EqualTo(0) ? "" : $"{(CoefficientD < 0 ? " - " : " + ")}{Math.Abs(CoefficientD)}";
             return $"f(x) = {(CoefficientA < 0 ? "- " : "")}{Math.Abs(CoefficientA)}x^3{b}{c}{d}";
         }
-        
+
+        public Task EnsureComputedAsync(CancellationToken cancellationToken = default)
+        {
+            if (!IsComputed)
+                return ComputeRootsAsync(cancellationToken);
+
+            return Task.CompletedTask;
+        }
+
+        public Task ComputeRootsAsync(CancellationToken cancellationToken = default)
+        {
+            if (IsComputed)
+                return Task.CompletedTask;
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var source = new TaskCompletionSource<bool>();
+
+            try
+            {
+                _redCoifP = -Math.Pow(CoefficientB, 2) / (3 * Math.Pow(CoefficientA, 2)) + CoefficientC / CoefficientA;
+                _redCoifQ = 2 * Math.Pow(CoefficientB, 3) / (27 * Math.Pow(CoefficientA, 3)) -
+                            CoefficientB * CoefficientC / (3 * Math.Pow(CoefficientA, 2)) + CoefficientD / CoefficientA;
+
+                _discriminant = Math.Pow(_redCoifQ / 2, 2) + Math.Pow(_redCoifP / 3, 3);
+
+                if (Discriminant < 0)
+                    _resultType = CubicEquationResultType.ThreeReal;
+                else
+                {
+                    if (Discriminant > 0)
+                        _resultType = CubicEquationResultType.OneRealTwoComplex;
+                    else
+                    {
+                        if (Discriminant.EqualTo(0) && _redCoifP.EqualTo(_redCoifQ))
+                            _resultType = CubicEquationResultType.OneReal;
+                        else
+                            _resultType = CubicEquationResultType.TwoReal;
+                    }
+                }
+
+                ComputeRoots();
+
+                IsComputed = true;
+                source.SetResult(true);
+            }
+            catch (Exception e)
+            {
+                source.SetException(e);
+            }
+
+            return source.Task;
+        }
+
         public IEnumerable<MathPoint> GetExtremePoints()
         {
             _firstDerivative.EnsureComputedAsync().Wait();
@@ -190,9 +184,12 @@ namespace Pentagon.Maths.Equations
             return list;
         }
 
-        public MathPoint GetInflectionPoint()
+        public MathPoint GetInflectionPoint() => new MathPoint(_secondDerivative.Root, Function.GetValue(_secondDerivative.Root));
+
+        void EnsureComputed()
         {
-            return new MathPoint(_secondDerivative.Root, Function.GetValue(_secondDerivative.Root));
+            if (!IsComputed)
+                throw new EquationNotComputedException();
         }
 
         void ComputeRoots()
@@ -227,7 +224,7 @@ namespace Pentagon.Maths.Equations
             }
 
             time.Stop();
-           _computeTime = new TimeSpan(time.ElapsedTicks);
+            _computeTime = new TimeSpan(time.ElapsedTicks);
         }
     }
 }

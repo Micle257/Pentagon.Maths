@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------
-//  <copyright file="Sequence.cs">
+//  <copyright file="NumberSequence.cs">
 //   Copyright (c) Michal Pokorný. All Rights Reserved.
 //  </copyright>
 // -----------------------------------------------------------------------

@@ -11,11 +11,19 @@ namespace Pentagon.Maths.Equations
     using System.Numerics;
     using System.Threading;
     using System.Threading.Tasks;
+    using Exceptions;
     using Functions;
     using Pentagon.Extensions;
 
     public class QuadraticEquation : Function
     {
+        readonly LinearEquation _derivative;
+        QuadraticEquationResultType _resultType;
+        Complex _root1;
+        Complex _root2;
+        TimeSpan _computeTime;
+        double _discriminant;
+
         public QuadraticEquation(double a, double b, double c)
         {
             if (a.EqualTo(0))
@@ -26,6 +34,68 @@ namespace Pentagon.Maths.Equations
             CoefficientC = c;
 
             _derivative = new LinearEquation(CoefficientA * 2, CoefficientB);
+        }
+
+        public double CoefficientA { get; }
+        public double CoefficientB { get; }
+        public double CoefficientC { get; }
+
+        public MathPoint ExtremePoint => new MathPoint(_derivative.Root, GetValue(_derivative.Root));
+
+        public double Discriminant
+        {
+            get
+            {
+                EnsureComputed();
+                return _discriminant;
+            }
+        }
+
+        public QuadraticEquationResultType ResultType
+        {
+            get
+            {
+                EnsureComputed();
+                return _resultType;
+            }
+        }
+
+        public Complex Root1
+        {
+            get
+            {
+                EnsureComputed();
+                return _root1;
+            }
+        }
+
+        public Complex Root2
+        {
+            get
+            {
+                EnsureComputed();
+                return _root2;
+            }
+        }
+
+        public TimeSpan ComputeTime
+        {
+            get
+            {
+                EnsureComputed();
+                return _computeTime;
+            }
+        }
+
+        public bool IsComputed { get; private set; }
+
+        public override double GetValue(double x) => Math.Pow(x, 2) * CoefficientA + CoefficientB * x + CoefficientC;
+
+        public override string ToString()
+        {
+            var b = CoefficientB.EqualTo(0) ? "" : $"{(CoefficientB < 0 ? " - " : " + ")}{Math.Abs(CoefficientB)}x";
+            var c = CoefficientC.EqualTo(0) ? "" : $"{(CoefficientC < 0 ? " - " : " + ")}{Math.Abs(CoefficientC)}";
+            return $"f(x) = {(CoefficientA < 0 ? "- " : "")}{Math.Abs(CoefficientA)}x^2{b}{c}";
         }
 
         public Task EnsureComputedAsync(CancellationToken cancellationToken = default)
@@ -52,8 +122,8 @@ namespace Pentagon.Maths.Equations
                     _resultType = QuadraticEquationResultType.ImaginaryRoot;
                 else
                 {
-                    _resultType = Discriminant > 0 
-                                          ? QuadraticEquationResultType.TwoRoots 
+                    _resultType = Discriminant > 0
+                                          ? QuadraticEquationResultType.TwoRoots
                                           : QuadraticEquationResultType.DoubleRoot;
                 }
 
@@ -69,70 +139,11 @@ namespace Pentagon.Maths.Equations
 
             return source.Task;
         }
-        
-        public double CoefficientA { get; }
-        public double CoefficientB { get; }
-        public double CoefficientC { get; }
 
-        public MathPoint ExtremePoint => new MathPoint(_derivative.Root, GetValue(_derivative.Root));
-
-        LinearEquation _derivative;
-         QuadraticEquationResultType _resultType;
-         Complex _root1;
-         Complex _root2;
-         TimeSpan _computeTime;
-         double _discriminant;
-
-        public double Discriminant
-        {
-            get
-            {
-                EnsureComputed(); return _discriminant; }
-        }
-
-        public bool IsComputed { get; private set; }
         void EnsureComputed()
         {
             if (!IsComputed)
                 throw new EquationNotComputedException();
-        }
-        public QuadraticEquationResultType ResultType
-        {
-            get
-            {
-                EnsureComputed();
-                return _resultType;
-            }
-        }
-
-        public Complex Root1
-        {
-            get
-            {
-                EnsureComputed(); return _root1; }
-        }
-
-        public Complex Root2
-        {
-            get
-            {
-                EnsureComputed(); return _root2; }
-        }
-
-        public TimeSpan ComputeTime
-        {
-            get
-            {
-                EnsureComputed(); return _computeTime; }
-        }
-
-        public override double GetValue(double x) => Math.Pow(x, 2) * CoefficientA + CoefficientB * x + CoefficientC;
-
-        public override string ToString()
-        {
-            var b = CoefficientB.EqualTo(0) ? "" : $"{(CoefficientB < 0 ? " - " : " + ")}{Math.Abs(CoefficientB)}x";
-            var c = CoefficientC.EqualTo(0) ? "" : $"{(CoefficientC < 0 ? " - " : " + ")}{Math.Abs(CoefficientC)}";
-            return $"f(x) = {(CoefficientA < 0 ? "- " : "")}{Math.Abs(CoefficientA)}x^2{b}{c}";
         }
 
         void ComputeRoots()
@@ -150,9 +161,9 @@ namespace Pentagon.Maths.Equations
                     break;
                 case QuadraticEquationResultType.ImaginaryRoot:
                     _root1 = new Complex(CoefficientB / (2 * CoefficientA),
-                                        Math.Sqrt(Math.Abs(Discriminant)) / (-2 * CoefficientA));
+                                         Math.Sqrt(Math.Abs(Discriminant)) / (-2 * CoefficientA));
                     _root2 = new Complex(CoefficientB / (2 * CoefficientA),
-                                        Math.Sqrt(Math.Abs(Discriminant)) / (2 * CoefficientA));
+                                         Math.Sqrt(Math.Abs(Discriminant)) / (2 * CoefficientA));
                     break;
             }
 

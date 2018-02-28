@@ -10,6 +10,7 @@ namespace Pentagon.Maths.SignalProcessing
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
+    using Fractions;
 
     public class TransferFunction : ISystemFunction
     {

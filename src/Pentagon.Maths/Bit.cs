@@ -33,7 +33,7 @@ namespace Pentagon.Maths
 
         /// <summary> Gets the indeterminate state of bit (default value). </summary>
         /// <value> The <see cref="Bit" />. </value>
-        public static Bit Indeterminate => default(Bit);
+        public static Bit Indeterminate => default;
 
         /// <inheritdoc />
         public bool? Value { get; }

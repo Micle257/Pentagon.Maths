@@ -9,6 +9,7 @@ namespace Pentagon.Maths.Functions
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Exceptions;
     using Helpers;
     using JetBrains.Annotations;
 
@@ -35,21 +36,6 @@ namespace Pentagon.Maths.Functions
 
             // TODO
         }
-        
-        public static Function FromPoints(IDictionary<double, double> values)
-        {
-            FunctionCallback function = d =>
-                           {
-                               if (values.ContainsKey(d))
-                                   return values[d];
-                               var key = values.Keys.OrderBy(a => a).Last(va => d > va);
-                               return values[key];
-                           };
-
-            var range = new Range<double>(values.Keys.Min(), values.Keys.Max());
-
-            return new Function(function, range);
-        }
 
         protected Function() { }
 
@@ -59,6 +45,21 @@ namespace Pentagon.Maths.Functions
 
         /// <summary> Gets the range of the Value. </summary>
         public IRange<double> Range { get; }
+
+        public static Function FromPoints(IDictionary<double, double> values)
+        {
+            FunctionCallback function = d =>
+                                        {
+                                            if (values.ContainsKey(d))
+                                                return values[d];
+                                            var key = values.Keys.OrderBy(a => a).Last(va => d > va);
+                                            return values[key];
+                                        };
+
+            var range = new Range<double>(values.Keys.Min(), values.Keys.Max());
+
+            return new Function(function, range);
+        }
 
         /// <summary> Gets the output value assigned to input value. </summary>
         /// <param name="x"> The input value of function. </param>

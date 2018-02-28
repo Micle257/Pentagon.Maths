@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Maths.Functions
+namespace Pentagon.Maths.Exceptions
 {
     using System;
 

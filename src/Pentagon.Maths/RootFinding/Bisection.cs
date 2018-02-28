@@ -19,14 +19,14 @@ namespace Pentagon.Maths.RootFinding
                 lowerBound = t;
             }
 
-            double fmin = f(lowerBound);
+            var fmin = f(lowerBound);
             if (Math.Sign(fmin) == 0)
             {
                 root = lowerBound;
                 return true;
             }
 
-            double fmax = f(upperBound);
+            var fmax = f(upperBound);
             if (Math.Sign(fmax) == 0)
             {
                 root = upperBound;
@@ -39,9 +39,9 @@ namespace Pentagon.Maths.RootFinding
             if (Math.Sign(fmin) == Math.Sign(fmax))
                 return false;
 
-            for (int i = 0; i <= maxIterations; i++)
+            for (var i = 0; i <= maxIterations; i++)
             {
-                double froot = f(root);
+                var froot = f(root);
 
                 if (upperBound - lowerBound <= 2 * accuracy && Math.Abs(froot) <= accuracy)
                     return true;

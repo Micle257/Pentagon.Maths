@@ -1,4 +1,11 @@
-namespace Pentagon.Maths.Functions {
+// -----------------------------------------------------------------------
+//  <copyright file="EquationNotComputedException.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.Maths.Exceptions
+{
     using System;
 
     public class EquationNotComputedException : Exception

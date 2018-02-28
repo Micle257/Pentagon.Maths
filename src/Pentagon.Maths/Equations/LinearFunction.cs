@@ -33,7 +33,7 @@ namespace Pentagon.Maths.Equations
             double a;
             double b;
             double r;
-            Regression.LinearRegression(new List<MathPoint> { p1, p2 }.Concat(pn), out r, out b, out a);
+            Regression.LinearRegression(new List<MathPoint> {p1, p2}.Concat(pn), out r, out b, out a);
             return new LinearFunction(a, b);
         }
     }

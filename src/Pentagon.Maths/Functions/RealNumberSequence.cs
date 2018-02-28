@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------
-//  <copyright file="RealSequence.cs">
+//  <copyright file="RealNumberSequence.cs">
 //   Copyright (c) Michal Pokorný. All Rights Reserved.
 //  </copyright>
 // -----------------------------------------------------------------------

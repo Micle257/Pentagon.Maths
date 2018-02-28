@@ -1,4 +1,11 @@
-﻿namespace Pentagon.Maths.Equations {
+﻿// -----------------------------------------------------------------------
+//  <copyright file="CubicFunction.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.Maths.Equations
+{
     using System;
     using Functions;
 

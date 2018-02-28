@@ -5,6 +5,7 @@
 // -----------------------------------------------------------------------
 namespace Pentagon.Maths.Tests
 {
+    using Fractions;
     using Xunit;
 
     public class PolynomialFractionTests

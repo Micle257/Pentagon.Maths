@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Maths
+namespace Pentagon.Maths.Fractions
 {
     using System.Collections.Generic;
 
