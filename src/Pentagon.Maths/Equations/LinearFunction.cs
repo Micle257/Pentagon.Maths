@@ -12,8 +12,8 @@ namespace Pentagon.Maths.Equations
 
     public class LinearFunction : Function
     {
-        public LinearFunction(double a, double b)
-                : base(x => a * x + b) { }
+        public LinearFunction(double slope, double offset)
+                : base(x => slope * x + offset) { }
 
         public static LinearFunction FromTwoPoints(MathPoint a, MathPoint b)
         {
@@ -33,7 +33,7 @@ namespace Pentagon.Maths.Equations
             double a;
             double b;
             double r;
-            Regression.LinearRegression(new List<MathPoint> {p1, p2}.Concat(pn), out r, out b, out a);
+            Regression.LinearRegression(new List<MathPoint> { p1, p2 }.Concat(pn), out r, out b, out a);
             return new LinearFunction(a, b);
         }
     }

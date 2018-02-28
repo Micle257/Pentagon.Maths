@@ -11,10 +11,12 @@ namespace Pentagon.Maths.Equations
     using System.Diagnostics;
     using System.Linq;
     using System.Numerics;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Functions;
     using Pentagon.Extensions;
 
-    public class CubicEquation : Function
+    public class CubicEquation 
     {
         public CubicEquation(double a, double b, double c, double d)
         {
@@ -26,49 +28,147 @@ namespace Pentagon.Maths.Equations
             CoefficientC = c;
             CoefficientD = d;
 
-            RedCoifP = -Math.Pow(CoefficientB, 2) / (3 * Math.Pow(CoefficientA, 2)) + CoefficientC / CoefficientA;
-            RedCoifQ = 2 * Math.Pow(CoefficientB, 3) / (27 * Math.Pow(CoefficientA, 3)) -
-                       CoefficientB * CoefficientC / (3 * Math.Pow(CoefficientA, 2)) + CoefficientD / CoefficientA;
-            Discriminant = Math.Pow(RedCoifQ / 2, 2) + Math.Pow(RedCoifP / 3, 3);
-            if (Discriminant < 0)
-                Type = CubicEquationResultType.ThreeReal;
-            else
-            {
-                if (Discriminant > 0)
-                    Type = CubicEquationResultType.OneRealTwoComplex;
-                else
-                {
-                    if (Discriminant.EqualTo(0) && RedCoifP.EqualTo(RedCoifQ))
-                        Type = CubicEquationResultType.OneReal;
-                    else
-                        Type = CubicEquationResultType.TwoReal;
-                }
-            }
-
-            ComputeRoots();
+            Function = new CubicFunction(a, b, c, d);
+            _firstDerivative = new QuadraticEquation(3 * CoefficientA, 2 * CoefficientB, CoefficientC);
+            _secondDerivative = new LinearEquation(6 * CoefficientA * CoefficientA, 2 * CoefficientB * CoefficientB);
         }
 
-        public event EventHandler RootsComputed;
+        public Task EnsureComputedAsync(CancellationToken cancellationToken = default)
+        {
+            if (!IsComputed)
+                return ComputeRootsAsync(cancellationToken);
+
+            return Task.CompletedTask;
+        }
+
+        public Task ComputeRootsAsync(CancellationToken cancellationToken = default)
+        {
+            if (IsComputed)
+                return Task.CompletedTask;
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var source = new TaskCompletionSource<bool>();
+
+            try
+            {
+                _redCoifP = -Math.Pow(CoefficientB, 2) / (3 * Math.Pow(CoefficientA, 2)) + CoefficientC / CoefficientA;
+                _redCoifQ = 2 * Math.Pow(CoefficientB, 3) / (27 * Math.Pow(CoefficientA, 3)) -
+                            CoefficientB * CoefficientC / (3 * Math.Pow(CoefficientA, 2)) + CoefficientD / CoefficientA;
+
+                _discriminant = Math.Pow(_redCoifQ / 2, 2) + Math.Pow(_redCoifP / 3, 3);
+
+                if (Discriminant < 0)
+                    _resultType = CubicEquationResultType.ThreeReal;
+                else
+                {
+                    if (Discriminant > 0)
+                        _resultType = CubicEquationResultType.OneRealTwoComplex;
+                    else
+                    {
+                        if (Discriminant.EqualTo(0) && _redCoifP.EqualTo(_redCoifQ))
+                            _resultType = CubicEquationResultType.OneReal;
+                        else
+                            _resultType = CubicEquationResultType.TwoReal;
+                    }
+                }
+
+                ComputeRoots();
+                
+                IsComputed = true;
+                source.SetResult(true);
+            }
+            catch (Exception e)
+            {
+                source.SetException(e);
+            }
+
+            return source.Task;
+        }
+
         public double CoefficientA { get; }
+
         public double CoefficientB { get; }
+
         public double CoefficientC { get; }
+
         public double CoefficientD { get; }
-        public QuadraticEquation FirstDerivative => new QuadraticEquation(CoefficientA * 3, CoefficientB * 2, CoefficientC);
 
-        public LinearEquation SecondDerivative => FirstDerivative.Derivative;
+        public CubicEquationResultType ResultType
+        {
+            get
+            {
+                EnsureComputed();
+                return _resultType;
+            }
+        }
 
-        public CubicEquationResultType Type { get; }
-        public double Discriminant { get; }
-        public Complex Root1 { get; private set; }
-        public Complex Root2 { get; private set; }
-        public Complex Root3 { get; private set; }
-        public TimeSpan ComputeTime { get; private set; }
+        void EnsureComputed()
+        {
+            if (!IsComputed)
+                throw new EquationNotComputedException();
+        }
 
-        double RedCoifP { get; }
-        double RedCoifQ { get; }
+        public double Discriminant
+        {
+            get
+            {
+                EnsureComputed();
+                return _discriminant;
+            }
+        }
 
-        public override double GetValue(double x) => Math.Pow(x, 3) * CoefficientA + Math.Pow(x, 2) * CoefficientB + x * CoefficientC + CoefficientD;
+        public Complex Root1
+        {
+            get
+            {
+                EnsureComputed();
+                return _root1;
+            }
+        }
 
+        public Complex Root2
+        {
+            get
+            {
+                EnsureComputed();
+                return _root2;
+            }
+        }
+
+        public Complex Root3
+        {
+            get
+            {
+                EnsureComputed();
+                return _root3;
+            }
+        }
+
+        public TimeSpan ComputeTime
+        {
+            get
+            {
+                EnsureComputed();
+                return _computeTime;
+            }
+        }
+
+        public bool IsComputed { get; private set; }
+
+        double _redCoifP;
+        double _redCoifQ;
+        Complex _root1;
+        Complex _root2;
+        Complex _root3;
+        TimeSpan _computeTime;
+        double _discriminant;
+        CubicEquationResultType _resultType;
+        QuadraticEquation _firstDerivative;
+        LinearEquation _secondDerivative;
+
+        public CubicFunction Function { get; }
+        
         public override string ToString()
         {
             var b = CoefficientB.EqualTo(0) ? "" : $"{(CoefficientB < 0 ? " - " : " + ")}{Math.Abs(CoefficientB)}x^2";
@@ -76,19 +176,14 @@ namespace Pentagon.Maths.Equations
             var d = CoefficientD.EqualTo(0) ? "" : $"{(CoefficientD < 0 ? " - " : " + ")}{Math.Abs(CoefficientD)}";
             return $"f(x) = {(CoefficientA < 0 ? "- " : "")}{Math.Abs(CoefficientA)}x^3{b}{c}{d}";
         }
-
+        
         public IEnumerable<MathPoint> GetExtremePoints()
         {
+            _firstDerivative.EnsureComputedAsync().Wait();
+
             var list = new List<MathPoint>();
-            switch (Type)
-            {
-                case CubicEquationResultType.OneRealTwoComplex:
-                case CubicEquationResultType.TwoReal:
-                case CubicEquationResultType.ThreeReal:
-                    list.Add(new MathPoint(FirstDerivative.Root1.Real, GetValue(FirstDerivative.Root1.Real)));
-                    list.Add(new MathPoint(FirstDerivative.Root2.Real, GetValue(FirstDerivative.Root2.Real)));
-                    break;
-            }
+            list.Add(new MathPoint(_firstDerivative.Root1.Real, Function.GetValue(_firstDerivative.Root1.Real)));
+            list.Add(new MathPoint(_firstDerivative.Root2.Real, Function.GetValue(_firstDerivative.Root2.Real)));
 
             if (list.Any(a => a == GetInflectionPoint()))
                 list.Clear();
@@ -97,51 +192,42 @@ namespace Pentagon.Maths.Equations
 
         public MathPoint GetInflectionPoint()
         {
-            switch (Type)
-            {
-                case CubicEquationResultType.OneRealTwoComplex:
-                case CubicEquationResultType.TwoReal:
-                case CubicEquationResultType.ThreeReal:
-                    return new MathPoint(SecondDerivative.Root, GetValue(SecondDerivative.Root));
-            }
-
-            return default(MathPoint);
+            return new MathPoint(_secondDerivative.Root, Function.GetValue(_secondDerivative.Root));
         }
 
         void ComputeRoots()
         {
             var time = new Stopwatch();
             time.Start();
-            switch (Type)
+            switch (ResultType)
             {
                 case CubicEquationResultType.TwoReal:
                 case CubicEquationResultType.ThreeReal:
-                    var i = Math.Sqrt(Math.Pow(RedCoifQ, 2) / 4 - Discriminant);
-                    var k = Math.Acos(-(RedCoifQ / (2 * i)));
+                    var i = Math.Sqrt(Math.Pow(_redCoifQ, 2) / 4 - Discriminant);
+                    var k = Math.Acos(-(_redCoifQ / (2 * i)));
                     var m = Math.Cos(k / 3);
                     var n = Math.Sqrt(3) * Math.Sin(k / 3);
                     var p = -(CoefficientB / (3 * CoefficientA));
-                    Root1 = 2 * i.Cbrt() * m + p;
-                    Root2 = -i.Cbrt() * (m + n) + p;
-                    Root3 = -i.Cbrt() * (m - n) + p;
+                    _root1 = 2 * i.Cbrt() * m + p;
+                    _root2 = -i.Cbrt() * (m + n) + p;
+                    _root3 = -i.Cbrt() * (m - n) + p;
                     break;
                 case CubicEquationResultType.OneRealTwoComplex:
-                    var r = -(RedCoifQ / 2) + Math.Sqrt(Discriminant);
+                    var r = -(_redCoifQ / 2) + Math.Sqrt(Discriminant);
                     var s = r.Cbrt();
-                    var t = -(RedCoifQ / 2) - Math.Sqrt(Discriminant);
+                    var t = -(_redCoifQ / 2) - Math.Sqrt(Discriminant);
                     var u = t.Cbrt();
-                    Root1 = Math.Round(s + u - CoefficientB / (3 * CoefficientA), 10);
-                    Root2 = new Complex(-(s + u) / 2 - CoefficientB / (3 * CoefficientA), (s - u) * Math.Sqrt(3) / 2);
-                    Root3 = new Complex(-(s + u) / 2 - CoefficientB / (3 * CoefficientA), -(s - u) * Math.Sqrt(3) / 2);
+                    _root1 = Math.Round(s + u - CoefficientB / (3 * CoefficientA), 10);
+                    _root2 = new Complex(-(s + u) / 2 - CoefficientB / (3 * CoefficientA), (s - u) * Math.Sqrt(3) / 2);
+                    _root3 = new Complex(-(s + u) / 2 - CoefficientB / (3 * CoefficientA), -(s - u) * Math.Sqrt(3) / 2);
                     break;
                 case CubicEquationResultType.OneReal:
-                    Root1 = Root2 = Root3 = -(CoefficientD / CoefficientA).Cbrt();
+                    _root1 = _root2 = _root3 = -(CoefficientD / CoefficientA).Cbrt();
                     break;
             }
 
             time.Stop();
-            ComputeTime = new TimeSpan(time.ElapsedTicks);
-            RootsComputed?.Invoke(this, null);
+           _computeTime = new TimeSpan(time.ElapsedTicks);
         }
     }
 }
