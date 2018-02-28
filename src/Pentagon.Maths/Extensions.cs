@@ -14,9 +14,61 @@ namespace Pentagon.Maths
     using Helpers;
     using JetBrains.Annotations;
 
+    public static class DoubleExtensions
+    {
+        public static double Round(this double value, int decimals) => Math.Round(value, decimals);
+
+        public static bool InRange(this double val, double min, double max) => new MathInterval(min, max).InRange(val);
+
+        public static double? ToDouble(this string val)
+        {
+            if (val == null)
+                throw new ArgumentNullException();
+
+            if (val.ToCharArray().Last().ToString() == CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator)
+                val = val.Remove(val.Length - 1);
+
+            if (!double.TryParse(val, out var doubleValue))
+                return null;
+
+            return doubleValue;
+        }
+
+        public static double Cbrt(this double value)
+        {
+            if (value >= 0)
+                return Math.Pow(value, 1d / 3d);
+
+            var s = -value;
+            return -Math.Pow(s, 1d / 3d);
+        }
+
+        public static int ToSampleNumber(this double value, double samplingFrequency) => (int)(value * samplingFrequency);
+
+        public static double ToTimeValue(this int value, double samplingFrequency) => value / samplingFrequency;
+
+        /// <summary> Computes absolute value of each value in the collection. </summary>
+        /// <param name="collection"> The collection. </param>
+        /// <returns> An enumeration of absolute values. </returns>
+        /// <exception cref="ArgumentNullException"> When collection is null. </exception>
+        public static IEnumerable<double> Abs([NotNull] this IEnumerable<double> collection)
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+
+            foreach (var value in collection)
+            {
+                if (value < 0d)
+                    yield return Math.Abs(value);
+                else
+                    yield return value;
+            }
+        }
+    }
+
     public static class Extensions
     {
-        static readonly HashSet<Type> NumericTypes = new HashSet<Type>
+      public  static readonly HashSet<Type> NumericTypes = new HashSet<Type>
                                                      {
                                                              typeof(short),
                                                              typeof(ushort),
@@ -37,55 +89,6 @@ namespace Pentagon.Maths
 
         public static bool InRange(this int val, int min, int max) => new Range<int>(min, max).InRange(val);
 
-        public static bool InRange(this double val, double min, double max) => new MathInterval(min, max).InRange(val);
-
-        public static bool InRange(this double val, MathInterval intv) => intv.InRange(val);
-
-        public static double Round(this double value, int decimals) => Math.Round(value, decimals);
-
-        public static double ToDouble(this string val)
-        {
-            if (val == null)
-                throw new ArgumentNullException();
-            if (val == string.Empty || !val.ToCharArray().Any(char.IsDigit))
-                return 0;
-            if (val.ToCharArray().Last().ToString() == CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator)
-                return Convert.ToDouble(val + "0");
-            if (CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator == ".")
-                val = val.Replace(',', '.');
-            else if (CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator == ",")
-                val = val.Replace('.', ',');
-            return Convert.ToDouble(val);
-        }
-
-        public static int ToSample(this double val, double sampling) => (int) (val * sampling);
-
-        public static double ToTime(this int val, double sampling) => val / sampling;
-
-        public static double Cbrt(this double v)
-        {
-            if (v >= 0)
-                return Math.Pow(v, 1d / 3d);
-            var s = -v;
-            return -Math.Pow(s, 1d / 3d);
-        }
-
-        /// <summary> Computes absolute value of each value in the collection. </summary>
-        /// <param name="collection"> The collection. </param>
-        /// <returns> An enumeration of absolute values. </returns>
-        /// <exception cref="ArgumentNullException"> When collection is null. </exception>
-        public static IEnumerable<double> Abs([NotNull] this IEnumerable<double> collection)
-        {
-            if (collection == null)
-                throw new ArgumentNullException(nameof(collection));
-
-            foreach (var value in collection)
-            {
-                if (value < 0d)
-                    yield return Math.Abs(value);
-                else
-                    yield return value;
-            }
-        }
+        public static decimal Round(this decimal value, int decimals) => Math.Round(value, decimals);
     }
 }

@@ -11,19 +11,19 @@ namespace Pentagon.Maths.Functions
     using System.Collections.Generic;
     using System.Linq;
 
-    public class Sequence<TNumber> : IEnumerable<TNumber>
+    public class NumberSequence<TNumber> : IEnumerable<TNumber>
             where TNumber : struct, IEquatable<TNumber>
     {
         protected int _zeroIndex;
         readonly IList<TNumber> _values;
 
-        public Sequence(IEnumerable<TNumber> values, int zeroIndex)
+        public NumberSequence(IEnumerable<TNumber> values, int zeroIndex)
         {
             _values = values as IList<TNumber> ?? values.ToList();
             _zeroIndex = zeroIndex;
         }
 
-        public Sequence(IEnumerable<TNumber> zeroPositiveValues, IEnumerable<TNumber> negativeValues = null)
+        public NumberSequence(IEnumerable<TNumber> zeroPositiveValues, IEnumerable<TNumber> negativeValues = null)
         {
             if (negativeValues != null)
             {

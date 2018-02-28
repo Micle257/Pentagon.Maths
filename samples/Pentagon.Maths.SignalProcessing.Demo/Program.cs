@@ -86,6 +86,12 @@ namespace Pentagon.Maths.SignalProcessing.Demo
             }
 
             /// <inheritdoc />
+            public void ConfigureConstrains(SystemManagerConstrainCollection contrains)
+            {
+                
+            }
+
+            /// <inheritdoc />
             public void Initialize()
             {
 
@@ -129,6 +135,12 @@ namespace Pentagon.Maths.SignalProcessing.Demo
             }
 
             /// <inheritdoc />
+            public void ConfigureConstrains(SystemManagerConstrainCollection contrains)
+            {
+                
+            }
+
+            /// <inheritdoc />
             public void Initialize()
             {
 
@@ -160,12 +172,16 @@ namespace Pentagon.Maths.SignalProcessing.Demo
             }
 
             /// <inheritdoc />
+            public void ConfigureConstrains(SystemManagerConstrainCollection contrains)
+            {
+                
+            }
+
+            /// <inheritdoc />
             public void Initialize()
             {
                
             }
         }
-
-
     }
 }

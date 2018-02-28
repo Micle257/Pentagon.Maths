@@ -28,7 +28,7 @@ namespace Pentagon.Maths.Functions
 
         public double EvaluateTime(double time)
         {
-            var d = time.ToSample(SamplingFrequency);
+            var d = time.ToSampleNumber(SamplingFrequency);
             return EvaluateSample(d);
         }
 
@@ -38,12 +38,12 @@ namespace Pentagon.Maths.Functions
 
         public static IDiscreteFunction ImpulseFunction(double sampling) => new InfiniteDiscreteFunction(i => i == 0 ? 1 : 0, sampling);
 
-        public Sequence<double> EvaluateSequence(IRange<int> interval)
+        public NumberSequence<double> EvaluateSequence(IRange<int> interval)
         {
             var ss = new double[Math.Abs(interval.Max - interval.Min)];
             for (var i = interval.Min; i < interval.Max; i++)
                 ss[i] = EvaluateSample(i);
-            return new Sequence<double>(ss, interval.Min);
+            return new NumberSequence<double>(ss, interval.Min);
         }
     }
 }

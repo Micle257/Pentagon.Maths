@@ -6,9 +6,9 @@
 
 namespace Pentagon.Maths
 {
-    public struct MathRectangle
+    public struct GraphDivisionDimension
     {
-        public MathRectangle(int top, int left, int bottom, int right)
+        public GraphDivisionDimension(int top, int left, int bottom, int right)
         {
             Top = top;
             Left = left;

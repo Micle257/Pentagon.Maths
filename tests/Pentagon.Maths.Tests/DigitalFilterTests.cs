@@ -7,11 +7,8 @@
 namespace Pentagon.Maths.Tests
 {
     using System.Collections.Generic;
-    using Expression;
     using Functions;
     using Helpers;
-    using Quantities;
-    using Units;
     using Xunit;
 
     public class DigitalFilterTests

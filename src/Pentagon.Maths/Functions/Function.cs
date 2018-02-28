@@ -32,18 +32,23 @@ namespace Pentagon.Maths.Functions
         {
             if (callbacks == null)
                 throw new ArgumentNullException(nameof(callbacks));
-        }
 
-        public Function(IDictionary<double, double> values)
+            // TODO
+        }
+        
+        public static Function FromPoints(IDictionary<double, double> values)
         {
-            Range = new Range<double>(values.Keys.Min(), values.Keys.Max());
-            Func = d =>
-                   {
-                       if (values.ContainsKey(d))
-                           return values[d];
-                       var key = values.Keys.OrderBy(a => a).Last(va => d > va);
-                       return values[key];
-                   };
+            FunctionCallback function = d =>
+                           {
+                               if (values.ContainsKey(d))
+                                   return values[d];
+                               var key = values.Keys.OrderBy(a => a).Last(va => d > va);
+                               return values[key];
+                           };
+
+            var range = new Range<double>(values.Keys.Min(), values.Keys.Max());
+
+            return new Function(function, range);
         }
 
         protected Function() { }
@@ -65,9 +70,9 @@ namespace Pentagon.Maths.Functions
             return Func(x);
         }
 
-        public virtual Function GetDerivative()
+        public virtual Function GetFiniteDerivativeFunction(double precision = .000001)
         {
-            return new Function(d => GetChangeInRate(d, .000001));
+            return new Function(d => GetChangeInRate(d, precision));
         }
 
         public double GetChangeInRate(double x, double precision)
@@ -77,20 +82,12 @@ namespace Pentagon.Maths.Functions
             return (Func(x - precision) - Func(x + precision)) / (-2 * precision);
         }
 
-        public double IntegrateApprox(Range<double> b, double incr)
+        public double IntegrateApprox(Range<double> b, double precision)
         {
             var result = 0d;
-            for (var i = b.Min; i < b.Max - incr; i += incr)
-                result += GetValue(i) * incr;
+            for (var i = b.Min; i < b.Max - precision; i += precision)
+                result += GetValue(i) * precision;
             return result;
-        }
-
-        public double IntegrateApprox(Range<double> boundaries, int samples)
-        {
-            var sum = 0d;
-            for (var i = 0; i < samples; i++)
-                sum += GetValue(boundaries.Min + i * ((boundaries.Max - boundaries.Min) / samples));
-            return sum * (boundaries.Max - boundaries.Min) / samples;
         }
 
         public IDictionary<double, double> GetValues(Range<double> interval, double step)
@@ -113,11 +110,11 @@ namespace Pentagon.Maths.Functions
 
         public IDiscreteFunction ToDiscreteFunction(double samplingFrequency, MathInterval mathInterval)
         {
-            var startTime = Math.Abs(mathInterval.Min.ToSample(samplingFrequency));
+            var startTime = Math.Abs(mathInterval.Min.ToSampleNumber(samplingFrequency));
             var count = (int) (mathInterval.Size * samplingFrequency);
-            return new RealSequence(GetSamples(count + 1, samplingFrequency, mathInterval.Min), startTime, samplingFrequency);
+            return new RealNumberSequence(GetSamples(count + 1, samplingFrequency, mathInterval.Min), startTime, samplingFrequency);
         }
 
-        public IDiscreteFunction ToDiscreteFunction(double sampl) => new InfiniteDiscreteFunction(i => GetValue(i.ToTime(sampl)), sampl);
+        public IDiscreteFunction ToDiscreteFunction(double samplingFrequency) => new InfiniteDiscreteFunction(i => GetValue(i.ToTimeValue(samplingFrequency)), samplingFrequency);
     }
 }

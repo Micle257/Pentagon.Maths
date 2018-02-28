@@ -9,7 +9,7 @@ namespace Pentagon.Maths
     using System;
     using System.Numerics;
 
-    public class Sum
+    public class SumHelper
     {
         public static double Compute(int from, int to, Func<int, double> function)
         {

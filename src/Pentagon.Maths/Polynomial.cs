@@ -148,7 +148,5 @@ namespace Pentagon.Maths
 
             return new Polynomial(coeffs);
         }
-
-        // public string VariableName { get; }
     }
 }

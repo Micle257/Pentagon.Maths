@@ -90,6 +90,8 @@ namespace Pentagon.Maths
         }
 
         /// <inheritdoc />
-        public override string ToString() => $"{Math.Round(X, 5)}; {Math.Round(Y, 5)}";
+        public override string ToString() => ToString(5);
+
+        public string ToString(int decimals) => $"{Math.Round(X, decimals)}; {Math.Round(Y, decimals)}";
     }
 }

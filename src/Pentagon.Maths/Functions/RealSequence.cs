@@ -11,14 +11,14 @@ namespace Pentagon.Maths.Functions
     using System.Linq;
     using Helpers;
 
-    public class RealSequence : Sequence<double>, IDiscreteFunction
+    public class RealNumberSequence : NumberSequence<double>, IDiscreteFunction
     {
-        public RealSequence(IEnumerable<double> values, int zeroIndex, double samplingFrequency) : base(values, zeroIndex)
+        public RealNumberSequence(IEnumerable<double> values, int zeroIndex, double samplingFrequency) : base(values, zeroIndex)
         {
             SamplingFrequency = samplingFrequency;
         }
 
-        public RealSequence(IEnumerable<double> zeroPositiveValues, IEnumerable<double> negativeValues = null) : base(zeroPositiveValues, negativeValues) { }
+        public RealNumberSequence(IEnumerable<double> zeroPositiveValues, IEnumerable<double> negativeValues = null) : base(zeroPositiveValues, negativeValues) { }
         public double SamplingFrequency { get; }
 
         public double EvaluateSample(int sample)
@@ -30,7 +30,7 @@ namespace Pentagon.Maths.Functions
 
         public double EvaluateTime(double time)
         {
-            var d = time.ToSample(SamplingFrequency);
+            var d = time.ToSampleNumber(SamplingFrequency);
             return EvaluateSample(d);
         }
 

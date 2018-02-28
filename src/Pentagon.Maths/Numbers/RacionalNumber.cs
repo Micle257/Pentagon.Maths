@@ -15,5 +15,6 @@ namespace Pentagon.Maths.Numbers
 
         public override NumberSet NumberSet => NumberSet.Racional;
         public double Value { get; }
+        public bool IsPeriodic { get; }
     }
 }
