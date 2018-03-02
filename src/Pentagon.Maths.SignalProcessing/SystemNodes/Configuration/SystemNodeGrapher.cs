@@ -10,6 +10,7 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes.Configuration
     using System.Collections.Generic;
     using System.Linq;
     using Abstractions;
+    using Collections;
 
     public class SystemNodeGrapher
     {
@@ -44,8 +45,7 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes.Configuration
             {
                 var relatedNodes = _connections.Where(a => a.Value.Contains(inputNode)).Select(a => a.Key).ToList();
 
-                var tree = new HierarchyList<INode>();
-                tree.AddRoot(inputNode);
+                var tree = new HierarchyList<INode>(inputNode);
                 foreach (var relatedNode in relatedNodes)
                     tree.Root.AddChildren(relatedNode);
 
