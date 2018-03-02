@@ -1,20 +1,25 @@
-# Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+# Pentagon.Common
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+**
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+## Packages
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+Package name|Stable                                      
+---|---
+`Pentagon.Maths`| [![NuGet][nuget-badge]][nuget]      
+`Pentagon.Maths.Expressions`| [![NuGet][nuget-badge-e]][nuget-e]  
+`Pentagon.Maths.SignalProcessing`| [![NuGet][nuget-badge-sp]][nuget-sp]  
+`Pentagon.Maths.UnitSystem`| [![NuGet][nuget-badge-us]][nuget-us]  
+`Pentagon.Maths.PathFinding`| [![NuGet][nuget-badge-pf]][nuget-pf]  
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://www.visualstudio.com/en-us/docs/git/create-a-readme). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+
+[nuget]: https://www.nuget.org/packages/Pentagon.Maths/
+[nuget-e]: https://www.nuget.org/packages/Pentagon.Maths.Expressions/
+[nuget-sp]: https://www.nuget.org/packages/Pentagon.Maths.SignalProcessing/
+[nuget-us]: https://www.nuget.org/packages/Pentagon.Maths.UnitSystem/
+[nuget-pf]: https://www.nuget.org/packages/Pentagon.Maths.PathFinding/
+[nuget-badge]: https://img.shields.io/nuget/v/Pentagon.Maths.svg?style=flat-square&label=nuget
+[nuget-badge-e]: https://img.shields.io/nuget/v/Pentagon.Maths.Expressions.svg?style=flat-square&label=nuget
+[nuget-badge-sp]: https://img.shields.io/nuget/v/Pentagon.Maths.SignalProcessing.svg?style=flat-square&label=nuget
+[nuget-badge-us]: https://img.shields.io/nuget/v/Pentagon.Maths.UnitSystem.svg?style=flat-square&label=nuget
+[nuget-badge-pf]: https://img.shields.io/nuget/v/Pentagon.Maths.PathFinding.svg?style=flat-square&label=nuget
