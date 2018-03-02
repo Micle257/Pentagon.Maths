@@ -8,47 +8,7 @@ namespace Pentagon.Maths.SignalProcessing
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Linq.Expressions;
-
-    public struct SystemTuple
-    {
-        public SystemTuple(IEnumerable<double> numeratorCoefficients, IEnumerable<double> denumeratorCoefficients)
-        {
-            var num = numeratorCoefficients as double[] ?? numeratorCoefficients?.ToArray();
-            var den = denumeratorCoefficients as double[] ?? denumeratorCoefficients?.ToArray();
-
-            if (num == null || num.Length == 0)
-                num = new[] { 1d };
-
-            if (den == null || den.Length == 0)
-                den = new[] { 1d };
-
-            if (den.Length != num.Length)
-            {
-                if (num.Length < den.Length)
-                    Array.Resize(ref num, den.Length);
-                else
-                    Array.Resize(ref den, num.Length);
-            }
-
-            Numerator = num;
-            Denumerator = den;
-
-            Order = num.Length;
-        }
-
-        public double[] Numerator { get; }
-
-        public double[] Denumerator { get; }
-
-        public int Order { get; }
-    }
-
-    public interface ISystemFunction
-    {
-        SystemTuple Coefficients { get; }
-    }
 
     public class DifferenceEquation : ISystemFunction
     {
@@ -68,6 +28,8 @@ namespace Pentagon.Maths.SignalProcessing
             _outputSignal = new RelativeSignal(tuple.Order);
         }
 
+        public double LastValue { get; private set; }
+
         public SystemTuple Coefficients { get; }
 
         public static DifferenceEquation FromTransferFunction(TransferFunction function)
@@ -86,12 +48,7 @@ namespace Pentagon.Maths.SignalProcessing
             return new DifferenceEquation(cs);
         }
 
-        public DifferenceEquation CopyInitial()
-        {
-            return new DifferenceEquation(Coefficients);
-        }
-        
-        public double LastValue { get; private set; }
+        public DifferenceEquation CopyInitial() => new DifferenceEquation(Coefficients);
 
         public double EvaluateNext(double x)
         {

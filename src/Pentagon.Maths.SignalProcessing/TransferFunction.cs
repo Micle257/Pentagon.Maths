@@ -7,8 +7,6 @@
 namespace Pentagon.Maths.SignalProcessing
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Linq.Expressions;
     using Fractions;
 
@@ -30,13 +28,14 @@ namespace Pentagon.Maths.SignalProcessing
             Coefficients = new SystemTuple(numerator.Coefficients, denumerator.Coefficients);
         }
 
-        public TransferFunction(double[] numerator, double[] denumeretor) : this(new ZTranform(numerator), new ZTranform(denumeretor) )
-        {
-        }
+        public TransferFunction(double[] numerator, double[] denumeretor) : this(new ZTranform(numerator), new ZTranform(denumeretor)) { }
 
         public ZTranform Denumerator { get; }
 
         public ZTranform Numerator { get; }
+
+        /// <inheritdoc />
+        public SystemTuple Coefficients { get; }
 
         #region Operators
 
@@ -46,7 +45,7 @@ namespace Pentagon.Maths.SignalProcessing
 
         public static TransferFunction operator +(TransferFunction a, double value)
         {
-            var fraction = a.ToPolynomialFraction().Add(new PolynomialFraction(new[] { value }, new[] { 1d }));
+            var fraction = a.ToPolynomialFraction().Add(new PolynomialFraction(new[] {value}, new[] {1d}));
 
             return new TransferFunction(new ZTranform(fraction.Numerator.Coefficients), new ZTranform(fraction.Denumerator.Coefficients));
         }
@@ -64,7 +63,7 @@ namespace Pentagon.Maths.SignalProcessing
 
         public static TransferFunction operator *(TransferFunction a, double value)
         {
-            var fraction = a.ToPolynomialFraction().Multiple(new PolynomialFraction(new[] { value }, new[] { 1d }));
+            var fraction = a.ToPolynomialFraction().Multiple(new PolynomialFraction(new[] {value}, new[] {1d}));
 
             return new TransferFunction(new ZTranform(fraction.Numerator.Coefficients), new ZTranform(fraction.Denumerator.Coefficients));
         }
@@ -78,19 +77,14 @@ namespace Pentagon.Maths.SignalProcessing
 
         #endregion
 
-        public static TransferFunction FromDifferenceEquationExpression(Expression<Func<RelativeSignal, RelativeSignal, double>> equationFunction)
-        {
-            return FromDifferenceEquation(DifferenceEquation.FromExpression(equationFunction));
-        }
+        public static TransferFunction FromDifferenceEquationExpression(Expression<Func<RelativeSignal, RelativeSignal, double>> equationFunction) =>
+                FromDifferenceEquation(DifferenceEquation.FromExpression(equationFunction));
 
-        public static TransferFunction FromDifferenceEquation(DifferenceEquation equation)
-        {
-            return new TransferFunction(equation.Coefficients);
-        }
+        public static TransferFunction FromDifferenceEquation(DifferenceEquation equation) => new TransferFunction(equation.Coefficients);
 
         /// <inheritdoc />
         public override string ToString() => $"H(z) = ({Numerator}) / ({Denumerator})";
-        
+
         public PolynomialFraction ToPolynomialFraction() => new PolynomialFraction(Numerator.Polynomial, Denumerator.Polynomial);
 
         static TransferFunction Substract(TransferFunction left, TransferFunction right)
@@ -119,8 +113,5 @@ namespace Pentagon.Maths.SignalProcessing
 
             return new TransferFunction(new ZTranform(mul.Numerator.Coefficients), new ZTranform(mul.Denumerator.Coefficients));
         }
-        
-        /// <inheritdoc />
-        public SystemTuple Coefficients { get; }
     }
 }

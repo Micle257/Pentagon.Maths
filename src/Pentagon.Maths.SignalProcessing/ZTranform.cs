@@ -1,19 +1,14 @@
-﻿namespace Pentagon.Maths.SignalProcessing
+﻿// -----------------------------------------------------------------------
+//  <copyright file="ZTranform.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.Maths.SignalProcessing
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Numerics;
-    using System.Text;
-    using Pentagon.Extensions;
-
-    public static class TransferFunctionExtensions
-    {
-        public static DifferenceEquation ToDifferenceEquation(this TransferFunction function)
-        {
-            return DifferenceEquation.FromTransferFunction(function);
-        }
-    }
 
     public struct ZTranform
     {
@@ -39,14 +34,14 @@
 
         public IReadOnlyList<double> Coefficients { get; }
 
+        /// <inheritdoc />
+        public override string ToString() => Polynomial.ToString(variableName: "z^-");
+
         public Complex Evaluate(Complex z)
         {
             var sum = default(Complex);
             var tmpThis = this;
-            return SumHelper.ComputeComplex(0, tmpThis.Coefficients.Count, n => new Complex(tmpThis.Coefficients[n],0) * Complex.Pow(z, -n));
+            return SumHelper.ComputeComplex(0, tmpThis.Coefficients.Count, n => new Complex(tmpThis.Coefficients[n], 0) * Complex.Pow(z, -n));
         }
-
-        /// <inheritdoc />
-        public override string ToString() => Polynomial.ToString("z^-");
     }
 }

@@ -1,19 +1,18 @@
-﻿namespace Pentagon.Maths.SignalProcessing.SystemNodes {
+﻿// -----------------------------------------------------------------------
+//  <copyright file="MultiInputFunctionNode.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.Maths.SignalProcessing.SystemNodes
+{
     using System;
     using System.Collections.Generic;
-    using System.Linq;
+    using Abstractions;
 
     public class MultiInputFunctionNode : IMultiInputNode
     {
         readonly Func<double[], double> _function;
-
-        public MultiInputFunctionNode(Func<double[], double> function)
-        {
-            _function = function;
-        }
-
-        /// <inheritdoc />
-        public string Name { get; set; }
 
         double[] _values;
 
@@ -21,31 +20,21 @@
 
         bool _isEvaluated;
 
-        public double CurrentValue { get; private set; }
-        /// <inheritdoc />
-        public double GetValue(int index)
+        public MultiInputFunctionNode(Func<double[], double> function)
         {
-            if (_values == null)
-                _values = new double[InputNodes.Count];
-
-            if (_isEvaluated && _index == index)
-                return CurrentValue;
-
-            _isEvaluated = false;
-
-            for (var i = 0; i < InputNodes.Count; i++)
-            {
-                _values[i] = InputNodes[i].GetValue(index);;
-            }
-
-            var value = _function(_values);
-
-            _index = index;
-            _isEvaluated = true;
-            CurrentValue = value;
-
-            return CurrentValue;
+            _function = function;
         }
+
+        /// <inheritdoc />
+        public int InputCount { get; }
+
+        /// <inheritdoc />
+        public IList<INode> InputNodes { get; } = new List<INode>();
+
+        public double CurrentValue { get; private set; }
+
+        /// <inheritdoc />
+        public string Name { get; set; }
 
         /// <inheritdoc />
         public double GetValue(int index, params double[] inputValues)
@@ -59,9 +48,7 @@
             _isEvaluated = false;
 
             for (var i = 0; i < inputValues.Length; i++)
-            {
                 _values[i] = inputValues[i];
-            }
 
             var value = _function(_values);
 
@@ -73,10 +60,30 @@
         }
 
         /// <inheritdoc />
-        public int InputCount { get; }
+        public double GetValue(int index)
+        {
+            if (_values == null)
+                _values = new double[InputNodes.Count];
 
-        /// <inheritdoc />
-        public IList<INode> InputNodes { get; } = new List<INode>();
+            if (_isEvaluated && _index == index)
+                return CurrentValue;
+
+            _isEvaluated = false;
+
+            for (var i = 0; i < InputNodes.Count; i++)
+            {
+                _values[i] = InputNodes[i].GetValue(index);
+                ;
+            }
+
+            var value = _function(_values);
+
+            _index = index;
+            _isEvaluated = true;
+            CurrentValue = value;
+
+            return CurrentValue;
+        }
 
         /// <inheritdoc />
         public void AddInputNode(INode node)

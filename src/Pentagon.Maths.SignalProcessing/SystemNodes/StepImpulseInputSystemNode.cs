@@ -1,16 +1,25 @@
-﻿namespace Pentagon.Maths.SignalProcessing.SystemNodes {
+﻿// -----------------------------------------------------------------------
+//  <copyright file="StepImpulseInputSystemNode.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.Maths.SignalProcessing.SystemNodes
+{
+    using Abstractions;
+
     public class StepImpulseInputSystemNode : IInputSystemNode
     {
         /// <inheritdoc />
-        public string Name { get; set; }
+        public int InputCount => 0;
 
         /// <inheritdoc />
-        public double GetValue(int index) => index == 0 ? 1 : 0;
+        public string Name { get; set; }
 
         /// <inheritdoc />
         public double GetValue(int index, params double[] inputValues) => index == 0 ? 1 : 0;
 
         /// <inheritdoc />
-        public int InputCount => 0;
+        public double GetValue(int index) => index == 0 ? 1 : 0;
     }
 }

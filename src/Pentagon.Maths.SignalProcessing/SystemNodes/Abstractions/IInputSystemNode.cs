@@ -1,6 +1,10 @@
-﻿namespace Pentagon.Maths.SignalProcessing.SystemNodes {
-    public interface IInputSystemNode : INode
-    {
+﻿// -----------------------------------------------------------------------
+//  <copyright file="IInputSystemNode.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
 
-    }
+namespace Pentagon.Maths.SignalProcessing.SystemNodes.Abstractions
+{
+    public interface IInputSystemNode : INode { }
 }

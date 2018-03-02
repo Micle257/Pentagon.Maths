@@ -1,21 +1,27 @@
-﻿namespace Pentagon.Maths.SignalProcessing.SystemNodes
+﻿// -----------------------------------------------------------------------
+//  <copyright file="FilterSystemNode.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.Maths.SignalProcessing.SystemNodes
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq.Expressions;
+    using Abstractions;
 
     public class FilterSystemNode : IFilterSystemNode, ISingleInputNode, IMemoryNode
     {
         DifferenceEquation _eq;
 
-        public ISystemFunction System { get; }
+        bool _wasEvaluated;
 
         public FilterSystemNode(IEnumerable<double> numeratorCoefficients, IEnumerable<double> denumeratorCoefficients)
         {
             _eq = new DifferenceEquation(numeratorCoefficients, denumeratorCoefficients);
         }
-        
+
         public FilterSystemNode(ISystemFunction system)
         {
             _eq = system as DifferenceEquation ?? new DifferenceEquation(system.Coefficients);
@@ -26,7 +32,13 @@
             _eq = DifferenceEquation.FromExpression(equationCallback);
         }
 
-        bool _wasEvaluated;
+        public ISystemFunction System { get; }
+
+        /// <inheritdoc />
+        public double LastValue => _eq.LastValue;
+
+        /// <inheritdoc />
+        public string Name { get; set; }
 
         public double GetValue(int index, params double[] inputValues)
         {
@@ -41,14 +53,13 @@
             _wasEvaluated = false;
             return value;
         }
-        
-        /// <inheritdoc />
-        public string Name { get; set; }
-        
+
         /// <inheritdoc />
         public override string ToString() => Name == null ? $"Filter system node" : $"{Name} (Filter)";
 
-        /// <inheritdoc />
-        public double LastValue => _eq.LastValue;
+        public void Reset()
+        {
+            _eq = _eq.CopyInitial();
+        }
     }
 }

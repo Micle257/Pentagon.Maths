@@ -4,11 +4,8 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Maths.SignalProcessing.SystemNodes
+namespace Pentagon.Maths.SignalProcessing.SystemNodes.Abstractions
 {
-    using System.Collections.Generic;
-    using Functions;
-
     public interface INode
     {
         string Name { get; set; }

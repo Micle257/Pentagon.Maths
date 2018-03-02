@@ -1,10 +1,23 @@
-﻿namespace Pentagon.Maths.SignalProcessing.SystemNodes {
-    using System;
+﻿// -----------------------------------------------------------------------
+//  <copyright file="InputSampleSystemNode.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.Maths.SignalProcessing.SystemNodes
+{
     using System.Collections.Generic;
+    using Abstractions;
 
     public class InputSampleSystemNode : IInputSystemNode
     {
-        public IList<double> Values { get; } = new  List<double>();
+        public IList<double> Values { get; } = new List<double>();
+
+        /// <inheritdoc />
+        public string Name { get; set; }
+
+        /// <inheritdoc />
+        public double GetValue(int index, params double[] inputValues) => Values[index];
 
         public void Add(double value)
         {
@@ -12,18 +25,6 @@
         }
 
         /// <inheritdoc />
-        public string Name { get; set; }
-
-        /// <inheritdoc />
-        public double GetValue(int index)
-        {
-            return Values[index];
-        }
-
-        /// <inheritdoc />
-        public double GetValue(int index, params double[] inputValues)
-        {
-            return Values[index];
-        }
+        public double GetValue(int index) => Values[index];
     }
 }

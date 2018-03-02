@@ -6,6 +6,8 @@ namespace Pentagon.Maths.SignalProcessing.Demo
     using System.Diagnostics;
     using System.Linq;
     using SystemNodes;
+    using SystemNodes.Abstractions;
+    using SystemNodes.Configuration;
     using Quantities;
     using SignalSources;
 

@@ -3,6 +3,7 @@
 //   Copyright (c) Michal Pokorný. All Rights Reserved.
 //  </copyright>
 // -----------------------------------------------------------------------
+
 namespace Pentagon.Maths.SignalProcessing.SignalSources
 {
     using Quantities;

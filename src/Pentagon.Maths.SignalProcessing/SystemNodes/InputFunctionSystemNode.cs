@@ -1,4 +1,12 @@
-﻿namespace Pentagon.Maths.SignalProcessing.SystemNodes {
+﻿// -----------------------------------------------------------------------
+//  <copyright file="InputFunctionSystemNode.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.Maths.SignalProcessing.SystemNodes
+{
+    using Abstractions;
     using Functions;
 
     public class InputFunctionSystemNode : IInputSystemNode
@@ -11,14 +19,10 @@
         }
 
         /// <inheritdoc />
-        public string Name { get; set; }
+        public int InputCount => 0;
 
         /// <inheritdoc />
-        public double GetValue(int index)
-        {
-            var value = _function.EvaluateSample(index);
-            return value;
-        }
+        public string Name { get; set; }
 
         /// <inheritdoc />
         public double GetValue(int index, params double[] inputValues)
@@ -28,6 +32,10 @@
         }
 
         /// <inheritdoc />
-        public int InputCount => 0;
+        public double GetValue(int index)
+        {
+            var value = _function.EvaluateSample(index);
+            return value;
+        }
     }
 }

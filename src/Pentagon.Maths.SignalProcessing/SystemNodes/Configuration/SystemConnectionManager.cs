@@ -4,83 +4,29 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Maths.SignalProcessing.SystemNodes
+namespace Pentagon.Maths.SignalProcessing.SystemNodes.Configuration
 {
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
-
-    public interface INodeSystem
-    {
-        INode Output { get; }
-        void ConfigureConnections(IConnectionBuilder builder);
-        void ConfigureConstrains(SystemManagerConstrainCollection contrains);
-        void Initialize();
-    }
-
-    public class SystemManagerConstrainCollection
-    {
-       public List<ISystemManagerConstrain> Items { get; } = new List<ISystemManagerConstrain>();
-
-        public void Add<TModel>(TModel model, Func<TModel, INode> noteSelector, Func<(double OutputValue, double[] InputValues), bool> condition, Action<TModel> action)
-            where TModel : INodeSystem
-        {
-            Items.Add(new SystemManagerConstrain<TModel>(model, noteSelector, condition,action));
-        }
-    }
-
-    public interface ISystemManagerConstrain {
-        INode Node { get; }
-        void Run(double outputValue, IEnumerable<double> inputValues);
-    }
-
-    public class SystemManagerConstrain<TModel> : ISystemManagerConstrain
-        where TModel : INodeSystem
-    {
-        readonly TModel _model;
-        readonly Func<TModel, INode> _noteSelector;
-        readonly Func<(double OutputValue, double[] InputValues), bool> _condition;
-        readonly Action<TModel> _action;
-
-        public SystemManagerConstrain(TModel model, Func<TModel, INode> noteSelector, Func<(double OutputValue, double[] InputValues), bool> condition, Action<TModel> action)
-        {
-            _model = model;
-            _condition = condition;
-            _action = action;
-
-            Node = noteSelector(_model);
-        }
-
-        /// <inheritdoc />
-        public INode Node { get; }
-
-        public void Run(double outputValue, IEnumerable<double> inputValues)
-        {
-            var result = _condition((outputValue, inputValues?.ToArray()));
-
-            if (result)
-                _action(_model); // TODO make togglable
-        }
-    }
+    using Abstractions;
 
     public class SystemConnectionManager : SystemConnectionManager<object> { }
 
     public class SystemConnectionManager<T>
     {
+        readonly IDictionary<INode, double> _values = new ConcurrentDictionary<INode, double>();
+        readonly List<SystemNodeWatcher> _watchers = new List<SystemNodeWatcher>();
         IDictionary<INode, IList<INode>> _connectionMap;
 
         INode _output;
 
-        readonly IDictionary<INode, double> _values = new ConcurrentDictionary<INode, double>();
-
         IList<INode> _priority = new List<INode>();
-        readonly List<SystemNodeWatcher> _watchers = new List<SystemNodeWatcher>();
-        
+
         SystemNodeGrapher _grapher;
-        public T Instance { get; private set; }
         public SystemManagerConstrainCollection Constrains { get; } = new SystemManagerConstrainCollection();
+        public T Instance { get; private set; }
 
         public void SetupConnection(Action<IConnectionBuilder, T> action)
         {
@@ -114,6 +60,40 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
         }
 
         public double GetValue(int index)
+        {
+            GetValueCore(index);
+
+            var force = false;
+            foreach (var d in _values)
+                force = force || CheckConstrains(d.Key, d.Value, null);
+
+            if (force)
+                GetValueCore(index);
+
+            foreach (var w in _watchers)
+            {
+                if (_values.ContainsKey(w.Node) && _connectionMap.ContainsKey(w.Node))
+                    w.AddValue(_values[w.Node], _connectionMap[w.Node].Select(a => _values[a]));
+            }
+
+            return _values[_output];
+        }
+
+        public void SetupSystem(T system)
+        {
+            Instance = system;
+
+            if (Instance is INodeSystem ns)
+            {
+                var b = new ConnectionBuilder();
+                ns.ConfigureConnections(b);
+                _connectionMap = b.Build();
+
+                InitializeOutputNode(ns.Output);
+            }
+        }
+
+        void GetValueCore(int index)
         {
             // compute the values for input nodes
             foreach (var inputNode in _grapher.InputNodes)
@@ -150,32 +130,17 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
 
                 var values = fixedInputs.Select(a => _values[a]).ToArray();
 
-                var value = GetValueOutput(n, n.GetValue(index, values));
+                var value = n.GetValue(index, values);
 
                 _values[n] = value;
             }
-
-            foreach (var w in _watchers)
-            {
-                if (_values.ContainsKey(w.Node) && _connectionMap.ContainsKey(w.Node))
-                    w.AddValue(_values[w.Node], _connectionMap[w.Node].Select(a => _values[a]));
-            }
-
-            return _values[_output];
         }
 
-        public void SetupSystem(T system)
+        bool CheckConstrains(INode node, double output, double[] inputs)
         {
-            Instance = system;
+            var con = Constrains.Items.FirstOrDefault(a => a.Node == node);
 
-            if (Instance is INodeSystem ns)
-            {
-                var b = new ConnectionBuilder();
-                ns.ConfigureConnections(b);
-                _connectionMap = b.Build();
-
-                InitializeOutputNode(ns.Output);
-            }
+            return con?.Run(_values[node], inputs) ?? false;
         }
 
         double GetValueOutput(INode node, double value)
@@ -186,18 +151,5 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
 
             return value;
         }
-    }
-
-    public class SystemManagerDisableConstrain
-    {
-        public SystemManagerDisableConstrain(INode node, Func<(double Value, double[] Input), bool> func)
-        {
-            Node = node;
-            Func = func;
-        }
-
-        public INode Node { get; }
-        public Func<(double Value, double[] Input), bool> Func { get; }
-        public bool IsDisabled { get; set; }
     }
 }

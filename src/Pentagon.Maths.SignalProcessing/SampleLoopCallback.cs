@@ -6,9 +6,7 @@
 
 namespace Pentagon.Maths.SignalProcessing
 {
-    /// <summary>
-    ///     Encapsulates a method for computing looping algorithm.
-    /// </summary>
+    /// <summary> Encapsulates a method for computing looping algorithm. </summary>
     /// <param name="iteration"> The iteration. </param>
     /// <param name="time"> The time. </param>
     /// <returns> A value. </returns>

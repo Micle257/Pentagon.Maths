@@ -1,4 +1,11 @@
-namespace Pentagon.Maths.SignalProcessing {
+// -----------------------------------------------------------------------
+//  <copyright file="ILinearSystem.cs">
+//   Copyright (c) Michal Pokorný. All Rights Reserved.
+//  </copyright>
+// -----------------------------------------------------------------------
+
+namespace Pentagon.Maths.SignalProcessing
+{
     using Functions;
     using Quantities;
 

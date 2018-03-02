@@ -7,21 +7,20 @@
 namespace Pentagon.Maths.SignalProcessing
 {
     using System;
-    using SystemNodes;
     using Functions;
     using Quantities;
 
     public class LinearTimeInvariantSystem : ILinearSystem
     {
-        public TransferFunction TransferFunction { get; }
-        public DifferenceEquation DifferenceEquation { get; }
-
         public LinearTimeInvariantSystem(ISystemFunction system)
         {
             TransferFunction = system as TransferFunction ?? new TransferFunction(system.Coefficients);
             DifferenceEquation = system as DifferenceEquation ?? new DifferenceEquation(system.Coefficients);
         }
-        
+
+        public TransferFunction TransferFunction { get; }
+        public DifferenceEquation DifferenceEquation { get; }
+
         public IDiscreteFunction GetImpulseResponse(Frequency samplingFrequency)
         {
             var imp = InfiniteDiscreteFunction.ImpulseFunction(samplingFrequency);
@@ -38,10 +37,7 @@ namespace Pentagon.Maths.SignalProcessing
                                      };
             return new InfiniteDiscreteFunction(func, samplingFrequency);
         }
-        
-        public double ProcessSample(double sample)
-        {
-           return DifferenceEquation.EvaluateNext(sample);
-        }
+
+        public double ProcessSample(double sample) => DifferenceEquation.EvaluateNext(sample);
     }
 }

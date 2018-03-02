@@ -4,59 +4,12 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Maths.SignalProcessing.SystemNodes
+namespace Pentagon.Maths.SignalProcessing.SystemNodes.Configuration
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
-
-    public class HierarchyList<T>
-    {
-        public HierarchyListItem<T > Root { get; private set; } 
-
-        public void AddRoot(T item)
-        {
-            if (Root != null)
-                return;
-
-            Root = new HierarchyListItem<T>(item, null);
-        }
-    }
-
-    public class HierarchyListItem<T>
-    {
-        public HierarchyListItem(T value, HierarchyListItem<T> parent)
-        {
-            Value = value;
-            Parent = parent;
-        }
-
-        public T Value { get; set; }
-
-        public HierarchyListItem<T> Parent { get; }
-
-        public IList<HierarchyListItem<T>> Children { get; } = new List<HierarchyListItem<T>>();
-
-        public IList<HierarchyListItem<T>> Siblings => GetSiblings();
-
-        IList<HierarchyListItem<T>> GetSiblings()
-        {
-            if (IsRoot)
-                return null;
-
-            if (Parent.Children != null && Parent.Children.Count != 0)
-                return Parent.Children.Except(new[] {this}).ToList();
-
-            return null;
-        }
-
-        public bool IsRoot => Parent == null;
-
-        public void AddChildren(T item)
-        {
-            Children.Add(new HierarchyListItem<T>(item, this));
-        }
-    }
+    using Abstractions;
 
     public class SystemNodeGrapher
     {
@@ -71,7 +24,7 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
 
             RelatedNodes = _connections.SelectMany(a => a.Value.Concat(new[] {a.Key})).Distinct().ToList();
             DelayNodes = RelatedNodes.Where(a => a is IDelaySystemNode).Select(a => (IDelaySystemNode) a).ToList();
-            FilterNodes = RelatedNodes.Where(a => a is IFilterSystemNode).Select(a => (IFilterSystemNode)a).ToList();
+            FilterNodes = RelatedNodes.Where(a => a is IFilterSystemNode).Select(a => (IFilterSystemNode) a).ToList();
             InputNodes = RelatedNodes.Where(a => a is IInputSystemNode).Select(a => (IInputSystemNode) a).ToList();
             FunctionalNodes = RelatedNodes.Except(InputNodes).Except(DelayNodes).ToList();
         }
@@ -94,9 +47,7 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
                 var tree = new HierarchyList<INode>();
                 tree.AddRoot(inputNode);
                 foreach (var relatedNode in relatedNodes)
-                {
                     tree.Root.AddChildren(relatedNode);
-                }
 
                 var currentItem = new List<HierarchyListItem<INode>> {tree.Root};
 
@@ -105,7 +56,7 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
 
                 while (relatedNodes.Any())
                 {
-                    var inNodes = new Dictionary<INode,List<INode>>();
+                    var inNodes = new Dictionary<INode, List<INode>>();
                     foreach (var relatedNode in relatedNodes)
                     {
                         if (overallPriority.Contains(relatedNode))
@@ -120,7 +71,7 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
 
                             // check if there is the connection to related node from inputNode  
                             var connectedNode = _connections.FirstOrDefault(a => a.Key == relatedNode).Value
-                                                           .FirstOrDefault(a => a == relatedHierItem.Parent);
+                                                            .FirstOrDefault(a => a == relatedHierItem.Parent);
 
                             if (connectedNode == null) //connection is not processed
                             {
@@ -129,9 +80,7 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
                                 while (nodeCursor != null) // null would be if we get to the root item
                                 {
                                     if (nodeCursor.Parent.IsRoot)
-                                    {
                                         break;
-                                    }
 
                                     var parent = nodeCursor.Parent.Value;
 
@@ -148,10 +97,9 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
 
                                         break;
                                     }
+
                                     if (parent == relatedNode)
-                                    {
-                                        throw new OverflowException("The node system computation loop.");
-                                    }
+                                        throw new OverflowException(message: "The node system computation loop.");
 
                                     nodeCursor = nodeCursor.Parent;
                                     chain.Value.Add(nodeCursor.Value);
@@ -159,9 +107,7 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
 
                                 // remove all nodes in chain from priority
                                 foreach (var node in chain.Value)
-                                {
                                     priority.Remove(node);
-                                }
 
                                 var insertIndex = priority.IndexOf(chain.Key);
 
@@ -173,7 +119,7 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
 
                         priority.Add(relatedNode);
 
-                        inNodes.Add(relatedNode,_connections.Where(a => a.Value.Contains(relatedNode)).Select(a => a.Key).ToList());
+                        inNodes.Add(relatedNode, _connections.Where(a => a.Value.Contains(relatedNode)).Select(a => a.Key).ToList());
                     }
 
                     var parents = new List<HierarchyListItem<INode>>();
@@ -192,11 +138,10 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
                                 continue;
 
                             foreach (var child in children)
-                            {
                                 parent.AddChildren(child);
-                            }
                         }
                     }
+
                     relatedNodes.Clear();
                     relatedNodes.AddRange(inNodes.Values.SelectMany(a => a));
 
@@ -210,7 +155,7 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
                 {
                     var lessPriorityNode = overallPriority.FirstOrDefault(a => skippedNodes.Any(b => b == a));
 
-                    if(lessPriorityNode == null)
+                    if (lessPriorityNode == null)
                         continue;
 
                     var insertIndex = overallPriority.IndexOf(lessPriorityNode);
@@ -220,8 +165,8 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
 
                 //overallPriority.Where(a => a is DelayOutputSystemNode).Cast<DelayOutputSystemNode>().GroupBy(a => a.Delay).Select(a => a.First());
             }
-            
-           var result = overallPriority.Where(a => !InputNodes.Contains(a) && !DelayOutputNodes.Contains(a)).ToList();
+
+            var result = overallPriority.Where(a => !InputNodes.Contains(a) && !DelayOutputNodes.Contains(a)).ToList();
 
             return result;
         }

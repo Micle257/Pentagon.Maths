@@ -1,10 +1,13 @@
 ﻿// -----------------------------------------------------------------------
-//  <copyright file="ISingleInputNode.cs">
+//  <copyright file="ISystemFunction.cs">
 //   Copyright (c) Michal Pokorný. All Rights Reserved.
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Maths.SignalProcessing.SystemNodes.Abstractions
+namespace Pentagon.Maths.SignalProcessing
 {
-    public interface ISingleInputNode : INode { }
+    public interface ISystemFunction
+    {
+        SystemTuple Coefficients { get; }
+    }
 }

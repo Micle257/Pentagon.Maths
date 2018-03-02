@@ -1,66 +1,35 @@
 ﻿// -----------------------------------------------------------------------
-//  <copyright file="N.cs">
+//  <copyright file="DelaySystemNode.cs">
 //   Copyright (c) Michal Pokorný. All Rights Reserved.
 //  </copyright>
 // -----------------------------------------------------------------------
+
 namespace Pentagon.Maths.SignalProcessing.SystemNodes
 {
     using System.Collections.Generic;
-    using System.Diagnostics;
-    using Pentagon.Extensions;
+    using Abstractions;
 
-    public class EmptySystemNode : INode, ISingleInputNode
-    {
-        /// <inheritdoc />
-        public string Name { get; set; }
-
-        /// <inheritdoc />
-        public double GetValue(int index, params double[] inputValues)
-        {
-            return inputValues[0];
-        }
-    }
-
-    public class DelayOutputSystemNode : ISingleInputNode
-    {
-        public IDelaySystemNode Delay { get; }
-
-        /// <inheritdoc />
-        public string Name { get; set; }
-
-        public DelayOutputSystemNode(IDelaySystemNode delay)
-        {
-            Delay = delay;
-        }
-
-        /// <inheritdoc />
-        public double GetValue(int index, params double[] inputValues)
-        {
-            return Delay.LastValue;
-        }
-    }
-    
     public class DelaySystemNode : IDelaySystemNode, ISingleInputNode, IMemoryNode
     {
-        public int DelayLength { get; }
+        readonly Queue<double> _delayLine = new Queue<double>();
+
+        int _lastIndex = -1;
 
         public DelaySystemNode(int delayLength)
         {
             DelayLength = delayLength;
-            for (int i = 0; i < DelayLength; i++)
-            {
+            for (var i = 0; i < DelayLength; i++)
                 _delayLine.Enqueue(0);
-            }
         }
-        
-        Queue<double> _delayLine = new Queue<double>();
-        
+
+        public int DelayLength { get; }
+
+        /// <inheritdoc />
+        public double LastValue => _delayLine.Peek();
+
         /// <inheritdoc />
         public string Name { get; set; }
 
-        /// <inheritdoc />
-        public double LastValue =>  _delayLine.Peek();
-        
         /// <inheritdoc />
         public double GetValue(int index, params double[] inputValues)
         {
@@ -69,16 +38,23 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
 
             var next = inputValues[0];
             var value = _delayLine.Dequeue();
-             _delayLine.Enqueue(next);
+            _delayLine.Enqueue(next);
 
             _lastIndex = index;
 
             return value;
         }
 
-        int _lastIndex = -1;
-        
         /// <inheritdoc />
         public override string ToString() => Name == null ? $"Delay: z^-{DelayLength}" : $"{Name} (Delay): z^-{DelayLength}";
+
+        public void Reset()
+        {
+            for (var i = 0; i < DelayLength; i++)
+            {
+                _delayLine.Dequeue();
+                _delayLine.Enqueue(0);
+            }
+        }
     }
 }

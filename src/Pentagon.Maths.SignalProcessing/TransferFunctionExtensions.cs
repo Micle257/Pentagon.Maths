@@ -1,15 +1,13 @@
 ﻿// -----------------------------------------------------------------------
-//  <copyright file="ValueDirection.cs">
+//  <copyright file="TransferFunctionExtensions.cs">
 //   Copyright (c) Michal Pokorný. All Rights Reserved.
 //  </copyright>
 // -----------------------------------------------------------------------
 
 namespace Pentagon.Maths.SignalProcessing
 {
-    public enum ValueDirection
+    public static class TransferFunctionExtensions
     {
-        Unspecified,
-        Input,
-        Output
+        public static DifferenceEquation ToDifferenceEquation(this TransferFunction function) => DifferenceEquation.FromTransferFunction(function);
     }
 }
