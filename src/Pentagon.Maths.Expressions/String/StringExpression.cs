@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Maths.Expression.String
+namespace Pentagon.Maths.Expressions.String
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -27,6 +27,7 @@ namespace Pentagon.Maths.Expression.String
                 IsValue = true;
                 _mathExpression = new ValueMathExpression(test);
             }
+
             foreach (var ch in v)
             {
                 if (!inExpression)
@@ -57,10 +58,12 @@ namespace Pentagon.Maths.Expression.String
                                 inExpression = false;
                         }
                     }
+
                     if (inExpression)
                         writer.AddChar(ch);
                 }
             }
+
             foreach (var item in ws)
             {
                 var stringExpression = new StringExpression(item.Expression);
@@ -89,6 +92,7 @@ namespace Pentagon.Maths.Expression.String
                 var sad = ex.Compute();
                 _exprs.Add(sad);
             }
+
             if (IsValue)
                 return new ValueMathExpression(Value);
             if (Operation == "+")

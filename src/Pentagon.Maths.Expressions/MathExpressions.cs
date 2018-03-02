@@ -1,12 +1,12 @@
 // -----------------------------------------------------------------------
-//  <copyright file="MathExpr.cs">
+//  <copyright file="MathExpressions.cs">
 //   Copyright (c) Michal Pokorný. All Rights Reserved.
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Maths.Expression
+namespace Pentagon.Maths.Expressions
 {
-    public static class MathExpr
+    public static class MathExpressions
     {
         public static AddMathExpression Add(MathExpression e1, MathExpression e2, params MathExpression[] en) => new AddMathExpression(e1, e2, en);
 

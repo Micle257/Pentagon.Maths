@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Maths.Expression.String
+namespace Pentagon.Maths.Expressions.String
 {
     using System.Collections.Generic;
 

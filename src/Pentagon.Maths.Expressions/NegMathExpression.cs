@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Maths.Expression
+namespace Pentagon.Maths.Expressions
 {
     public class NegMathExpression : MathExpression
     {

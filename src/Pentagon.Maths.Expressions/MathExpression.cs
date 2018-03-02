@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Maths.Expression
+namespace Pentagon.Maths.Expressions
 {
     using System;
     using System.Collections.Generic;
@@ -28,11 +28,9 @@ namespace Pentagon.Maths.Expression
                 yield return this;
                 foreach (var exp in InnerExpressions)
                 {
-                    // yield return exp;
                     foreach (var expAllInnerExpression in exp.AllInnerExpressions)
                         yield return expAllInnerExpression;
                 }
-                //return InnerExpressions.SelectMany(a => a.InnerExpressions).ToList();
             }
         }
 
@@ -77,6 +75,7 @@ namespace Pentagon.Maths.Expression
                         expression.SetUnknownValue(unknown.value);
                 }
             }
+
             return Value;
         }
 
@@ -90,6 +89,7 @@ namespace Pentagon.Maths.Expression
                 if (unknown.Name == name)
                     unknown.SetUnknownValue(value);
             }
+
             return Value;
         }
 
@@ -106,6 +106,7 @@ namespace Pentagon.Maths.Expression
                         expression.SetUnknownValue(unknown.value);
                 }
             }
+
             var val = Value;
             ResetUnknowns();
             return val;
@@ -121,6 +122,7 @@ namespace Pentagon.Maths.Expression
                 if (expression.Name == name)
                     expression.SetUnknownValue(value);
             }
+
             var val = Value;
             ResetUnknowns();
             return val;
@@ -140,7 +142,7 @@ namespace Pentagon.Maths.Expression
         protected double GetValue(double value)
         {
             if (!AllInnerExpressions.All(a => a.IsValuable))
-                throw new InvalidOperationException("This MathExpression can't be evaluate. (Some value in expression is unknown)");
+                throw new InvalidOperationException(message: "This MathExpression can't be evaluate. (Some value in expression is unknown)");
             return value;
         }
     }

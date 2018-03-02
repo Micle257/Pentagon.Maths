@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Maths.Expression
+namespace Pentagon.Maths.Expressions
 {
     using System.Collections.Generic;
 
@@ -19,7 +19,7 @@ namespace Pentagon.Maths.Expression
             InnerExpressions = new List<IMathExpression>();
         }
 
-        public static UnknownMathExpression X => new UnknownMathExpression("x");
+        public static UnknownMathExpression X => new UnknownMathExpression(name: "x");
 
         public override double Value => GetValue(_value);
 
