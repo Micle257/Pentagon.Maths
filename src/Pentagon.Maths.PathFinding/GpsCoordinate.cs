@@ -4,7 +4,7 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Maths.Path
+namespace Pentagon.Maths.PathFinding
 {
     public struct GpsCoordinate { }
 }

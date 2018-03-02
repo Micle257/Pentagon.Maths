@@ -1,14 +1,14 @@
 ﻿// -----------------------------------------------------------------------
-//  <copyright file="Node.cs">
+//  <copyright file="GeographicLocation.cs">
 //   Copyright (c) Michal Pokorný. All Rights Reserved.
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Maths.Path
+namespace Pentagon.Maths.PathFinding
 {
-    public class Node
+    public class GeographicLocation
     {
-        public GpsCoordinate Location { get; set; }
+        public GpsCoordinate Coordinate { get; set; }
         public Elevation Elevation { get; set; }
     }
 }

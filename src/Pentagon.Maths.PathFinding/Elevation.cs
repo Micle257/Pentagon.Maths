@@ -4,35 +4,29 @@
 //  </copyright>
 // -----------------------------------------------------------------------
 
-namespace Pentagon.Maths.Path
+namespace Pentagon.Maths.PathFinding
 {
     using System;
     using Quantities;
     using Units;
 
-    /// <summary>
-    ///     Represents an elevation of a geographic location is its height above or below a fixed reference point (geoid sea level).
-    /// </summary>
+    /// <summary> Represents an elevation of a geographic location is its height above or below a fixed reference point (geoid sea level). </summary>
     public struct Elevation : IValueDataType<Elevation>
     {
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="Elevation" /> struct.
-        /// </summary>
+        readonly Length _length;
+
+        /// <summary> Initializes a new instance of the <see cref="Elevation" /> struct. </summary>
         /// <param name="value"> The value. </param>
         /// <param name="unit"> The unit. </param>
-        public Elevation(double value, ILengthUnit unit)
+        public Elevation(Length length) : this()
         {
-            Value = value;
-            Unit = unit;
+            _length = length;
+            Value = length.Value;
             HasValue = true;
         }
 
-        /// <summary>
-        ///     Gets a value indicating whether this elevation is above sea level.
-        /// </summary>
-        /// <value>
-        ///     <c> true </c> if it's above sea level; otherwise, <c> false </c>.
-        /// </value>
+        /// <summary> Gets a value indicating whether this elevation is above sea level. </summary>
+        /// <value> <c> true </c> if it's above sea level; otherwise, <c> false </c>. </value>
         public bool AboveSeaLevel => Value > 0;
 
         /// <inheritdoc />
@@ -66,18 +60,7 @@ namespace Pentagon.Maths.Path
 
         #endregion
 
-        /// <inheritdoc />
-        public int CompareTo(Elevation other) => Value.CompareTo(other.Value);
-
-        /// <inheritdoc />
-        public int CompareTo(object obj)
-        {
-            if (ReferenceEquals(null, obj))
-                return 1;
-            if (!(obj is Elevation))
-                throw new ArgumentException($"Object must be of type {nameof(Elevation)}");
-            return CompareTo((Elevation) obj);
-        }
+        #region IEquatable members
 
         /// <inheritdoc />
         public bool Equals(Elevation other) => Value.Equals(other.Value);
@@ -92,6 +75,21 @@ namespace Pentagon.Maths.Path
 
         /// <inheritdoc />
         public override int GetHashCode() => Value.GetHashCode();
+
+        #endregion
+
+        /// <inheritdoc />
+        public int CompareTo(Elevation other) => Value.CompareTo(other.Value);
+
+        /// <inheritdoc />
+        public int CompareTo(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+                return 1;
+            if (!(obj is Elevation))
+                throw new ArgumentException($"Object must be of type {nameof(Elevation)}");
+            return CompareTo((Elevation) obj);
+        }
 
         /// <inheritdoc />
         public override string ToString() => $"Elevation: {Math.Abs(Value)} {(AboveSeaLevel ? "above sea level" : "below sea level")}";
