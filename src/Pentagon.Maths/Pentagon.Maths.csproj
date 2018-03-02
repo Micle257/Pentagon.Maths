@@ -4,7 +4,6 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Pentagon.Maths</RootNamespace>
-    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <Authors>Michal Pokorný</Authors>
     <Company />
     <Product>Pentagon Maths</Product>

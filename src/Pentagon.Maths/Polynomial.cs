@@ -50,7 +50,7 @@ namespace Pentagon.Maths
 
             for (var i = 0; i < Coefficients.Count; i++)
             {
-                if (Math.Abs(Coefficients[i]) < 0.00001)
+                if (Math.Abs(Coefficients[i]) < double.Epsilon)
                     continue;
 
                 if (Coefficients[i] < 0)
@@ -64,7 +64,7 @@ namespace Pentagon.Maths
                 }
 
                 if (i != 0)
-                    result.Append($"{variableName}^{i}");
+                    result.Append($"{variableName}{i}");
             }
 
             return result.ToString();
@@ -73,9 +73,6 @@ namespace Pentagon.Maths
         public Polynomial Multiple(Polynomial second)
         {
             var first = this;
-
-            //  if (first.VariableName != second.VariableName)
-            //      throw new NotSupportedException(message: "The variable names must match.");
 
             var result = new double[first.Coefficients.Count + second.Coefficients.Count - 1];
             for (var i = 0; i < result.Length; i++)
@@ -92,9 +89,6 @@ namespace Pentagon.Maths
         public Polynomial Add(Polynomial second)
         {
             var first = this;
-
-            //   if (first.VariableName != second.VariableName)
-            //       throw new NotSupportedException(message: "The variable names must match.");
 
             var length = first.Coefficients.Count >= second.Coefficients.Count ? first.Coefficients.Count : second.Coefficients.Count;
 
@@ -113,9 +107,6 @@ namespace Pentagon.Maths
         public Polynomial Substract(Polynomial second)
         {
             var first = this;
-
-            // if (first.VariableName != second.VariableName)
-            //     throw new NotSupportedException(message: "The variable names must match.");
 
             var list = new List<double>();
             foreach (var c in second.Coefficients)

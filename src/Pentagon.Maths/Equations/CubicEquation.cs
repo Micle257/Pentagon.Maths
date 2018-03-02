@@ -18,6 +18,8 @@ namespace Pentagon.Maths.Equations
 
     public class CubicEquation
     {
+        readonly QuadraticEquation _firstDerivative;
+        readonly LinearEquation _secondDerivative;
         double _redCoifP;
         double _redCoifQ;
         Complex _root1;
@@ -26,8 +28,6 @@ namespace Pentagon.Maths.Equations
         TimeSpan _computeTime;
         double _discriminant;
         CubicEquationResultType _resultType;
-        readonly QuadraticEquation _firstDerivative;
-        readonly LinearEquation _secondDerivative;
 
         public CubicEquation(double a, double b, double c, double d)
         {
