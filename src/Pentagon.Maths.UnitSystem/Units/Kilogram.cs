@@ -1,23 +1,20 @@
 // -----------------------------------------------------------------------
-//  <copyright file="Radian.cs">
+//  <copyright file="Kilogram.cs">
 //   Copyright (c) Michal Pokorný. All Rights Reserved.
 //  </copyright>
 // -----------------------------------------------------------------------
 
 namespace Pentagon.Maths.Units
 {
-    public class Radian : IPlaneAngleUnit
+    public class Kilogram : IPhysicalUnit
     {
         /// <inheritdoc />
-        public MeasurementSystem System => MeasurementSystem.Unspecified;
-
-        /// <inheritdoc />
-        public string Symbol => "rad";
+        public string Symbol => "kg";
 
         #region IEquatable members
 
         /// <inheritdoc />
-        public bool Equals(IPhysicalUnit obj) => this.IsEqual(obj);
+        public bool Equals(IPhysicalUnit other) => this.IsEqual(other);
 
         #endregion
     }

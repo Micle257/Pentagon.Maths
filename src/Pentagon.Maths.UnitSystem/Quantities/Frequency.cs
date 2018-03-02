@@ -12,34 +12,6 @@ namespace Pentagon.Maths.Quantities
     using Units;
     using Units.Converters;
 
-    public static class Densities
-    {
-        public static Density Steel => new Density(7860);
-
-        public static Density Copper => new Density(8960);
-    }
-
-    public struct Density : IPhysicalQuantity, IRangeable<double>
-    {
-        public Density(double value) : this()
-        {
-            if (!Range.InRange(value))
-                throw new ArgumentOutOfRangeException(nameof(value));
-            Value = value;
-
-            Unit = new ComposeUnit(new [] { new Kilogram()}, new [] { new MeterCubed() });
-        }
-
-        /// <inheritdoc />
-        public double Value { get; }
-
-        /// <inheritdoc />
-        public IPhysicalUnit Unit { get; }
-
-        /// <inheritdoc />
-        public IRange<double> Range => new MathInterval(0, double.PositiveInfinity);
-    }
-
     /// <summary> Represents the number of occurrences of a repeating event per unit time. </summary>
     public struct Frequency : IPhysicalQuantity, IRangeable<double>, IValueDataType<Frequency>, IUnitConvertable<Frequency>
     {
@@ -118,6 +90,24 @@ namespace Pentagon.Maths.Quantities
 
         #endregion
 
+        #region IEquatable members
+
+        /// <inheritdoc />
+        public bool Equals(Frequency other) => QuantityHelpers.IsEqual(this, other, ReferenceUnit);
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+                return false;
+            return obj is Frequency f && Equals(f);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode() => Value.GetHashCode();
+
+        #endregion
+
         /// <inheritdoc />
         public int CompareTo(Frequency other) => QuantityHelpers.Compare(this, other, ReferenceUnit);
 
@@ -132,26 +122,12 @@ namespace Pentagon.Maths.Quantities
         }
 
         /// <inheritdoc />
-        public bool Equals(Frequency other) => QuantityHelpers.IsEqual(this, other, ReferenceUnit);
-
-        /// <inheritdoc />
         public Frequency ConvertUnit(IPhysicalUnit newUnit) => new FrequencyUnitConverter().ConvertUnit(this, newUnit);
 
         /// <summary> Instanced a new <see cref="Frequency" /> from its time period. </summary>
         /// <param name="period"> The period. </param>
         /// <returns> A <see cref="Frequency" />. </returns>
         public static Frequency FromPeriod(double period) => new Frequency(1 / period);
-
-        /// <inheritdoc />
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj))
-                return false;
-            return obj is Frequency f && Equals(f);
-        }
-
-        /// <inheritdoc />
-        public override int GetHashCode() => Value.GetHashCode();
 
         /// <inheritdoc />
         public override string ToString() => $"{Value.RoundSignificantFigures(5)} {Unit.Symbol}";

@@ -9,10 +9,12 @@ namespace Pentagon.Maths.Units
     public class MetreLengthUnit : ILengthUnit
     {
         /// <inheritdoc />
-        public string Symbol => "m";
+        public MeasurementSystem System => MeasurementSystem.Metric;
 
         /// <inheritdoc />
-        public MeasurementSystem System => MeasurementSystem.Metric;
+        public string Symbol => "m";
+
+        #region IEquatable members
 
         /// <inheritdoc />
         public bool Equals(IPhysicalUnit obj)
@@ -25,5 +27,7 @@ namespace Pentagon.Maths.Units
                 return false;
             return true;
         }
+
+        #endregion
     }
 }

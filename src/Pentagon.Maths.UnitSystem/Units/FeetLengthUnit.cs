@@ -9,10 +9,12 @@ namespace Pentagon.Maths.Units
     public class FeetLengthUnit : ILengthUnit
     {
         /// <inheritdoc />
-        public string Symbol => "ft";
+        public MeasurementSystem System => MeasurementSystem.Imperial;
 
         /// <inheritdoc />
-        public MeasurementSystem System => MeasurementSystem.Imperial;
+        public string Symbol => "ft";
+
+        #region IEquatable members
 
         /// <inheritdoc />
         public bool Equals(IPhysicalUnit obj)
@@ -25,5 +27,7 @@ namespace Pentagon.Maths.Units
                 return false;
             return true;
         }
+
+        #endregion
     }
 }

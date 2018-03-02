@@ -13,14 +13,10 @@ namespace Pentagon.Maths.Units.Converters
     /// <typeparam name="TQuantity"> The type of the quantity. </typeparam>
     /// <typeparam name="TUnit"> The type of the unit. </typeparam>
     public interface IUnitConvertable<out TQuantity>
-        where TQuantity : IPhysicalQuantity
+            where TQuantity : IPhysicalQuantity
     {
-        /// <summary>
-        ///     Gets the reference unit.
-        /// </summary>
-        /// <value>
-        ///     The <see cref="TUnit" />.
-        /// </value>
+        /// <summary> Gets the reference unit. </summary>
+        /// <value> The <see cref="TUnit" />. </value>
         [NotNull]
         IPhysicalConversionReferenceUnit ReferenceUnit { get; }
 

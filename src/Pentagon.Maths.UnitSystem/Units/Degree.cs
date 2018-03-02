@@ -12,13 +12,17 @@ namespace Pentagon.Maths.Units
     public class Degree : IPlaneAngleUnit, IPhysicalConversionReferenceUnit
     {
         /// <inheritdoc />
-        public string Symbol => "°";
-
-        /// <inheritdoc />
         public MeasurementSystem System => MeasurementSystem.Unspecified;
 
         /// <inheritdoc />
+        public string Symbol => "°";
+
+        #region IEquatable members
+
+        /// <inheritdoc />
         public bool Equals(IPhysicalUnit obj) => this.IsEqual(obj);
+
+        #endregion
 
         /// <inheritdoc />
         public double GetConvertRatioTo(IPhysicalUnit unit)

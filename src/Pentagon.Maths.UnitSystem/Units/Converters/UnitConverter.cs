@@ -12,7 +12,7 @@ namespace Pentagon.Maths.Units.Converters
     /// <typeparam name="TQuantity"> The type of the quantity. </typeparam>
     /// <typeparam name="TUnit"> The type of the unit. </typeparam>
     public abstract class UnitConverter<TQuantity>
-        where TQuantity : IPhysicalQuantity
+            where TQuantity : IPhysicalQuantity
     {
         /// <summary> Converts the quantity into another unit. </summary>
         /// <param name="quantity"> The quantity. </param>
