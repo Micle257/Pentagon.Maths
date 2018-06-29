@@ -7,6 +7,7 @@
 namespace Pentagon.Maths.SignalProcessing
 {
     using System;
+    using System.Linq;
     using System.Linq.Expressions;
     using Fractions;
 
@@ -81,6 +82,8 @@ namespace Pentagon.Maths.SignalProcessing
                 FromDifferenceEquation(DifferenceEquation.FromExpression(equationFunction));
 
         public static TransferFunction FromDifferenceEquation(DifferenceEquation equation) => new TransferFunction(equation.Coefficients);
+
+        public static TransferFunction Delay(int delay) => new TransferFunction(new ZTranform(Enumerable.Repeat(0d, delay).Concat(new[] {1d}).ToArray()), new ZTranform(1));
 
         /// <inheritdoc />
         public override string ToString() => $"H(z) = ({Numerator}) / ({Denumerator})";

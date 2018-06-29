@@ -9,7 +9,7 @@ namespace Pentagon.Maths
     using System;
 
     /// <summary> Represents a boolean bit value. </summary>
-    public struct Bit : IValueDataType<Bit>, IValuable<bool?>
+    public struct Bit : IValueDataType<Bit>
     {
         /// <summary> The inner bit value as integer. </summary>
         readonly bool _bit;

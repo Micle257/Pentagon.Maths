@@ -6,20 +6,17 @@
 
 namespace Pentagon.Maths.SignalProcessing.SystemNodes
 {
+    using System;
     using Abstractions;
-    using Functions;
 
     public class InputFunctionSystemNode : IInputSystemNode
     {
-        readonly IDiscreteFunction _function;
+        readonly Func<int, double> _function;
 
-        public InputFunctionSystemNode(IDiscreteFunction function)
+        public InputFunctionSystemNode(Func<int, double> function)
         {
             _function = function;
         }
-
-        /// <inheritdoc />
-        public int InputCount => 0;
 
         /// <inheritdoc />
         public string Name { get; set; }
@@ -27,14 +24,7 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes
         /// <inheritdoc />
         public double GetValue(int index, params double[] inputValues)
         {
-            var value = _function.EvaluateSample(index);
-            return value;
-        }
-
-        /// <inheritdoc />
-        public double GetValue(int index)
-        {
-            var value = _function.EvaluateSample(index);
+            var value = _function(index);
             return value;
         }
     }

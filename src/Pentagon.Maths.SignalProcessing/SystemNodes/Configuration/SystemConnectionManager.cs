@@ -67,8 +67,8 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes.Configuration
             foreach (var d in _values)
                 force = force || CheckConstrains(d.Key, d.Value, null);
 
-            if (force)
-                GetValueCore(index);
+            // if (force)
+            //    GetValueCore(index);
 
             foreach (var w in _watchers)
             {

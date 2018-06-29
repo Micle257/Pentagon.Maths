@@ -88,6 +88,10 @@ namespace Pentagon.Maths.Quantities
         /// <returns> The result of the operator. </returns>
         public static Frequency operator +(Frequency left, Frequency right) => new Frequency(left.Value + right.Value);
 
+        public static Frequency operator *(Frequency left, double factor) => new Frequency(left.Value * factor, left.Unit);
+
+        public static Frequency operator *(double factor, Frequency left) => new Frequency(left.Value * factor, left.Unit);
+
         #endregion
 
         #region IEquatable members
