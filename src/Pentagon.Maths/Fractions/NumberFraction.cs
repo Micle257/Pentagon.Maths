@@ -13,7 +13,7 @@ namespace Pentagon.Maths.Fractions
             where TValue : INumber
     {
         /// <inheritdoc />
-        public NumberFraction(TValue numerator, TValue denumerator) : base(numerator, denumerator) { }
+        public NumberFraction(TValue numerator, TValue denumerator) : base(numerator, denumerator) {  }
 
         /// <inheritdoc />
         public override Fraction<TValue> Add(Fraction<TValue> second) => throw new NotImplementedException();
