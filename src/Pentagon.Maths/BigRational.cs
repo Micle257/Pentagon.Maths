@@ -13,7 +13,7 @@ namespace Pentagon.Maths
     using System.Runtime.Serialization;
     using System.Security.Permissions;
     using System.Text;
-
+    
     [Serializable]
     public struct BigRational : IComparable, IComparable<BigRational>, IDeserializationCallback, IEquatable<BigRational>, ISerializable
     {
@@ -24,7 +24,7 @@ namespace Pentagon.Maths
         const int DecimalSignMask = unchecked((int) 0x80000000);
 
         const int DecimalMaxScale = 28;
-
+        
         const string FractionSolidus = @"/";
 
         static readonly BigInteger DoublePrecision = BigInteger.Pow(10, DoubleMaxScale);
