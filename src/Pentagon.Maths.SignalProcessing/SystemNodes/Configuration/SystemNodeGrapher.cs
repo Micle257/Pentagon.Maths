@@ -49,7 +49,7 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes.Configuration
                 foreach (var relatedNode in relatedNodes)
                     tree.Root.AddChildren(relatedNode);
 
-                var currentItem = new List<HierarchyListItem<INode>> {tree.Root};
+                var currentItem = new List<HierarchyListNode<INode>> {tree.Root};
 
                 var priority = new List<INode> {inputNode};
                 var skippedNodes = new List<INode>();
@@ -122,7 +122,7 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes.Configuration
                         inNodes.Add(relatedNode, _connections.Where(a => a.Value.Contains(relatedNode)).Select(a => a.Key).ToList());
                     }
 
-                    var parents = new List<HierarchyListItem<INode>>();
+                    var parents = new List<HierarchyListNode<INode>>();
                     for (var i = 0; i < currentItem.Count; i++)
                     {
                         for (var j = 0; j < relatedNodes.Count; j++)
