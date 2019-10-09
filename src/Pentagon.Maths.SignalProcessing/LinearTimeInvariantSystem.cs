@@ -9,13 +9,14 @@ namespace Pentagon.Maths.SignalProcessing
     using System;
     using System.Numerics;
     using Functions;
+    using JetBrains.Annotations;
     using Quantities;
 
     public class LinearTimeInvariantSystem : ILinearSystem
     {
         readonly ISystemFunction _originalFunction;
 
-        public LinearTimeInvariantSystem(ISystemFunction system)
+        public LinearTimeInvariantSystem([NotNull] ISystemFunction system)
         {
             _originalFunction = system;
             TransferFunction = system as TransferFunction ?? new TransferFunction(system.Coefficients);

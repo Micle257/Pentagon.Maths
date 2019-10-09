@@ -9,6 +9,7 @@ namespace Pentagon.Maths.Expressions
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using JetBrains.Annotations;
 
     public abstract class MathExpression : IMathExpression
     {
@@ -19,6 +20,7 @@ namespace Pentagon.Maths.Expressions
             InnerExpressions = new List<IMathExpression>(nums);
         }
 
+        [NotNull]
         public abstract string StringValue { get; }
 
         public IEnumerable<IMathExpression> AllInnerExpressions
