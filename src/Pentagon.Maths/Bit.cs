@@ -9,19 +9,17 @@ namespace Pentagon.Maths
     using System;
 
     /// <summary> Represents a boolean bit value. </summary>
-    public struct Bit : IValueDataType<Bit>, IValuable<bool?>
+    public struct Bit : IValueDataType<Bit>
     {
-        /// <summary>
-        ///     The inner bit value as integer.
-        /// </summary>
-        readonly int _bit;
+        /// <summary> The inner bit value as integer. </summary>
+        readonly bool _bit;
 
         /// <summary> Initializes a new instance of the <see cref="Bit" /> class. </summary>
         /// <param name="value"> The bit value. </param>
         public Bit(bool value)
         {
             Value = value;
-            _bit = Convert.ToInt32(value);
+            _bit = value;
             HasValue = true;
         }
 
@@ -35,7 +33,7 @@ namespace Pentagon.Maths
 
         /// <summary> Gets the indeterminate state of bit (default value). </summary>
         /// <value> The <see cref="Bit" />. </value>
-        public static Bit Indeterminate => default(Bit);
+        public static Bit Indeterminate => default;
 
         /// <inheritdoc />
         public bool? Value { get; }
@@ -70,8 +68,23 @@ namespace Pentagon.Maths
 
         #endregion
 
+        #region IEquatable members
+
         /// <inheritdoc />
         public bool Equals(Bit other) => Value == other.Value;
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+                return false;
+            return obj is Bit && Equals((Bit) obj);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode() => Value.GetHashCode();
+
+        #endregion
 
         /// <inheritdoc />
         public int CompareTo(Bit other) => Nullable.Compare(Value, other.Value);
@@ -87,17 +100,6 @@ namespace Pentagon.Maths
         }
 
         /// <inheritdoc />
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj))
-                return false;
-            return obj is Bit && Equals((Bit) obj);
-        }
-
-        /// <inheritdoc />
-        public override int GetHashCode() => Value.GetHashCode();
-
-        /// <inheritdoc />
-        public override string ToString() => $"{_bit}";
+        public override string ToString() => $"{(_bit ? "1" : "0")}";
     }
 }

@@ -39,7 +39,7 @@ namespace Pentagon.Maths
 
         #endregion
 
-        public int CompareTo(Percentage other) => DecimalValue.CompareTo(other.DecimalValue);
+        #region IEquatable members
 
         public bool Equals(Percentage other) => DecimalValue.EqualTo(other.DecimalValue);
 
@@ -52,6 +52,10 @@ namespace Pentagon.Maths
 
         public override int GetHashCode() => DecimalValue.GetHashCode();
 
-        public override string ToString() => $"{DecimalValue.SignificantFigures(3) * 100}%";
+        #endregion
+
+        public int CompareTo(Percentage other) => DecimalValue.CompareTo(other.DecimalValue);
+
+        public override string ToString() => $"{DecimalValue.RoundSignificantFigures(3) * 100}%";
     }
 }
