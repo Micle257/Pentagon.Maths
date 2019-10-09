@@ -47,20 +47,20 @@ namespace Pentagon.Maths.Tests
                 yn.Add(filter.ProcessSample(sample));
         }
 
-        [Fact]
-        public void ShouldDifferenceEq()
-        {
-            var outputZ1 = new ZTranform(new[] { 1d, 2, 1 });
-            var inputZ1 = new ZTranform(new[] { 1d, 1 / 3d, -1 / 4d });
-            var outputZ = new ZTranform(new[] {1d});
-            var inputZ = new ZTranform(new[] {1d, 0.92});
-            var f = new TransferFunction(outputZ, inputZ);
-            var fs = new TransferFunction(outputZ1, inputZ1);
-            var sss = f + fs;
-            var de = f.ToDifferenceEquation();
-            var signal = new Function(MathExpressions.Sin(Function.IndependentName * (ValueMathExpression) new Frequency(10000).ConvertUnit(new AngularSpeed()).Value)).ToDiscreteFunction((Frequency) 48000);
-            var ss = de.EvaluateSignal(signal.EvaluateSamples(new Range<int>(0, 100)));
-        }
+       //TODO[Fact]
+       //public void ShouldDifferenceEq()
+       //{
+       //    var outputZ1 = new ZTranform(new[] { 1d, 2, 1 });
+       //    var inputZ1 = new ZTranform(new[] { 1d, 1 / 3d, -1 / 4d });
+       //    var outputZ = new ZTranform(new[] {1d});
+       //    var inputZ = new ZTranform(new[] {1d, 0.92});
+       //    var f = new TransferFunction(outputZ, inputZ);
+       //    var fs = new TransferFunction(outputZ1, inputZ1);
+       //    var sss = f + fs;
+       //    var de = f.ToDifferenceEquation();
+       //    var signal = new Function(MathExpressions.Sin(Function.IndependentName * (ValueMathExpression) new Frequency(10000).ConvertUnit(new AngularSpeed()).Value)).ToDiscreteFunction((Frequency) 48000);
+       //    var ss = de.EvaluateSignal(signal.EvaluateSamples(new Range<int>(0, 100)));
+       //}
 
         [Fact]
         public void ShouldSystemGetImpulseResponse()
