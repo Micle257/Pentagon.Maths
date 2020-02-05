@@ -8,9 +8,10 @@ namespace Pentagon.Maths.Quantities
 {
     using System;
     using Helpers;
+    using Ranges;
     using Units;
 
-    public struct Length : IPhysicalQuantity, IRangeable<double>
+    public struct Length : IPhysicalQuantity
     {
         public Length(double value, ILengthUnit unit = null) : this()
         {

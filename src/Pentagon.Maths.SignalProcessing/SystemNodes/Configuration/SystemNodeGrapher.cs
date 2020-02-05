@@ -11,6 +11,7 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes.Configuration
     using System.Linq;
     using Abstractions;
     using Collections;
+    using Collections.Tree;
 
     public class SystemNodeGrapher
     {
@@ -29,7 +30,7 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes.Configuration
             InputNodes = RelatedNodes.Where(a => a is IInputSystemNode).Select(a => (IInputSystemNode) a).ToList();
             FunctionalNodes = RelatedNodes.Except(InputNodes).Except(DelayNodes).ToList();
 
-            DifferenceEquation.FromExpression((i,o) => )
+            //TODO DifferenceEquation.FromExpression((i,o) => )
         }
 
         public IList<INode> RelatedNodes { get; }

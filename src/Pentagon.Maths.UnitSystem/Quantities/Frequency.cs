@@ -9,11 +9,12 @@ namespace Pentagon.Maths.Quantities
     using System;
     using Helpers;
     using Pentagon.Extensions;
+    using Ranges;
     using Units;
     using Units.Converters;
 
     /// <summary> Represents the number of occurrences of a repeating event per unit time. </summary>
-    public struct Frequency : IPhysicalQuantity, IRangeable<double>, IValueDataType<Frequency>, IUnitConvertable<Frequency>
+    public struct Frequency : IPhysicalQuantity, IValueDataType<Frequency>, IUnitConvertable<Frequency>
     {
         /// <summary> Initializes a new instance of the <see cref="Frequency" /> by given value. </summary>
         /// <param name="value"> The value. </param>

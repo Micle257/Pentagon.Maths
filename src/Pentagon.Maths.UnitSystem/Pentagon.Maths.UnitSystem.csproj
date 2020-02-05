@@ -8,14 +8,16 @@
     <Product>Pentagon Maths Unit System</Product>
     <Description>...</Description>
     <Copyright>Copyright (c) Michal Pokorný. All Rights Reserved.</Copyright>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>8.0</LangVersion>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DefineConstants>RELEASE</DefineConstants>
-    <OutputPath>..\..\build\$(AssemblyName)\$(Version)\</OutputPath>
-    <DocumentationFile>..\..\build\$(AssemblyName)\$(Version)\$(AssemblyName).xml</DocumentationFile>
+    <OutputPath>..\..\build\$(AssemblyName)\</OutputPath>
+    <DocumentationFile>..\..\build\$(AssemblyName)\$(AssemblyName).xml</DocumentationFile>
     <DebugType>none</DebugType>
     <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>

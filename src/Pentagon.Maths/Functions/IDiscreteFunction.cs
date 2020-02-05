@@ -8,6 +8,7 @@ namespace Pentagon.Maths.Functions
 {
     using System.Collections.Generic;
     using Helpers;
+    using Ranges;
 
     public interface IDiscreteFunction
     {

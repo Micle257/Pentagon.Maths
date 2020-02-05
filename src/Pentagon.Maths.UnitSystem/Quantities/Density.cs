@@ -8,9 +8,10 @@ namespace Pentagon.Maths.Quantities
 {
     using System;
     using Helpers;
+    using Ranges;
     using Units;
 
-    public struct Density : IPhysicalQuantity, IRangeable<double>
+    public struct Density : IPhysicalQuantity
     {
         public Density(double value) : this()
         {

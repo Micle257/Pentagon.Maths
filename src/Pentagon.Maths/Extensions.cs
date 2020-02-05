@@ -10,6 +10,7 @@ namespace Pentagon.Maths
     using System.Collections.Generic;
     using System.Numerics;
     using Helpers;
+    using Ranges;
 
     public static class Extensions
     {

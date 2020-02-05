@@ -10,6 +10,7 @@ namespace Pentagon.Maths.Functions
     using System.Collections.Generic;
     using System.Linq;
     using Helpers;
+    using Ranges;
 
     public class RealNumberSequence : NumberSequence<double>, IDiscreteFunction
     {

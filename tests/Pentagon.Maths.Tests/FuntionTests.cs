@@ -11,6 +11,7 @@ namespace Pentagon.Maths.Tests
     using Functions;
     using Helpers;
     using Pentagon.Extensions;
+    using Ranges;
     using Xunit;
 
     public class FunctionTests

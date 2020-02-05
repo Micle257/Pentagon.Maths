@@ -12,6 +12,7 @@ namespace Pentagon.Maths
     using System.Linq;
     using Helpers;
     using JetBrains.Annotations;
+    using Ranges;
 
     public static class DoubleExtensions
     {

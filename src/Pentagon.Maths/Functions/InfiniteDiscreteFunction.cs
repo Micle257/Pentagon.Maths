@@ -9,6 +9,7 @@ namespace Pentagon.Maths.Functions
     using System;
     using System.Collections.Generic;
     using Helpers;
+    using Ranges;
 
     public class InfiniteDiscreteFunction : IDiscreteFunction
     {
