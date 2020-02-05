@@ -139,7 +139,7 @@ namespace Pentagon.Maths.SignalProcessing.Demo
             /// <inheritdoc />
             public void ConfigureConstrains(SystemManagerConstrainCollection contrains)
             {
-                
+
             }
 
             /// <inheritdoc />

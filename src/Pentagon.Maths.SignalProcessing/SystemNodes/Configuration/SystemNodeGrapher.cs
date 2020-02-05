@@ -28,6 +28,8 @@ namespace Pentagon.Maths.SignalProcessing.SystemNodes.Configuration
             FilterNodes = RelatedNodes.Where(a => a is IFilterSystemNode).Select(a => (IFilterSystemNode) a).ToList();
             InputNodes = RelatedNodes.Where(a => a is IInputSystemNode).Select(a => (IInputSystemNode) a).ToList();
             FunctionalNodes = RelatedNodes.Except(InputNodes).Except(DelayNodes).ToList();
+
+            DifferenceEquation.FromExpression((i,o) => )
         }
 
         public IList<INode> RelatedNodes { get; }
