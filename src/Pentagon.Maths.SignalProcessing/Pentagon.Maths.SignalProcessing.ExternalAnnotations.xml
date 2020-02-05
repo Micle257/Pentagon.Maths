@@ -1,8 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<assembly name="Pentagon.Maths.SignalProcessing">
-  <member name="M:Pentagon.Maths.SignalProcessing.LinearTimeInvariantSystem.#ctor(Pentagon.Maths.SignalProcessing.ISystemFunction)">
-    <parameter name="system">
-      <attribute ctor="M:JetBrains.Annotations.NotNullAttribute.#ctor" />
-    </parameter>
-  </member>
-</assembly>
