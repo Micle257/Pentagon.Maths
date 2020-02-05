@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29318.209
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pentagon.Maths", "src\Pentagon.Maths\Pentagon.Maths.csproj", "{ECA1D9C0-38CF-421F-B9A3-EE094CB6651E}"
 EndProject
@@ -21,9 +21,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pentagon.Maths.UnitSystem",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pentagon.Maths.PathFinding", "src\Pentagon.Maths.PathFinding\Pentagon.Maths.PathFinding.csproj", "{FDB6B454-49EC-4208-9A6A-9229B139F270}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pentagon.Maths.Expressions.Tests", "test\Pentagon.Maths.Expressions.Tests\Pentagon.Maths.Expressions.Tests.csproj", "{7A3DF00B-1EFD-4D59-A785-49EE991146F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pentagon.Maths.Expressions.Tests", "test\Pentagon.Maths.Expressions.Tests\Pentagon.Maths.Expressions.Tests.csproj", "{7A3DF00B-1EFD-4D59-A785-49EE991146F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pentagon.Maths.SignalProcessing.Tests", "test\Pentagon.Maths.SignalProcessing.Tests\Pentagon.Maths.SignalProcessing.Tests.csproj", "{D74DF2A0-1E18-4B5C-806B-D79BC25DE08F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pentagon.Maths.SignalProcessing.Tests", "test\Pentagon.Maths.SignalProcessing.Tests\Pentagon.Maths.SignalProcessing.Tests.csproj", "{D74DF2A0-1E18-4B5C-806B-D79BC25DE08F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{ED8C6008-A2AE-477F-A1CB-580193B07F4D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pentagon.Common", "lib\Pentagon.Common\src\Pentagon.Common\Pentagon.Common.csproj", "{DFBD08FD-83D7-473D-B980-2FB4FD43F0AA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -67,6 +71,10 @@ Global
 		{D74DF2A0-1E18-4B5C-806B-D79BC25DE08F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D74DF2A0-1E18-4B5C-806B-D79BC25DE08F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D74DF2A0-1E18-4B5C-806B-D79BC25DE08F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFBD08FD-83D7-473D-B980-2FB4FD43F0AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFBD08FD-83D7-473D-B980-2FB4FD43F0AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFBD08FD-83D7-473D-B980-2FB4FD43F0AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFBD08FD-83D7-473D-B980-2FB4FD43F0AA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -76,6 +84,7 @@ Global
 		{2C311383-73CE-482D-B8F1-8C59E3FEE168} = {101B8FBB-5E1E-4779-926C-C162D290D608}
 		{7A3DF00B-1EFD-4D59-A785-49EE991146F3} = {B7A6AD43-9A7A-4434-92FD-447222C8714D}
 		{D74DF2A0-1E18-4B5C-806B-D79BC25DE08F} = {B7A6AD43-9A7A-4434-92FD-447222C8714D}
+		{DFBD08FD-83D7-473D-B980-2FB4FD43F0AA} = {ED8C6008-A2AE-477F-A1CB-580193B07F4D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5E31A500-F437-46F4-914E-C3E00628C9F3}

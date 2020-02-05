@@ -1,0 +1,4 @@
+[submodule "lib/Pentagon.Common"]
+	path = lib/Pentagon.Common
+	url = git@gitlab.com:pentagon-power/Pentagon.Common.git
+	branch = dev

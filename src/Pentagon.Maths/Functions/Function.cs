@@ -12,6 +12,7 @@ namespace Pentagon.Maths.Functions
     using Exceptions;
     using Helpers;
     using JetBrains.Annotations;
+    using Ranges;
 
     /// <summary> Represents a relation between a set of inputs and a set of permissible outputs with the property that each input is related to exactly one output. </summary>
     public class Function : IRangeable<double>
