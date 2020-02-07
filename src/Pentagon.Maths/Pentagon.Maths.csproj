@@ -15,10 +15,8 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DefineConstants>RELEASE</DefineConstants>
-    <OutputPath>..\..\build\$(AssemblyName)\</OutputPath>
-    <DocumentationFile>..\..\build\$(AssemblyName)\$(AssemblyName).xml</DocumentationFile>
-    <DebugType>none</DebugType>
-    <DebugSymbols>false</DebugSymbols>
+    <OutputPath>..\..\build\$(AssemblyName)\$(Version)\</OutputPath>
+    <DocumentationFile>..\..\build\$(AssemblyName)\$(Version)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -39,7 +37,7 @@
     </When>
     <Otherwise>
       <ItemGroup>
-        <PackageReference Include="Pentagon.Common" Version="3.4.0" />
+        <PackageReference Include="Pentagon.Common" Version="3.5.0" />
       </ItemGroup>
     </Otherwise>
   </Choose>
